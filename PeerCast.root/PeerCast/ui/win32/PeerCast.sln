@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "corelib", "..\..\core\win32\lib\corelib.vcproj", "{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple", "simple\Simple.vcproj", "{7D4833CE-1286-4587-9470-52E098B29C12}"
+EndProject
+Global
+	GlobalSection(SourceCodeControl) = preSolution
+		SccNumberOfProjects = 3
+		SccProjectName0 = \u0022$/PeerCast.root/PeerCast\u0022,\u0020JCAAAAAA
+		SccLocalPath0 = ..\\..
+		SccProvider0 = MSSCCI:Microsoft\u0020Visual\u0020SourceSafe
+		SccProjectFilePathRelativizedFromConnection0 = ui\\win32\\
+		SccProjectUniqueName1 = ..\\..\\core\\win32\\lib\\corelib.vcproj
+		SccLocalPath1 = ..\\..
+		SccProjectFilePathRelativizedFromConnection1 = core\\win32\\lib\\
+		SccProjectUniqueName2 = simple\\Simple.vcproj
+		SccLocalPath2 = ..\\..
+		SccProjectFilePathRelativizedFromConnection2 = ui\\win32\\simple\\
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Private Debug|Win32 = Private Debug|Win32
+		Private Release|Win32 = Private Release|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}.Debug|Win32.Build.0 = Debug|Win32
+		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}.Private Debug|Win32.ActiveCfg = Private Debug|Win32
+		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}.Private Debug|Win32.Build.0 = Private Debug|Win32
+		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}.Private Release|Win32.ActiveCfg = Private Release|Win32
+		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}.Private Release|Win32.Build.0 = Private Release|Win32
+		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}.Release|Win32.ActiveCfg = Release|Win32
+		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}.Release|Win32.Build.0 = Release|Win32
+		{7D4833CE-1286-4587-9470-52E098B29C12}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7D4833CE-1286-4587-9470-52E098B29C12}.Debug|Win32.Build.0 = Debug|Win32
+		{7D4833CE-1286-4587-9470-52E098B29C12}.Private Debug|Win32.ActiveCfg = Private Debug|Win32
+		{7D4833CE-1286-4587-9470-52E098B29C12}.Private Debug|Win32.Build.0 = Private Debug|Win32
+		{7D4833CE-1286-4587-9470-52E098B29C12}.Private Release|Win32.ActiveCfg = Private Release|Win32
+		{7D4833CE-1286-4587-9470-52E098B29C12}.Private Release|Win32.Build.0 = Private Release|Win32
+		{7D4833CE-1286-4587-9470-52E098B29C12}.Release|Win32.ActiveCfg = Release|Win32
+		{7D4833CE-1286-4587-9470-52E098B29C12}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

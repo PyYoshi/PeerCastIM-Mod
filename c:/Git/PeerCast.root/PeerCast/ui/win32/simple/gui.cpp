@@ -1137,6 +1137,18 @@ void PopupChannelMenu(int channel_id){
 			break;
 
 		case 1002:	// 再接続
+			// 直下かつ受信中であれば確認メッセージ表示
+			if (cd->isTracker() && cd->getStatus() == Channel::S_RECEIVING)
+			{
+				int id;
+				id = MessageBox(guiWnd,
+					"直下ですが再接続しますか？",
+					"直下警告",
+					MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2);
+				if (id != IDYES)
+					break;
+			}
+
 			c->bump = true;
 			break;
 

@@ -757,15 +757,28 @@ void	APICALL MyPeercastApp::channelUpdate(ChanInfo *info)
 //-----------------------------
 void	APICALL MyPeercastApp::notifyMessage(ServMgr::NOTIFY_TYPE type, const char *msg)
 {
+	static bool shownUpgradeAlert=false;
+
 	currNotify = type;
 
-	if (type == ServMgr::NT_UPGRADE)
+	trayIcon.uFlags = 0;
+
+	if (!shownUpgradeAlert)
 	{
 	    trayIcon.uFlags = NIF_ICON;
-	    trayIcon.hIcon = icon2;
-	}else{
-	    trayIcon.uFlags = NIF_ICON;
-	    trayIcon.hIcon = icon1;
+
+		if (type == ServMgr::NT_UPGRADE)
+		{
+			shownUpgradeAlert = true;
+		    trayIcon.hIcon = icon2;
+		}else
+		{
+			trayIcon.hIcon = icon1;	
+		}
+	}else
+	{
+		if (type == ServMgr::NT_UPGRADE)
+			return;
 	}
 
 	const char *title="";

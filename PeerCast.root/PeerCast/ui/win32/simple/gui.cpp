@@ -905,7 +905,7 @@ THREAD_PROC GUIDataUpdate(ThreadInfo *thread){
 			bool firewalled = false;
 			unsigned int numRelays = 0;
 			int vp_ver = 0;
-			char ver_ex_prefix[2] = {' ',' '};
+			char ver_ex_prefix[2] = {' ', ' '};
 			int ver_ex_number = 0;
 			// 直下ホスト情報チェック
 			unsigned int totalRelays = 0;

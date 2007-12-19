@@ -149,7 +149,9 @@ int PCPStream::readPacket(Stream &in,BroadcastState &bcs)
 			error = PCPStream::procAtom(patom,id,numc,numd,bcs);
 			
 			if (error)
+			{
 				throw StreamException("PCP exception");
+			}
 		}
 
 		error = 0;

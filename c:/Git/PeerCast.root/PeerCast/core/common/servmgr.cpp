@@ -2354,6 +2354,8 @@ bool ServMgr::writeVariable(Stream &out, const String &var)
 		sprintf(buf,"%d",maxBitrateOut);
 	else if (var == "maxControlsIn")
 		sprintf(buf,"%d",maxControl);
+	else if (var == "maxServIn")
+		sprintf(buf,"%d",maxServIn);
 	else if (var == "numFilters")
 		sprintf(buf,"%d",numFilters+1);
 	else if (var == "maxPGNUIn")

@@ -254,8 +254,8 @@ public:
 	ThreadInfo	thread;
 
 
-	char	loginPassword[64];
-	char	loginMount[64];
+	String	loginPassword;
+	String	loginMount;
 
 	bool	priorityConnect;
 	bool	addMetadata;

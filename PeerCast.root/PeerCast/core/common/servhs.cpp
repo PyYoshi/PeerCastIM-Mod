@@ -371,13 +371,13 @@ void Servent::handshakeHTTP(HTTP &http, bool isHTTP)
 					mount[-1] = 0; // password preceeds
 					break;
 				}
-			strcpy(loginPassword,in+7);
+			loginPassword.set(in+7);
 			
-			LOG_DEBUG("ICY client: %s %s",loginPassword,mount?mount:"unknown");
+			LOG_DEBUG("ICY client: %s %s",loginPassword.cstr(),mount?mount:"unknown");
 		}
 
 		if (mount)
-			strcpy(loginMount,mount);
+			loginMount.set(mount);
 
 		handshakeICY(Channel::SRC_ICECAST,isHTTP);
 		sock = NULL;	// socket is taken over by channel, so don`t close it
@@ -387,7 +387,7 @@ void Servent::handshakeHTTP(HTTP &http, bool isHTTP)
 		if (!isAllowed(ALLOW_BROADCAST))
 			throw HTTPException(HTTP_SC_UNAVAILABLE,503);
 
-		strcpy(loginPassword,servMgr->password);	// pwd already checked
+		loginPassword.set(servMgr->password);	// pwd already checked
 
 		sock->writeLine("OK2");
 		sock->writeLine("icy-caps:11");
@@ -1778,15 +1778,15 @@ void Servent::handshakeICY(Channel::SRC_TYPE type, bool isHTTP)
 	while (http.nextHeader())
 	{
 		LOG_DEBUG("ICY %s",http.cmdLine);
-		readICYHeader(http,info,loginPassword);
+		readICYHeader(http,info,loginPassword.cstr());
 	}
 
 
 		
 	// check password before anything else, if needed
-	if (strcmp(servMgr->password,loginPassword)!=0)
+	if (servMgr->password != loginPassword)
 	{
-		if (!sock->host.isLocalhost() || strlen(loginPassword))
+		if (!sock->host.isLocalhost() || !loginPassword.isEmpty())
 			throw HTTPException(HTTP_SC_UNAUTHORIZED,401);
 	}
 
@@ -1800,7 +1800,7 @@ void Servent::handshakeICY(Channel::SRC_TYPE type, bool isHTTP)
 
 
 	info.id = chanMgr->broadcastID;
-	info.id.encode(NULL,info.name.cstr(),loginMount,info.bitrate);
+	info.id.encode(NULL,info.name.cstr(),loginMount.cstr(),info.bitrate);
 
 	LOG_DEBUG("Incoming source: %s : %s",info.name.cstr(),ChanInfo::getTypeStr(info.contentType));
 
@@ -1821,7 +1821,7 @@ void Servent::handshakeICY(Channel::SRC_TYPE type, bool isHTTP)
 	info.comment = chanMgr->broadcastMsg;
 	info.bcID = chanMgr->broadcastID;
 
-	c = chanMgr->createChannel(info,loginMount);
+	c = chanMgr->createChannel(info,loginMount.cstr());
 	if (!c)
 		throw HTTPException(HTTP_SC_UNAVAILABLE,503);
 

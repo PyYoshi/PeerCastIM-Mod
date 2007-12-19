@@ -613,7 +613,7 @@ ClientSocket *WSAClientSocket::accept()
     WSAClientSocket *cs = new WSAClientSocket();
 	cs->sockNum = conSock;
 
-	cs->host.port = from.sin_port;
+	cs->host.port = (from.sin_port & 0xff) << 8 | ((from.sin_port >> 8) & 0xff);
 	cs->host.ip = from.sin_addr.S_un.S_un_b.s_b1<<24 |
 				  from.sin_addr.S_un.S_un_b.s_b2<<16 |
 				  from.sin_addr.S_un.S_un_b.s_b3<<8 |

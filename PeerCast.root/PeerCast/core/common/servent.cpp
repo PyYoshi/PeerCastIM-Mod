@@ -230,8 +230,8 @@ void Servent::reset()
 	nsSwitchNum = 0;
 	pack.func = 255;
 	lastConnect = lastPing = lastPacket = 0;
-	loginPassword[0] = 0;
-	loginMount[0] = 0;
+	loginPassword.clear();
+	loginMount.clear();
 	bytesPerSecond = 0;
 	priorityConnect = false;
 	pushSock = NULL;

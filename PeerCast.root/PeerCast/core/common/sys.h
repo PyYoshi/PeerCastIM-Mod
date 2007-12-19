@@ -157,8 +157,8 @@ public:
 		*this = tmp;
 	}
 
-	bool operator == (const char *s) const {return isSame(s);}
-	bool operator != (const char *s) const {return !isSame(s);}
+ 	bool operator == (const char *s) const {return isSame(s);}
+ 	bool operator != (const char *s) const {return !isSame(s);}
 
 	operator const char *() const {return data;}
 

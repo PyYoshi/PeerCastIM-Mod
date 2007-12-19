@@ -2608,3 +2608,84 @@ void ServMgr::banFirewalledHost()
 	}
 }
 
+// --------------------------------------------------
+static ChanHit *findServentHit(Servent *s)
+{
+	ChanHitList *chl = chanMgr->findHitListByID(s->chanID);
+	Host h = s->getHost();
+
+	if (chl)
+	{
+		ChanHit *hit = chl->hit;
+		while (hit)
+		{
+			if ((hit->numHops == 1) && hit->host.isValid() && (h.ip == hit->host.ip))
+				return hit;
+			hit = hit->next;
+		}
+	}
+	return NULL;
+}
+// --------------------------------------------------
+int ServMgr::kickUnrelayableHost(GnuID &chid, Servent *ns)
+{
+	Servent *ks = NULL;
+	Servent *s = servMgr->servents;
+
+	while (s)
+	{
+		if (s->type == Servent::T_RELAY && s->chanID.isSame(chid) && !s->isPrivate())
+		{
+			Host h = s->getHost();
+
+			chanMgr->hitlistlock.on();
+			ChanHit *hit = findServentHit(s);
+			if (hit && !hit->relay && hit->numRelays == 0)
+			{
+				char hostName[256];
+				h.toStr(hostName);
+				//s->thread.active = false;
+				LOG_DEBUG("unrelayable Servent : %s",hostName);
+				if (!ks || s->lastConnect < ks->lastConnect) // elder servent
+					ks = s;
+			}
+			chanMgr->hitlistlock.off();
+		}
+		s = s->next;
+	}
+
+	if (ks)
+	{
+		if (ns)
+		{
+			Host h = ns->getHost();
+			ChanHit nh;
+			nh.init();
+			nh.chanID = chid;
+			nh.rhost[0] = h;
+
+			ChanPacket pack;
+			MemoryStream mem(pack.data,sizeof(pack.data));
+			AtomStream atom(mem);
+			nh.writeAtoms(atom, chid);
+			pack.len = mem.pos;
+			pack.type = ChanPacket::T_PCP;
+			GnuID noID;
+			noID.clear();
+
+			ks->sendPacket(pack, chid, noID, noID, Servent::T_RELAY);
+		}
+
+		ks->setStatus(Servent::S_CLOSING);
+		ks->thread.active = false;
+
+		char hostName[256];
+		ks->getHost().toStr(hostName);
+
+		LOG_DEBUG("Stop unrelayable Servent : %s",hostName);
+
+		return 1;
+	}
+
+	return 0;
+}

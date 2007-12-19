@@ -642,9 +642,9 @@ void WSAClientSocket::close()
 		try
 		{
 			char c[1024];
-			while (readUpto(&c,1024) > 0)
-				if (sys->getTime() - stime > 5) break;
-			//readUpto(&c,1);
+			while (read(&c, sizeof(c)) > 0)
+				if (sys->getTime() - stime > 5)
+					break;
 		}catch(StreamException &) {}
 
 		if (closesocket (sockNum))

@@ -442,6 +442,8 @@ THREAD_PROC	Channel::stream(ThreadInfo *thread)
 			LOG_DEBUG("Channel sleeping for %d seconds",diff);
 			for(unsigned int i=0; i<diff; i++)
 			{
+				if (ch->info.lastPlayEnd == 0) // reconnected
+					break;
 				if (!thread->active || peercastInst->isQuitting){
 					thread->active = false;
 					break;
@@ -675,16 +677,6 @@ void PeercastSource::stream(Channel *ch)
 					}
 				}
 
-				// find tracker
-				unsigned int ctime = sys->getTime();
-				if (!ch->sourceHost.host.ip && tracker_check && ch->trackerHit.host.ip){
-					if (ch->trackerHit.lastContact + 30 < ctime){
-						ch->sourceHost = ch->trackerHit;
-						ch->trackerHit.lastContact = ctime;
-						LOG_DEBUG("use saved tracker");
-					}
-				}
-
 				// else find global tracker
 				if (!ch->sourceHost.host.ip)
 				{
@@ -697,6 +689,16 @@ void PeercastSource::stream(Channel *ch)
 						tracker_check = true;
 						ch->trackerHit = chs.best[0];
 						LOG_DEBUG("use global tracker");
+					}
+				}
+
+				// find tracker
+				unsigned int ctime = sys->getTime();
+				if (!ch->sourceHost.host.ip && tracker_check && ch->trackerHit.host.ip){
+					if (ch->trackerHit.lastContact + 30 < ctime){
+						ch->sourceHost = ch->trackerHit;
+						ch->trackerHit.lastContact = ctime;
+						LOG_DEBUG("use saved tracker");
 					}
 				}
 			}
@@ -1539,7 +1541,7 @@ int Channel::readStream(Stream &in,ChannelStream *source)
 					break;
 
 				//if (rawData.writePos > 0)
-				if (rawData.lastWriteTime > 0)
+				if (rawData.lastWriteTime > 0 || rawData.lastSkipTime > 0)
 				{
 					if (isBroadcasting())
 					{					
@@ -1830,8 +1832,10 @@ bool ChanPacketBuffer::findPacket(unsigned int spos, ChanPacket &pack)
 
 	lock.on();
 
+	unsigned int bound = packets[0].len * ChanPacketBuffer::MAX_PACKETS * 2; // max packets to wait
 	unsigned int fpos = getStreamPos(firstPos);
-	if (spos < fpos)
+	unsigned int lpos = getStreamPos(lastPos);
+	if (spos < fpos && (fpos < lpos || spos > lpos + bound))
 		spos = fpos;
 
 
@@ -1839,7 +1843,7 @@ bool ChanPacketBuffer::findPacket(unsigned int spos, ChanPacket &pack)
 	{
 		//ChanPacket &p = packets[i%MAX_PACKETS];
 		ChanPacketv &p = packets[i%MAX_PACKETS];
-		if (p.pos >= spos)
+		if (p.pos >= spos && p.pos - spos <= bound)
 		{
 			pack.init(p);
 			lock.off();
@@ -1904,6 +1908,7 @@ bool ChanPacketBuffer::writePacket(ChanPacket &pack, bool updateReadPos)
 			if (packets[lastPos%MAX_PACKETS].type == ChanPacket::T_HEAD) lpos = 0;
 			if (lpos && (diff == 0 || diff > 0xfff00000)) {
 				LOG_DEBUG("*   latest pos=%d, pack pos=%d", getLatestPos(), pack.pos);
+				lastSkipTime = sys->getTime();
 				return false;
 			}
 		}
@@ -2217,6 +2222,8 @@ Channel *ChanMgr::findAndRelay(ChanInfo &info)
 	} else if (!(c->thread.active)){
 		c->thread.active = true;
 		c->thread.finish = false;
+		c->info.lastPlayStart = 0; // reconnect 
+		c->info.lastPlayEnd = 0;
 		if (c->finthread){
 			c->finthread->finish = true;
 			c->finthread = NULL;
@@ -3101,7 +3108,8 @@ void ChanHit::initLocal(int numl,int numr,int,int uptm,bool connected,bool isFul
 		}
 		c = c->next;
 	}
-	int diff = servMgr->maxRelays - servMgr->numStreams(Servent::T_RELAY,false);
+	unsigned int numRelay = servMgr->numStreams(Servent::T_RELAY,false);
+	int diff = servMgr->maxRelays - numRelay;
 	if (ch->localRelays()){
 		if (noRelay > diff){
 			noRelay = diff;
@@ -3111,19 +3119,13 @@ void ChanHit::initLocal(int numl,int numr,int,int uptm,bool connected,bool isFul
 		needRate = 0;
 	}
 
-	// for PCRaw (relay) start.
-	bool force_off = false;
-
-	if(isIndexTxt(ch))
-		force_off = true;
-	// for PCRaw (relay) end.
-
 //	ratefull = servMgr->bitrateFull(needRate+bitrate);
 	ratefull = (servMgr->maxBitrateOut < allRate + needRate + ch->info.bitrate);
 
-	//relay =	(!relayfull) && (!chfull) && (!ratefull) && ((servMgr->numStreams(Servent::T_RELAY,false) + noRelay) < servMgr->maxRelays);
-	relay =	(!relayfull || force_off) && (!chfull) && (!ratefull)
-		&& (((servMgr->numStreams(Servent::T_RELAY,false) + noRelay) < servMgr->maxRelays) || force_off);	// for PCRaw (relay) (force_off)
+	if (!isIndexTxt(ch))
+		relay =	(!relayfull) && (!chfull) && (!ratefull) && (numRelay + noRelay < servMgr->maxRelays);
+	else
+		relay =	(!chfull) && (!ratefull); // for PCRaw (relay)
 
 /*	if (relayfull){
 		LOG_DEBUG("Reject by relay full");

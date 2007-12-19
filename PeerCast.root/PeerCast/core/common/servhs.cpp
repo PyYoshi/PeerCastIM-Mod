@@ -414,14 +414,21 @@ bool Servent::canStream(Channel *ch)
 
 	if (!isPrivate())
 	{
+		if  (!ch->isPlaying() || ch->isFull() || ((type == T_DIRECT) && servMgr->directFull()))
+			return false;
+
+		if (!isIndexTxt(ch) && (type == T_RELAY) && (servMgr->relaysFull()))
+			return false;
+
 		Channel *c = chanMgr->channel;
 		int noRelay = 0;
 		unsigned int needRate = 0;
 		unsigned int allRate = 0;
 		while(c){
 			if (c->isPlaying()){
-				allRate += c->info.bitrate * c->localRelays();
-				if ((c != ch) && (c->localRelays() == 0)){
+				int nlr = c->localRelays();
+				allRate += c->info.bitrate * nlr;
+				if ((c != ch) && (nlr == 0)){
 					if(!isIndexTxt(c))	// for PCRaw (relay)
 						noRelay++;
 					needRate+=c->info.bitrate;
@@ -429,7 +436,8 @@ bool Servent::canStream(Channel *ch)
 			}
 			c = c->next;
 		}
-		int diff = servMgr->maxRelays - servMgr->numStreams(Servent::T_RELAY,false);
+		unsigned int numRelay = servMgr->numStreams(Servent::T_RELAY,false);
+ 		int diff = servMgr->maxRelays - numRelay;
 		if (ch->localRelays()){
 			if (noRelay > diff){
 				noRelay = diff;
@@ -439,23 +447,24 @@ bool Servent::canStream(Channel *ch)
 			needRate = 0;
 		}
 
-		// for PCRaw (relay) start.
-		bool force_off = true;
-
-		if(isIndexTxt(ch))
-			force_off = false;
-		// for PCRaw (relay) end.
-
 		LOG_DEBUG("Relay check: Max=%d Now=%d Need=%d ch=%d",
 			servMgr->maxBitrateOut, allRate, needRate, ch->info.bitrate);
-		if  (	!ch->isPlaying()
-				|| ch->isFull()
-//				|| servMgr->bitrateFull(needRate+ch->getBitrate())
-				|| (allRate + needRate + ch->info.bitrate > servMgr->maxBitrateOut)
-				|| ((type == T_RELAY) && servMgr->relaysFull() && force_off)	// for PCRaw (relay) (force_off)
-				|| ((type == T_RELAY) && (((servMgr->numStreams(Servent::T_RELAY,false) + noRelay) >= servMgr->maxRelays)) && force_off)	// for PCRaw (relay) (force_off)
-				|| ((type == T_DIRECT) && servMgr->directFull())
-		){
+		//		if  (	!ch->isPlaying()
+		//				|| ch->isFull()
+		//				|| (allRate + needRate + ch->info.bitrate > servMgr->maxBitrateOut)
+		//				|| ((type == T_RELAY) && servMgr->relaysFull() && force_off)	// for PCRaw (relay) (force_off)
+		//				|| ((type == T_RELAY) && (((servMgr->numStreams(Servent::T_RELAY,false) + noRelay) >= servMgr->maxRelays)) && force_off)	// for PCRaw (relay) (force_off)
+		//				|| ((type == T_DIRECT) && servMgr->directFull())
+		//		){
+
+		if (allRate + needRate + ch->info.bitrate > servMgr->maxBitrateOut)
+		{
+			LOG_DEBUG("Relay check: NG");
+			return false;
+		}
+
+		if (!isIndexTxt(ch) && (type == T_RELAY) && (numRelay + noRelay >= servMgr->maxRelays))
+		{
 			LOG_DEBUG("Relay check: NG");
 			return false;
 		}
@@ -1784,7 +1793,7 @@ void Servent::handshakeICY(Channel::SRC_TYPE type, bool isHTTP)
 
 		
 	// check password before anything else, if needed
-	if (servMgr->password != loginPassword)
+	if (!loginPassword.isSame(servMgr->password))
 	{
 		if (!sock->host.isLocalhost() || !loginPassword.isEmpty())
 			throw HTTPException(HTTP_SC_UNAUTHORIZED,401);

@@ -29,22 +29,22 @@ static bool	PCP_FORCE_YP				= false;
 #endif
 // ------------------------------------------------
 static const int PCP_CLIENT_VERSION		= 1218;
-static const int PCP_CLIENT_VERSION_VP	= 24;
+static const int PCP_CLIENT_VERSION_VP	= 25;
 static const int PCP_ROOT_VERSION		= 1218;
 
 static const int PCP_CLIENT_MINVERSION	= 1200;
 
 static const char *PCX_AGENT 		= "PeerCast/0.1218";	
 static const char *PCX_AGENTJP 		= "PeerCast/0.1218-J";
-static const char *PCX_AGENTVP		= "PeerCast/0.1218(VP0024)";
-static const char *PCX_VERSTRING	= "v0.1218(VP0024)";
+static const char *PCX_AGENTVP		= "PeerCast/0.1218(VP0025-1)";
+static const char *PCX_VERSTRING	= "v0.1218(VP0025-1)";
 
 #if 1 /* for VP extend version */
 #define VERSION_EX 1
 static const char *PCP_CLIENT_VERSION_EX_PREFIX = "IM"; // 2bytes only
-static const int  PCP_CLIENT_VERSION_EX_NUMBER = 7651;
-static const char *PCX_AGENTEX = "PeerCast/0.1218(IM7651)";
-static const char *PCX_VERSTRING_EX = "v0.1218(IM7651)";
+static const int  PCP_CLIENT_VERSION_EX_NUMBER = 7650;
+static const char *PCX_AGENTEX = "PeerCast/0.1218(IM-VP25-1)";
+static const char *PCX_VERSTRING_EX = "v0.1218(IM765-VP25-1)";
 #endif
 
 // ------------------------------------------------

@@ -402,6 +402,7 @@ public:
 	unsigned int kickPushTime;
 	bool	isCheckPushStream(); //JP-EX
 	void	banFirewalledHost(); //JP-EX
+	int kickUnrelayableHost(GnuID &, Servent * = NULL);
 
 	bool	getModulePath; //JP-EX
 	bool	clearPLS; //JP-EX

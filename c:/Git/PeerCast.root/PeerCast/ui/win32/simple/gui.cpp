@@ -446,6 +446,21 @@ int ChannelData::drawChannel(Graphics *g, int x, int y){
 	// 次の基点
 	origin.X += r1.Width;
 
+	//// 上流IP/リスナー数/リレー数表示
+	//// NOTE:
+	////    ぴあかすの動作勉強用。リリースビルドでは元のコードを使用の事。
+	////    文字表示範囲は幅220ぐらいでおｋ
+	//char tmp[512]; // 表示用バッファ
+	//char hostip[256]; // IPアドレスバッファ
+	//chDisp.uphost.toStr(hostip); // 上流IP
+	//sprintf(tmp, "%d/%d - [%d/%d] - %s",
+	//	getTotalListeners(),
+	//	getTotalRelays(),
+	//	getLocalListeners(),
+	//	getLocalRelays(),
+	//	hostip
+	//	);
+
 	// リスナー数/リレー数表示
 	char tmp[256];
 	sprintf(tmp, "%d/%d - [%d/%d]", getTotalListeners(), getTotalRelays(), getLocalListeners(), getLocalRelays());
@@ -1342,6 +1357,12 @@ void PopupOtherMenu(){
 }
 
 void WmCreateProc(HWND hwnd){
+	// 自動最前面機能
+	if (servMgr->topmostGui)
+	{
+		::gbDispTop = true;
+	}
+
 	if (backImage){
 		::delete backImage;
 	}

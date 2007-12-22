@@ -416,6 +416,9 @@ public:
 	bool	saveGuiPos;
 	bool	keepDownstreams;
 
+	bool topmostGui; // Å‘O–Ê
+	bool startWithGui; // ‹N“®‚ÉGUI
+
 	int maxRelaysIndexTxt;	// for PCRaw (relay)
 
 private:

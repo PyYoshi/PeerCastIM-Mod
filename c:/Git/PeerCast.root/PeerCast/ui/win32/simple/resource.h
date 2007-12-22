@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by Simple.rc
 //
 #define IDC_MYICON                      2
@@ -96,6 +96,11 @@
 #define ID_POPUP_YELLOWPAGES2           32821
 #define ID_POPUP_SAVE_GUI_POS           32823
 #define ID_POPUP_KEEP_DOWNSTREAMS       32825
+#define ID_Menu                         32826
+#define ID_Menu32827                    32827
+#define ID_POPUP_TOPMOST                32828
+#define ID_32829                        32829
+#define ID_POPUP_START_WITH_GUI         32830
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -103,7 +108,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        142
-#define _APS_NEXT_COMMAND_VALUE         32826
+#define _APS_NEXT_COMMAND_VALUE         32831
 #define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

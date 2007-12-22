@@ -138,6 +138,9 @@ ServMgr::ServMgr()
 	saveGuiPos = false;
 	keepDownstreams = true;
 
+	topmostGui = false;
+	startWithGui = false;
+
 	chanLog="";
 
 	maxRelaysIndexTxt = 1;	// for PCRaw (relay)
@@ -1053,6 +1056,9 @@ void ServMgr::saveSettings(const char *fn)
 			iniFile.writeIntValue("guiLeft", winPlace.rcNormalPosition.left);
 			iniFile.writeIntValue("guiRight", winPlace.rcNormalPosition.right);
 		}
+
+		iniFile.writeBoolValue("topmostGui", servMgr->topmostGui);
+		iniFile.writeBoolValue("startWithGui", servMgr->startWithGui);
 #endif
 		int i;
 
@@ -1430,6 +1436,14 @@ void ServMgr::loadSettings(const char *fn)
 				if (servMgr->saveGuiPos){
 					guiFlg = true;
 				}
+			}
+
+			else if (iniFile.isName("topmostGui"))
+			{
+				servMgr->topmostGui = iniFile.getBoolValue();
+			} else if (iniFile.isName("startWithGui"))
+			{
+				servMgr->startWithGui = iniFile.getBoolValue();
 			}
 #endif
 

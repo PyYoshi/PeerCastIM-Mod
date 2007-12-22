@@ -75,6 +75,9 @@ bool chanInfoIsRelayed;
 String exePath;
 ULONG_PTR gdiplusToken;
 
+// プロトタイプ宣言
+void createGUI(HWND);
+
 // ---------------------------------
 Sys * APICALL MyPeercastInst::createSys()
 {
@@ -389,6 +392,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		CheckMenuItem(trayMenu,ID_POPUP_SHOWMESSAGES_BROADCASTERS,MF_CHECKED|MF_BYCOMMAND);
 	if (mask & ServMgr::NT_TRACKINFO)
 		CheckMenuItem(trayMenu,ID_POPUP_SHOWMESSAGES_TRACKINFO,MF_CHECKED|MF_BYCOMMAND);
+
+	if (servMgr->startWithGui)
+	{
+		createGUI((HWND)0);
+	}
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0)) 
@@ -823,6 +831,12 @@ void createGUI(HWND hWnd)
 			NULL);
 	}
 	ShowWindow(guiWnd,SW_SHOWNORMAL);
+
+	// 自動で最前面
+	if (servMgr->topmostGui)
+	{
+		::SetWindowPos(guiWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
+	}
 }
 
 
@@ -1046,6 +1060,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					CheckMenuItem(trayMenu, ID_POPUP_SAVE_GUI_POS, MF_UNCHECKED|MF_BYCOMMAND);
 				}
 
+				// 自動GUI/最前面機能
+				if (servMgr->topmostGui)
+				{
+					CheckMenuItem(trayMenu, ID_POPUP_TOPMOST, MF_CHECKED|MF_BYCOMMAND);
+				} else
+				{
+					CheckMenuItem(trayMenu, ID_POPUP_TOPMOST, MF_UNCHECKED|MF_BYCOMMAND);
+				}
+
+				if (servMgr->startWithGui)
+				{
+					CheckMenuItem(trayMenu, ID_POPUP_START_WITH_GUI, MF_CHECKED|MF_BYCOMMAND);
+				} else
+				{
+					CheckMenuItem(trayMenu, ID_POPUP_START_WITH_GUI, MF_UNCHECKED|MF_BYCOMMAND);
+				}
+
 				SetForegroundWindow(hWnd);    
 				bool skipMenu=false;
 
@@ -1254,6 +1285,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						CheckMenuItem(trayMenu, ID_POPUP_KEEP_DOWNSTREAMS, MF_CHECKED|MF_BYCOMMAND);
 					}
 					//peercastInst->saveSettings();
+					break;
+
+				case ID_POPUP_TOPMOST:
+					// 最前面表示
+					if (servMgr->topmostGui)
+					{
+						servMgr->topmostGui = false;
+						CheckMenuItem(trayMenu, ID_POPUP_TOPMOST, MF_UNCHECKED|MF_BYCOMMAND);
+					} else
+					{
+						servMgr->topmostGui = true;
+						CheckMenuItem(trayMenu, ID_POPUP_TOPMOST, MF_CHECKED|MF_BYCOMMAND);
+					}
+					peercastInst->saveSettings();
+					break;
+
+				case ID_POPUP_START_WITH_GUI:
+					// 起動時にGUI表示
+					if (servMgr->startWithGui)
+					{
+						servMgr->startWithGui = false;
+						CheckMenuItem(trayMenu, ID_POPUP_START_WITH_GUI, MF_UNCHECKED|MF_BYCOMMAND);
+					} else
+					{
+						servMgr->startWithGui = true;
+						CheckMenuItem(trayMenu, ID_POPUP_START_WITH_GUI, MF_CHECKED|MF_BYCOMMAND);
+					}
+					peercastInst->saveSettings();
 					break;
 
 				case ID_POPUP_EXIT_CONFIRM:

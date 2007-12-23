@@ -127,12 +127,12 @@ THREAD_PROC GetHostName(ThreadInfo *thread){
 	unsigned int ip;
 	bool flg = TRUE;
 
-	ChannelDataLock.on();
 	ip = htonl(id->getIpAddr());
 
 	for (int i=0; i<5 && flg; i++){
 		he = gethostbyaddr((char *)&ip,sizeof(ip),AF_INET);
 
+		ChannelDataLock.on();
 		ChannelData* cd = channelDataTop;
 		if (he)
 		{

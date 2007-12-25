@@ -366,6 +366,7 @@ int ChannelData::drawChannel(Graphics *g, int x, int y){
 	// ステータス表示
 	Gdiplus::Image *img = NULL;
 	unsigned int nowTime = sys->getTime();
+	Channel *ch = chanMgr->findChannelByChannelID(this->channel_id);
 	switch(this->getStatus()){
 		case Channel::S_IDLE:
 			img = img_idle;
@@ -401,7 +402,14 @@ int ChannelData::drawChannel(Graphics *g, int x, int y){
 			img = img_broad_ok;
 			break;
 		case Channel::S_ERROR:
-			img = img_error;
+			// bump時にエラーが表示されるのを防止
+			if (ch && ch->bumped)
+			{
+				img = img_connect;
+			} else
+			{
+				img = img_error;
+			}
 			break;
 		default:
 			img = img_idle;
@@ -968,7 +976,7 @@ THREAD_PROC GUIDataUpdate(ThreadInfo *thread){
 				while(cd){
 					ServentData *sv = cd->findServentData(s->servent_id);
 					// ServentDataがあれば
-					if (sv){
+					if (sv && cd->getChannelId() == s->channel_id){
 						// データ設定
 						sv->setData(s, &hitData, totalListeners, totalRelays, infoFlg);
 						sv->setEnableFlg(TRUE);

@@ -46,6 +46,12 @@ public:
 		MAX_OUTPACKETS = 32		// max. output packets per queue (normal/priority)
 	};
 
+	enum
+	{
+		MAX_PROC_PACKETS = 300,
+		MAX_OUTWARD_SIZE = 1024 * 10
+	};
+
     enum TYPE					
     {
 		T_NONE,					// Not allocated
@@ -287,6 +293,8 @@ public:
 	unsigned int lastSkipTime;
 	unsigned int lastSkipCount;
 	unsigned int waitPort;
+
+	ChanHit serventHit;
 
 	int channel_id;
 };

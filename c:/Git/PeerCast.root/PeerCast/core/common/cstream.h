@@ -58,6 +58,7 @@ public:
 		pos = 0;
 		sync = 0;
 		skip = false;
+		priority = 0;
 	}
 	void	init(ChanPacketv &p);
 	void	init(TYPE t, const void *, unsigned int , unsigned int );
@@ -74,6 +75,7 @@ public:
 	char data[MAX_DATALEN];
 	bool skip;
 
+	int priority;
 };
 // ----------------------------------
 class ChanPacketv
@@ -111,6 +113,7 @@ public:
 		skip = false;
 		data = NULL;
 		datasize = 0;
+		priority = 0;
 	}
 	void init(ChanPacket &p)
 	{
@@ -124,6 +127,7 @@ public:
 		pos = p.pos;
 		sync = p.sync;
 		skip = p.skip;
+		priority = p.priority;
 		if (!data) {
 			datasize = (len & ~(BSIZE - 1)) + BSIZE;
 			data = new char[datasize];
@@ -149,6 +153,7 @@ public:
 	unsigned int datasize;
 	bool skip;
 
+	int priority;
 };
 // ----------------------------------
 class ChanPacketBuffer 
@@ -176,6 +181,7 @@ public:
 
 	bool	writePacket(ChanPacket &,bool = false);
 	void	readPacket(ChanPacket &);
+	void readPacketPri(ChanPacket &);
 
 	bool	willSkip();
 
@@ -221,6 +227,7 @@ public:
 	virtual void kill() {}
 	virtual bool sendPacket(ChanPacket &,GnuID &) {return false;}
 	virtual void flush(Stream &) {}
+	virtual unsigned int flushUb(Stream &, unsigned int) { return 0; }
 	virtual void readHeader(Stream &,Channel *)=0;
 	virtual int  readPacket(Stream &,Channel *)=0;
 	virtual void readEnd(Stream &,Channel *)=0;

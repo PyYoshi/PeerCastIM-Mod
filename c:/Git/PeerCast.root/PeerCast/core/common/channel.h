@@ -207,6 +207,8 @@ public:
 
 	char				version_ex_prefix[2];
 	unsigned int		version_ex_number;
+
+	unsigned int lastSendSeq;
 };
 // ----------------------------------
 class ChanHitList
@@ -603,7 +605,7 @@ public:
 
 	int			pickHits(ChanHitSearch &);
 
-
+	bool findParentHit(ChanHit &p);
 
 	Channel		*channel;
 	ChanHitList	*hitlist;

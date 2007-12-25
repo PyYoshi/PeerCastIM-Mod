@@ -235,6 +235,7 @@ public:
 
 	virtual bool sendPacket(ChanPacket &,GnuID &);
 	virtual void flush(Stream &);
+	virtual unsigned int flushUb(Stream &, unsigned int);
 	virtual void readHeader(Stream &,Channel *);
 	virtual int readPacket(Stream &,Channel *);
 	virtual void readEnd(Stream &,Channel *);

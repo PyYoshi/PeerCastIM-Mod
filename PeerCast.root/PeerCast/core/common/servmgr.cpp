@@ -2623,6 +2623,7 @@ void ServMgr::banFirewalledHost()
 }
 
 // --------------------------------------------------
+#if 0
 static ChanHit *findServentHit(Servent *s)
 {
 	ChanHitList *chl = chanMgr->findHitListByID(s->chanID);
@@ -2640,8 +2641,9 @@ static ChanHit *findServentHit(Servent *s)
 	}
 	return NULL;
 }
+#endif
 // --------------------------------------------------
-int ServMgr::kickUnrelayableHost(GnuID &chid, Servent *ns)
+int ServMgr::kickUnrelayableHost(GnuID &chid, ChanHit &sendhit)
 {
 	Servent *ks = NULL;
 	Servent *s = servMgr->servents;
@@ -2652,9 +2654,8 @@ int ServMgr::kickUnrelayableHost(GnuID &chid, Servent *ns)
 		{
 			Host h = s->getHost();
 
-			chanMgr->hitlistlock.on();
-			ChanHit *hit = findServentHit(s);
-			if (hit && !hit->relay && hit->numRelays == 0)
+			ChanHit hit = s->serventHit;
+			if (!hit.relay && hit.numRelays == 0)
 			{
 				char hostName[256];
 				h.toStr(hostName);
@@ -2663,25 +2664,18 @@ int ServMgr::kickUnrelayableHost(GnuID &chid, Servent *ns)
 				if (!ks || s->lastConnect < ks->lastConnect) // elder servent
 					ks = s;
 			}
-			chanMgr->hitlistlock.off();
 		}
 		s = s->next;
 	}
 
 	if (ks)
 	{
-		if (ns)
+		if (sendhit.rhost[0].port)
 		{
-			Host h = ns->getHost();
-			ChanHit nh;
-			nh.init();
-			nh.chanID = chid;
-			nh.rhost[0] = h;
-
 			ChanPacket pack;
 			MemoryStream mem(pack.data,sizeof(pack.data));
 			AtomStream atom(mem);
-			nh.writeAtoms(atom, chid);
+			sendhit.writeAtoms(atom, chid);
 			pack.len = mem.pos;
 			pack.type = ChanPacket::T_PCP;
 			GnuID noID;

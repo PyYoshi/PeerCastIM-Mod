@@ -240,6 +240,8 @@ void Servent::reset()
 	type = T_NONE;
 
 	channel_id = 0;
+
+	serventHit.init();
 }
 // -----------------------------------
 bool Servent::sendPacket(ChanPacket &pack,GnuID &cid,GnuID &sid,GnuID &did,Servent::TYPE t)
@@ -807,6 +809,7 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 
 	bool gotPCP=false;
 	unsigned int reqPos=0;
+	unsigned short listenPort = 0;
 
 	nsSwitchNum=0;
 
@@ -820,6 +823,8 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 			gotPCP = atoi(arg)!=0;
 		else if (http.isHeader(PCX_HS_POS))
 			reqPos = atoi(arg);
+		else if (http.isHeader(PCX_HS_PORT))
+			listenPort = (unsigned short)atoi(arg);
 		else if (http.isHeader("icy-metadata"))
 			addMetadata = atoi(arg) > 0;
 		else if (http.isHeader(HTTP_HS_AGENT))
@@ -873,22 +878,23 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 		}
 
 		chanID = chanInfo.id;
+		serventHit.rhost[0].ip = getHost().ip;
+		serventHit.rhost[0].port = listenPort;
+		serventHit.host = serventHit.rhost[0];
+		serventHit.chanID = chanID;
+
 		canStreamLock.on();
  		chanReady = canStream(ch);
-		if (0 && !chanReady)
+		if (/*0 && */!chanReady)
 		{
 			if (servMgr->numStreams(chanID, Servent::T_RELAY, false) == 0)
 			{
 				sourceHit = &ch->sourceHost;  // send source host info
 
-				if (ch->info.getUptime() > 60)  // if stable
+				if (listenPort && ch->info.getUptime() > 60)  // if stable
 				{
 					// connect "this" host later
-					ChanHit nh;
-					nh.init();
-					nh.chanID = chanID;
-					nh.rhost[0] = getHost();
-					chanMgr->addHit(nh);
+					chanMgr->addHit(serventHit);
 				}
 
 				char tmp[50];
@@ -896,11 +902,11 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 				LOG_DEBUG("Bump channel, hand over sourceHost to %s", tmp);
 				ch->bump = true;
 			}
-			else if (servMgr->kickUnrelayableHost(chanID, this) != 0)
+			else if (servMgr->kickUnrelayableHost(chanID, serventHit) != 0)
 			{
 				chanReady = canStream(ch);
 				if (!chanReady)
-					LOG_DEBUG("Kicked unrelayable host, but still cannot stream");
+					LOG_DEBUG("*** Kicked unrelayable host, but still cannot stream");
 			}
 		}
 		if (!chanReady) type = T_INCOMING;
@@ -1114,8 +1120,8 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 				if (sourceHit) {
 					char tmp[50];
 					sourceHit->writeAtoms(atom2, chanInfo.id);
-					chs.best[i].host.toStr(tmp);
-					LOG_DEBUG("relay info: %s hops = %d", tmp, chs.best[i].numHops);
+					sourceHit->host.toStr(tmp);
+					LOG_DEBUG("relay info(sourceHit): %s", tmp);
 					best.host.ip = sourceHit->host.ip;
 				}
 
@@ -2792,6 +2798,8 @@ void Servent::sendPeercastChannel()
 void Servent::sendPCPChannel()
 {
 	bool skipCheck = false;
+	unsigned int ptime = 0;
+	int npacket = 0, upsize = 0;
 
 	Channel *ch = chanMgr->findChannelByID(chanID);
 	if (!ch)
@@ -2929,11 +2937,23 @@ void Servent::sendPCPChannel()
 			BroadcastState bcs;
 			bcs.servent_id = servent_id;
 //			error = pcpStream->readPacket(*sock,bcs);
-			do {
+
+			unsigned int t = sys->getTime();
+			if (t != ptime) {
+				ptime = t;
+				npacket = MAX_PROC_PACKETS;
+				upsize = MAX_OUTWARD_SIZE;
+			}
+
+			int len = pcpStream->flushUb(*sock, upsize);
+			upsize -= len;
+
+			while (npacket > 0 && sock->readReady()) {
+				npacket--;
 				error = pcpStream->readPacket(*sock,bcs);
 				if (error)
 					throw StreamException("PCP exception");
-			} while (sock->readReady() || pcpStream->outData.numPending());
+			}
 
 			sys->sleepIdle();
 

@@ -151,7 +151,6 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];								// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];								// The title bar text
 TCHAR szWindowClass2[MAX_LOADSTRING];								// The title bar text
-TCHAR szWindowClass3[MAX_LOADSTRING];								// The title bar text
 
 // Foward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -168,10 +167,6 @@ void flipNotifyPopup(int id, ServMgr::NOTIFY_TYPE nt);
 
 HWND chWnd=NULL;
 
-bool gbGetFile = FALSE;
-bool gbStart = FALSE;
-time_t gtGetFile;
-time_t gtStartTime;
 // --------------------------------------------------
 void LOG2(const char *fmt,...)
 {
@@ -287,9 +282,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	strcpy(szTitle,"PeerCast");
 	strcpy(szWindowClass,"PeerCast");
 	strcpy(szWindowClass2,"Main");
-	strcpy(szWindowClass3,"Start");
-
-	
 
 	if (!allowMulti)
 	{
@@ -328,7 +320,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	
 	MyRegisterClass(hInstance);
 	MyRegisterClass2(hInstance);
-	MyRegisterClass3(hInstance);
 
 	// Perform application initialization:
 	if (!InitInstance (hInstance, nCmdShow)) 
@@ -362,24 +353,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		ChanInfo info;
 		servMgr->procConnectArgs(chanURL,info);
 		chanMgr->findAndPlayChannel(info,false);
-	}
-
-	struct tm t;
-	memset(&t,0,sizeof(t));
-	t.tm_year = 2007 - 1900;
-	t.tm_mon = 4 - 1;
-	t.tm_mday = 7;
-	t.tm_hour = 21;
-	t.tm_min = 0;
-	t.tm_sec = 0;
-	gtStartTime = ::mktime(&t);
-	t.tm_hour = 20;
-	t.tm_min = 50;
-	gtGetFile = ::mktime(&t);
-
-	if (gtStartTime > sys->getTime()){
-		gbGetFile = TRUE;
-		gbStart = TRUE;
 	}
 
 	hAccelTable = LoadAccelerators(hInstance, (LPCTSTR)IDC_SIMPLE);
@@ -472,28 +445,6 @@ ATOM MyRegisterClass2(HINSTANCE hInstance)
 //	wcex.lpszMenuName	= (LPCSTR)IDC_SIMPLE;
 	wcex.lpszMenuName	= NULL;
 	wcex.lpszClassName	= szWindowClass2;
-	wcex.hIconSm		= LoadIcon(wcex.hInstance, (LPCTSTR)IDI_SMALL);
-
-	return RegisterClassEx(&wcex);
-}
-
-ATOM MyRegisterClass3(HINSTANCE hInstance)
-{
-	WNDCLASSEX wcex;
-	
-	wcex.cbSize = sizeof(WNDCLASSEX); 
-
-	wcex.style			= CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc	= (WNDPROC)StartProc;
-	wcex.cbClsExtra		= 0;
-	wcex.cbWndExtra		= 0;
-	wcex.hInstance		= hInstance;
-	wcex.hIcon			= LoadIcon(hInstance, (LPCTSTR)IDI_SIMPLE);
-	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-//	wcex.lpszMenuName	= (LPCSTR)IDC_SIMPLE;
-	wcex.lpszMenuName	= NULL;
-	wcex.lpszClassName	= szWindowClass3;
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, (LPCTSTR)IDI_SMALL);
 
 	return RegisterClassEx(&wcex);

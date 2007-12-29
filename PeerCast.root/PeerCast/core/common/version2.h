@@ -43,8 +43,8 @@ static const char *PCX_VERSTRING	= "v0.1218(VP0026)";
 #define VERSION_EX 1
 static const char *PCP_CLIENT_VERSION_EX_PREFIX = "IM"; // 2bytes only
 static const int  PCP_CLIENT_VERSION_EX_NUMBER = 26;
-static const char *PCX_AGENTEX = "PeerCast/0.1218(IM0026-patch071223)";
-static const char *PCX_VERSTRING_EX = "v0.1218(IM0026)";
+static const char *PCX_AGENTEX = "PeerCast/0.1218(IM0026-2)";
+static const char *PCX_VERSTRING_EX = "v0.1218(IM0026-2)";
 #endif
 
 // ------------------------------------------------

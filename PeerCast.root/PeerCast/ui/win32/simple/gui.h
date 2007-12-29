@@ -24,7 +24,6 @@
 #include "channel.h"
 
 extern LRESULT CALLBACK GUIProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-extern LRESULT CALLBACK StartProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 extern void ADDLOG(const char *str,int id,bool sel,void *data, LogBuffer::TYPE type);
 
 extern String iniFileName;
@@ -39,9 +38,7 @@ enum
 	WM_TRAYICON,
 	WM_SHOWGUI,
 	WM_SHOWMENU,
-	WM_PROCURL,
-	WM_START
-
+	WM_PROCURL
 };
 
 class IdData

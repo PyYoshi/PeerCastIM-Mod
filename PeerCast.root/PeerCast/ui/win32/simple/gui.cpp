@@ -105,20 +105,8 @@ WLock ChannelDataLock;
 WLock MakeBackLock;
 ChannelData *channelDataTop = NULL;
 
-extern bool gbGetFile;
-extern bool gbStart;
-extern time_t gtGetFile;
-extern time_t gtStartTime;
-ThreadInfo gtiStart;
-ThreadInfo gtiGetFile;
-static char *data1URL = "http://www.idolmaster.jp/download/images/wallpaper/imas360p_800.jpg";
-static char *data2URL = "http://www.xbox.com/NR/rdonlyres/CAB05E2F-3051-409B-A4C8-830167C1C138/0/wpr0701idolmasterw120001.jpg";
-HWND ghStart;
-
 bool gbDispTop = false;
 bool gbAllOpen = false;
-
-THREAD_PROC FestivalStart(ThreadInfo *thread);
 
 THREAD_PROC GetHostName(ThreadInfo *thread){
 	IdData *id = (IdData*)(thread->data);
@@ -152,69 +140,6 @@ THREAD_PROC GetHostName(ThreadInfo *thread){
 
 	return 0;
 }
-
-bool DownloadFile(LPCTSTR URL, LPCTSTR local){
-	char header[] = "Accept: */*\r\n\r\n";
-	char buf[4096];
-
-	FileStream f;
-	HINTERNET hInternet;
-	HINTERNET hConnect;
-
-	try{
-		f.openWriteReplace(local);
-	}catch(StreamException &e){
-		return false;
-	}
-
-	hInternet = ::InternetOpen(NULL, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-	if (hInternet == NULL){
-		return false;
-	}
-
-	hConnect = ::InternetOpenUrl(hInternet, URL, header, strlen(header), INTERNET_FLAG_DONT_CACHE, 0);
-	if (hConnect == NULL){
-		::InternetCloseHandle(hInternet);
-		return false;
-	}
-
-	while(1){
-		sys->sleep(0);
-		DWORD dwReadSize;
-		BOOL ret = ::InternetReadFile(hConnect, buf, 4096, &dwReadSize);
-		if (ret){
-			if (dwReadSize == 0){
-				break;
-			}
-			try{
-				f.write(buf, dwReadSize);
-				continue;
-			} catch(StreamException e){
-			}
-			f.close();
-			::InternetCloseHandle(hConnect);
-			::InternetCloseHandle(hInternet);
-			return false;
-		}
-	}
-
-	f.flush();
-	f.close();
-	::InternetCloseHandle(hConnect);
-	::InternetCloseHandle(hInternet);
-
-	return true;
-}
-
-THREAD_PROC GetInternetFile(ThreadInfo *thread){
-
-	DownloadFile(data1URL, "data1.jpg");
-	DownloadFile(data2URL, "data2.jpg");
-	return 0;
-}
-
-extern TCHAR szWindowClass3[];								// The title bar text
-
 
 int drawSpeed(Graphics *gra, int posX, int posY){
 
@@ -339,7 +264,7 @@ int ChannelData::drawChannel(Graphics *g, int x, int y){
 	posX = x;
 	posY = y;
 
-	int w,h;
+	int w/*,h*/;
 
 	if (getWidth() == 0){
 		if (gW){
@@ -666,7 +591,7 @@ void ServentData::setData(Servent *s, ChanHit *hit, unsigned int listeners, unsi
 int ServentData::drawServent(Gdiplus::Graphics *g, int x, int y){
 	REAL xx = x * 1.0f;
 	REAL yy = y * 1.0f;
-	int w,h;
+	int w/*,h*/;
 
 	// ˆÊ’u‚ð•Û‘¶
 	posX = x;
@@ -1038,20 +963,6 @@ THREAD_PROC GUIDataUpdate(ThreadInfo *thread){
 			if (!thread->active)
 				break;
 			sys->sleep(100);
-		}
-
-		if (gbGetFile && (sys->getTime() > gtGetFile)){
-			gbGetFile = false;
-			gtiGetFile.func = GetInternetFile;
-			gtiGetFile.data = NULL;
-			sys->startThread(&gtiGetFile);
-		}
-		else if (gbStart && (sys->getTime() > gtStartTime)){
-			gbStart = false;
-			SendMessage(guiWnd, WM_START, 0, 0);
-			gtiStart.func = FestivalStart;
-			gtiStart.data = NULL;
-			sys->startThread(&gtiStart);
 		}
 	}
 
@@ -1681,214 +1592,10 @@ LRESULT CALLBACK GUIProc (HWND hwnd, UINT message,
 
 			guiWnd = NULL;
 			break;
-		case WM_START:
-			ghStart = ::CreateWindow(szWindowClass3,
-				"Peercast-IM@S",
-				WS_OVERLAPPEDWINDOW & ~(WS_MAXIMIZEBOX),
-				0,
-				0,
-				400,
-				300,
-				NULL,
-				NULL,
-				hInst,
-				NULL);
-			::ShowWindow(ghStart, SW_SHOWNORMAL);
-			break;
 
 		default:
 			return (DefWindowProc(hwnd, message, wParam, lParam));
 	}
 
-	return 0;
-}
-
-Gdiplus::Image *data1 = NULL;
-Gdiplus::Image *data2 = NULL;
-Gdiplus::Bitmap *startBmp = NULL;
-Gdiplus::Graphics *startGra = NULL;
-WLock MakeStartLock;
-
-LRESULT CALLBACK StartProc (HWND hwnd, UINT message,
-                                 WPARAM wParam, LPARAM lParam)
-{
-	SolidBrush b(Color::Black);
-	bstr_t bstr;
-
-	switch(message){
-		case WM_CREATE:
-			startBmp = ::new Bitmap(400,300);
-			startGra = ::new Graphics(startBmp);
-			bstr = L"data1.jpg";
-			data1 = ::new Image(bstr);
-			bstr = L"data2.jpg";
-			data2 = ::new Image(bstr);
-			// •‚Å“h‚è‚Â‚Ô‚µ
-			startGra->FillRectangle(&b, 0, 0, 400, 300);
-			break;
-		case WM_PAINT:
-			if (startGra){
-				HDC hdc;
-				PAINTSTRUCT paint;
-
-				MakeStartLock.on();
-				hdc = BeginPaint(hwnd, &paint);
-				RECT *rcRect;
-				rcRect = &(paint.rcPaint);
-				LONG width = rcRect->right - rcRect->left + 1;
-				LONG height = rcRect->bottom - rcRect->top + 1;
-
-				Graphics g2(hdc);
-				Rect r(rcRect->left, rcRect->top, width, height);
-				g2.DrawImage(startBmp, r, rcRect->left, rcRect->top, width, height, UnitPixel);
-				EndPaint(hwnd, &paint);
-				MakeStartLock.off();
-			}
-			break;
-		case WM_ERASEBKGND:
-			return TRUE;
-		case WM_CLOSE:
-			DestroyWindow(ghStart);
-			if (startBmp){
-				::delete startBmp;
-			}
-			if (startGra){
-				::delete startGra;
-			}
-			if (data1){
-				::delete data1;
-			}
-			if (data2){
-				::delete data2;
-			}
-			break;
-
-		default:
-			return (DefWindowProc(hwnd, message, wParam, lParam));
-	}
-
-	return 0;
-}
-
-THREAD_PROC FestivalStart(ThreadInfo *thread){
-
-	while(startGra==NULL){
-		sys->sleep(100);
-	}
-
-	sys->sleep(1000);
-
-	MakeStartLock.on();
-	Font font(L"‚l‚r ‚oƒSƒVƒbƒN",40);
-	StringFormat format;
-	format.SetAlignment(StringAlignmentCenter);
-	startGra->SetTextRenderingHint(TextRenderingHintAntiAlias);
-	PointF origin(199.0f,49.0f);
-	RectF rect(0,0,400,100);
-	LinearGradientBrush b1(rect, Color::LightSkyBlue, Color::White, LinearGradientModeHorizontal);
-	startGra->DrawString(L"‘æ‚Q‰ñ", -1, &font, origin, &format, &b1);
-	origin.Y += 50;
-	LinearGradientBrush b2(rect, Color::LightGreen, Color::White, LinearGradientModeHorizontal);
-	startGra->DrawString(L"ƒAƒCƒhƒ‹ƒ}ƒXƒ^[", -1, &font, origin, &format, &b2);
-	origin.Y += 50;
-	LinearGradientBrush b3(rect, Color::LightGoldenrodYellow, Color::White, LinearGradientModeHorizontal);
-	startGra->DrawString(L"ƒtƒ@ƒ“Š´ŽÓÕ", -1, &font, origin, &format, &b3);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(3000);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(0,0,80,400), 200,200,66,330, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(80,0,80,400), 266,200,66,330, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(160,0,80,400), 332,200,66,330, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(240,0,80,400), 398,200,66,330, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(320,0,80,400), 464,200,66,330, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(0,0,80,400), 530,200,54,270, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(80,0,80,400), 584,200,54,270, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(160,0,80,400), 638,200,54,270, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(240,0,80,400), 692,200,54,270, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	MakeStartLock.on();
-	startGra->DrawImage(data1, Rect(320,0,80,400), 746,200,54,270, UnitPixel);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(500);
-
-	for (int i=1; i<=10; i++){
-		ColorMatrix mtx = {
-			1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.1f*i, 0.0f,
-			0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
-		ImageAttributes att;
-
-		MakeStartLock.on();
-		att.SetColorMatrix(&mtx, ColorMatrixFlagsDefault, ColorAdjustTypeBitmap);
-		startGra->DrawImage(data2, Rect(0,0,400,300), 360,130,400,300, UnitPixel, &att);
-		MakeStartLock.off();
-		InvalidateRect(ghStart, NULL, FALSE);
-		sys->sleep(100);
-	}
-
-	sys->sleep(2000);
-
-	MakeStartLock.on();
-	INT style = FontStyleBold;
-	Font font2(L"‚l‚r ‚oƒSƒVƒbƒN",70,style,UnitPoint);
-	PointF origin2(199.0f,99.0f);
-	SolidBrush bs(Color::Black);
-	startGra->DrawString(L"START!", -1, &font2, origin2, &format, &bs);
-	Font font3(L"‚l‚r ‚oƒSƒVƒbƒN",70,style,UnitPoint);
-	LinearGradientBrush bx(rect, Color::LightPink, Color::DeepPink, LinearGradientModeHorizontal);
-	startGra->DrawString(L"START!", -1, &font3, origin2, &format, &bx);
-	MakeStartLock.off();
-	InvalidateRect(ghStart, NULL, FALSE);
-	sys->sleep(5000);
-
-	SendMessage(ghStart, WM_CLOSE, 0, 0);
 	return 0;
 }

@@ -143,7 +143,7 @@ int channel_count=1;
 // -----------------------------------------------------------------------------
 // Initialise the channel to its default settings of unallocated and reset.
 // -----------------------------------------------------------------------------
-Channel::Channel()
+Channel::Channel() : maxRelays(0)
 {
 	next = NULL;
 	reset();
@@ -306,7 +306,14 @@ bool	Channel::isFull()
 	}
 	// for PCRaw (relay) end.
 
-	return chanMgr->maxRelaysPerChannel ? localRelays() >= chanMgr->maxRelaysPerChannel : false;
+	// チャンネル固有のリレー上限設定があるか
+	if (maxRelays > 0)
+	{
+		return localRelays() >= maxRelays;
+	} else
+	{
+		return chanMgr->maxRelaysPerChannel ? localRelays() >= chanMgr->maxRelaysPerChannel : false;
+	}
 }
 // -----------------------------------
 int Channel::localRelays()

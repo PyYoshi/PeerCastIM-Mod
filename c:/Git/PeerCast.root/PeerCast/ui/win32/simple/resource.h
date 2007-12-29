@@ -50,7 +50,10 @@
 #define IDC_STATIC_LOG                  1018
 #define IDC_BUTTON4                     1019
 #define IDC_BUTTON5                     1020
+#define IDC_EDIT_MAXRELAYS              1020
 #define IDC_BUTTON6                     1021
+#define IDC_APPLY_MAX_RELAYS            1021
+#define IDC_APPLY_MAXRELAYS             1021
 #define IDC_EDIT3                       1025
 #define IDC_EDIT5                       1027
 #define IDC_LOGDEBUG                    1037
@@ -107,9 +110,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        142
+#define _APS_NEXT_RESOURCE_VALUE        143
 #define _APS_NEXT_COMMAND_VALUE         32831
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

@@ -1365,6 +1365,15 @@ LRESULT CALLBACK ChanInfoProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 				{
 					SendDlgItemMessage(hDlg,IDC_EDIT_STATUS,WM_SETTEXT,0,(LONG)ch->getStatusStr());
 					SendDlgItemMessage(hDlg, IDC_KEEP,BM_SETCHECK, ch->stayConnected, 0);
+
+					// 現在の固有リレー上限設定を表示(0は無効)
+					::SetDlgItemInt(hDlg, IDC_EDIT_MAXRELAYS, ch->maxRelays, false);
+					if (isIndexTxt(ch))
+					{
+						// index.txtなので無効に
+						::EnableWindow(::GetDlgItem(hDlg, IDC_EDIT_MAXRELAYS), false);
+						::EnableWindow(::GetDlgItem(hDlg, IDC_APPLY_MAXRELAYS), false);
+					}
 				}else
 				{
 					SendDlgItemMessage(hDlg,IDC_EDIT_STATUS,WM_SETTEXT,0,(LONG)"OK");
@@ -1406,18 +1415,18 @@ LRESULT CALLBACK ChanInfoProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 
 				switch (LOWORD(wParam))
 				{
-					case IDC_CONTACT:
+				case IDC_CONTACT:
 					{
 						sys->getURL(chanInfo.url);
 						return TRUE;
 					}
-					case IDC_DETAILS:
+				case IDC_DETAILS:
 					{
 						sprintf(str,"admin?page=chaninfo&id=%s&relay=%d",idstr,chanInfoIsRelayed);
 						sys->callLocalURL(str,servMgr->serverHost.port);
 						return TRUE;
 					}
-					case IDC_KEEP:
+				case IDC_KEEP:
 					{
 						Channel *ch = chanMgr->findChannelByID(chanInfo.id);
 						if (ch)
@@ -1426,12 +1435,36 @@ LRESULT CALLBACK ChanInfoProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 					}
 
 
-					case IDC_PLAY:
+				case IDC_PLAY:
 					{
 						chanMgr->findAndPlayChannel(chanInfo,false);
 						return TRUE;
 					}
 
+				case IDC_APPLY_MAXRELAYS:
+					{
+						// チャンネル固有の最大リレー数を設定
+						BOOL bSucc;
+						unsigned int mr;
+
+						// 入力値取得
+						mr = ::GetDlgItemInt(hDlg, IDC_EDIT_MAXRELAYS, &bSucc, false);
+
+						if (bSucc)
+						{
+							Channel *ch = chanMgr->findChannelByID(chanInfo.id);
+							if (ch && !isIndexTxt(ch))
+							{
+								ch->maxRelays = mr;
+							}
+						} else
+						{
+							MessageBox(hDlg, "入力値が不正です。", "Error", MB_OK|MB_ICONERROR|MB_APPLMODAL);
+							Channel *ch = chanMgr->findChannelByID(chanInfo.id);
+							if (ch)
+								::SetDlgItemInt(hDlg, IDC_EDIT_MAXRELAYS, ch->maxRelays, false);
+						}
+					}
 				}
 			}
 			break;

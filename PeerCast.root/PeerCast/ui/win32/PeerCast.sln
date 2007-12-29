@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple", "simple\Simple.vcp
 		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1} = {7BCFE65B-8757-45F3-8DFB-1E7D683950D1}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{00D364AE-DB2F-4109-A925-31B4F129D613}"
+	ProjectSection(SolutionItems) = preProject
+		memo.txt = memo.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SourceCodeControl) = preSolution
 		SccNumberOfProjects = 3

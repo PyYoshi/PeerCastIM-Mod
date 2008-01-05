@@ -197,6 +197,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	hInst = hInstance;
 
+	version_ex = 0; // PP”ÅŠg’£‹@”\‚ð–³Œø‚É
+
 	iniFileName.set(".\\peercast.ini");
 
 	WIN32_FIND_DATA fd; //JP-EX
@@ -1290,11 +1292,14 @@ LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_INITDIALOG:
 			//SendDlgItemMessage(hDlg,IDC_ABOUTVER,WM_SETTEXT,0,(LONG)PCX_AGENT);
 //			SendDlgItemMessage(hDlg,IDC_ABOUTVER,WM_SETTEXT,0,(LONG)PCX_AGENTJP);
-#ifdef VERSION_EX
-			SendDlgItemMessage(hDlg,IDC_ABOUTVER,WM_SETTEXT,0,(LONG)PCX_AGENTEX);
-#else
-			SendDlgItemMessage(hDlg,IDC_ABOUTVER,WM_SETTEXT,0,(LONG)PCX_AGENTVP);
-#endif
+			if (version_ex)
+			{
+				SendDlgItemMessage(hDlg,IDC_ABOUTVER,WM_SETTEXT,0,(LONG)PCX_AGENTEX);
+			} else
+			{
+				SendDlgItemMessage(hDlg,IDC_ABOUTVER,WM_SETTEXT,0,(LONG)PCX_AGENTVP);
+			}
+
 			return TRUE;
 
 		case WM_COMMAND:

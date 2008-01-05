@@ -243,7 +243,7 @@ int XML::Node::findAttrID(const char *name)
 // ----------------------------------
 char *XML::Node::findAttr(const char *name)
 {
-	int nlen = strlen(name);
+	size_t nlen = strlen(name);
 	for(int i=1; i<numAttr; i++)
     {
     	char *an = getAttrName(i);

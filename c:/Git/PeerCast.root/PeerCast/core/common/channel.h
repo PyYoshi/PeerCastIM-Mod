@@ -168,6 +168,7 @@ public:
 	TrackInfo	track;
 	::String	desc,genre,url,comment;
 
+	unsigned int ppFlags; //JP-MOD
 };
 
 
@@ -177,6 +178,7 @@ class ChanHit
 public:
 	void	init();
 	void	initLocal(int numl,int numr,int nums,int uptm,bool,bool,unsigned int,Channel*,unsigned int,unsigned int);
+	void	initLocal_pp(bool isStealth, int numClaps); //JP-MOD
 	XML::Node *createXML();
 
 	void	writeAtoms(AtomStream &,GnuID &);
@@ -187,6 +189,7 @@ public:
 	Host				host;
 	Host				rhost[2];
 	unsigned int		numListeners,numRelays,numHops;
+	int					clap_pp;	//JP-MOD
 	unsigned int		time,upTime,lastContact;
 	unsigned int		hitID;
 	GnuID				sessionID,chanID;
@@ -225,6 +228,7 @@ public:
 	void	clearHits(bool);
 	int		numHits();
 	int		numListeners();
+	int		numClaps();	//JP-MOD
 	int		numRelays();
 	int		numFirewalled();
 	int		numTrackers();
@@ -474,6 +478,7 @@ public:
 	int		localListeners();
 	int		localRelays();
 
+	int		totalClaps();	//JP-MOD
 	int		totalListeners();
 	int		totalRelays();
 
@@ -496,10 +501,13 @@ public:
 	::String  sourceURL;
 
 	bool	bump,stayConnected;
+	bool	stealth; //JP-MOD
 	int		icyMetaInterval;
 	unsigned int streamPos;
 	unsigned int skipCount; //JP-EX
 	bool	readDelay;
+	int		overrideMaxRelaysPerChannel; //JP-MOD
+	bool	bClap; //JP-MOD
 
 	TYPE	type;
 	ChannelSource *sourceData;
@@ -663,20 +671,23 @@ public:
 		type = t;
 		urls = new ::String[max];
 		titles = new ::String[max];
+		contacturls = new ::String[max]; //JP-MOD
 	}
 
 	~PlayList()
 	{
 		delete [] urls;
 		delete [] titles;
+		delete [] contacturls; //JP-MOD
 	}
 
-	void	addURL(const char *url, const char *tit)
+	void	addURL(const char *url, const char *tit, const char *contacturl/*JP-MOD*/)
 	{
 		if (numURLs < maxURLs)
 		{
 			urls[numURLs].set(url);
 			titles[numURLs].set(tit);
+			contacturls[numURLs].set(contacturl); //JP-MOD
 			numURLs++;
 		}
 	}
@@ -719,6 +730,7 @@ public:
 	TYPE	type;
 	int		numURLs,maxURLs;
 	::String	*urls,*titles;
+	::String	*contacturls; //JP-MOD
 };
 
 // ----------------------------------

@@ -85,6 +85,7 @@ static const ID4 PCP_HOST_VERSION	= "ver";
 static const ID4 PCP_HOST_VERSION_VP	= "vevp";
 static const ID4 PCP_HOST_VERSION_EX_PREFIX = "vexp";
 static const ID4 PCP_HOST_VERSION_EX_NUMBER = "vexn";
+static const ID4 PCP_HOST_CLAP_PP		= "clap"; //JP-MOD
 static const ID4 PCP_HOST_FLAGS1	= "flg1";
 static const ID4 PCP_HOST_OLDPOS	= "oldp";
 static const ID4 PCP_HOST_NEWPOS	= "newp";
@@ -114,6 +115,7 @@ static const ID4 PCP_CHAN_INFO_NAME		= "name";
 static const ID4 PCP_CHAN_INFO_URL		= "url";
 static const ID4 PCP_CHAN_INFO_DESC		= "desc";
 static const ID4 PCP_CHAN_INFO_COMMENT	= "cmnt";
+static const ID4 PCP_CHAN_INFO_PPFLAGS	= "pflg"; //JP-MOD
 
 static const ID4 PCP_CHAN_TRACK			= "trck";
 static const ID4 PCP_CHAN_TRACK_TITLE	= "titl";
@@ -191,6 +193,7 @@ public:
 	,streamPos(0)
 	,group(0)
 	,servent_id(0)
+	,ttl(0)
 	{
 		chanID.clear();
 		bcID.clear();
@@ -213,6 +216,7 @@ public:
 	unsigned int streamPos;
 	int group;
 	int servent_id;
+	int ttl;
 };
 
 // ----------------------------------------------

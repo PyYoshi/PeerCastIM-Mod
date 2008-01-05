@@ -161,7 +161,7 @@ public:
 
 
     static unsigned int    getIP(char *);
-	static bool			getHostname(char *,unsigned int);
+	static bool			getHostname(char *,size_t,unsigned int); //JP-MOD
 
     virtual bool eof()
     {

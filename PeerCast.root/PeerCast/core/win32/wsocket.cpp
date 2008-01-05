@@ -27,7 +27,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include "wsocket.h"
-#include "stats.h"
+#include "..\common\stats.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
@@ -51,8 +51,11 @@ void WSAClientSocket::init()
 
 }
 // --------------------------------------------------
-bool ClientSocket::getHostname(char *str,unsigned int ip)
+bool ClientSocket::getHostname(char *str,size_t size,unsigned int ip) //JP-MOD
 {
+	if(size == 0)
+		return false;
+
 	HOSTENT *he;
 
 	ip = htonl(ip);
@@ -61,7 +64,9 @@ bool ClientSocket::getHostname(char *str,unsigned int ip)
 
 	if (he)
 	{
-		strcpy(str,he->h_name);
+		LOG_DEBUG("getHostname: %d.%d.%d.%d -> %s", ((BYTE*)&ip)[0], ((BYTE*)&ip)[1], ((BYTE*)&ip)[2], ((BYTE*)&ip)[3], he->h_name);
+		strncpy(str,he->h_name,size-1);
+		str[size-1] = '\0';
 		return true;
 	}else
 		return false;
@@ -603,7 +608,7 @@ ClientSocket *WSAClientSocket::accept()
 	int fromSize = sizeof(sockaddr_in);
 	sockaddr_in from;
 
-	int conSock = ::accept(sockNum,(sockaddr *)&from,&fromSize);
+	SOCKET conSock = ::accept(sockNum,(sockaddr *)&from,&fromSize);
 
 
 	if (conSock ==  INVALID_SOCKET)

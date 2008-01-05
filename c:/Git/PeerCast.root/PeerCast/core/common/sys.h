@@ -96,7 +96,7 @@ public:
 	// set from null terminated string, remove first/last chars
 	void setUnquote(const char *p, TYPE t=T_ASCII) 
 	{
-		int slen = strlen(p);
+		size_t slen = strlen(p);
 		if (slen > 2)
 		{
 			if (slen >= MAX_LEN) slen = MAX_LEN;
@@ -109,6 +109,7 @@ public:
 
 	void clear() 
 	{
+		memset(data, 0, MAX_LEN);
 		data[0]=0;
 		type = T_UNKNOWN;
 	}
@@ -243,6 +244,9 @@ public:
 
 typedef __int64 int64_t;
 
+#ifndef _UINTPTR_T_DEFINED
+typedef unsigned int uintptr_t;
+#endif
 
 // ------------------------------------
 class WEvent
@@ -292,7 +296,7 @@ public:
 
 // ------------------------------------
 typedef int (WINAPI *THREAD_FUNC)(ThreadInfo *);
-typedef unsigned int THREAD_HANDLE;
+typedef uintptr_t THREAD_HANDLE;
 #define THREAD_PROC int WINAPI
 #define vsnprintf _vsnprintf
 

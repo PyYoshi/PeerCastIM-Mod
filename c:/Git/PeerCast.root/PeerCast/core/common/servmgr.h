@@ -122,7 +122,8 @@ public:
 		NT_UPGRADE			= 0x0001,
 		NT_PEERCAST			= 0x0002,
 		NT_BROADCASTERS		= 0x0004,
-		NT_TRACKINFO		= 0x0008
+		NT_TRACKINFO		= 0x0008,
+		NT_APPLAUSE			= 0x0010 //JP-MOD
 	};
 
 	enum FW_STATE
@@ -420,6 +421,32 @@ public:
 	bool startWithGui; // ‹N“®Žž‚ÉGUI
 
 	int maxRelaysIndexTxt;	// for PCRaw (relay)
+
+#ifdef WIN32 //JP-MOD
+	bool	guiSimpleChannelList;
+	bool	guiSimpleConnectionList;
+	bool	guiTopMost;
+
+	int		guiChanListDisplays;
+	int		guiConnListDisplays;
+	bool	guiTitleModify;
+	String	guiTitleModifyNormal;
+	String	guiTitleModifyMinimized;
+
+	bool	guiAntennaNotifyIcon;
+
+	bool	ppClapSound;
+	String	ppClapSoundPath;
+#endif
+
+	int		disableAutoBumpIfDirect;
+	int		asxDetailedMode;
+
+	enum PPBCSTFLAG //JP-MOD
+	{
+		bcstNone		= 0x00000000,
+		bcstClap		= 0x00000001
+	};
 
 private:
 	FW_STATE	firewalled;

@@ -81,7 +81,7 @@ char *Channel::statusMsgs[]=
 // for PCRaw start.
 bool isIndexTxt(ChanInfo *info)
 {
-	int len;
+	size_t len;
 
 	if(	info &&
 		info->contentType == ChanInfo::T_RAW &&
@@ -235,6 +235,9 @@ void Channel::reset()
 	mount.clear();
 	bump = false;
 	stayConnected = false;
+	stealth = false; //JP-MOD
+	overrideMaxRelaysPerChannel = -1; //JP-MOD
+	bClap = false; //JP-MOD
 
 	icyMetaInterval = 0;
 	streamPos = 0;
@@ -345,8 +348,12 @@ int Channel::totalListeners()
 	return tot;
 }
 
-
-
+// -----------------------------------
+int Channel::totalClaps()	//JP-MOD
+{
+	ChanHitList *chl = chanMgr->findHitListByID(info.id);
+	return chl ? chl->numClaps() : 0;
+}
 
 // -----------------------------------
 void	Channel::startGet()
@@ -1173,8 +1180,8 @@ void Channel::broadcastTrackerUpdate(GnuID &svID, bool force)
 		if (!chl)
 			throw StreamException("Broadcast channel has no hitlist");
 
-		int numListeners = totalListeners();
-		int numRelays = totalRelays();
+		int numListeners = stealth ? -1 : totalListeners(); //JP-MOD リスナー数隠蔽機能
+		int numRelays = stealth ? -1 : totalRelays(); //JP-MOD リレー数隠蔽機能
 
 		unsigned int oldp = rawData.getOldestPos();
 		unsigned int newp = rawData.getLatestPos();
@@ -1182,27 +1189,31 @@ void Channel::broadcastTrackerUpdate(GnuID &svID, bool force)
 		hit.initLocal(numListeners,numRelays,info.numSkips,info.getUptime(),isPlaying(), false, 0, this, oldp,newp);
 		hit.tracker = true;
 
-#ifndef VERSION_EX
-		atom.writeParent(PCP_BCST,8);
-#else
-		atom.writeParent(PCP_BCST,10);
-#endif
-			atom.writeChar(PCP_BCST_GROUP,PCP_BCST_GROUP_ROOT);
-			atom.writeChar(PCP_BCST_HOPS,0);
-			atom.writeChar(PCP_BCST_TTL,11);
-			atom.writeBytes(PCP_BCST_FROM,servMgr->sessionID.id,16);
-			atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
-			atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
-#ifdef VERSION_EX
+		if (version_ex == 0)
+		{
+			atom.writeParent(PCP_BCST,8);
+		} else
+		{
+			atom.writeParent(PCP_BCST,10);
+		}
+		atom.writeChar(PCP_BCST_GROUP,PCP_BCST_GROUP_ROOT);
+		atom.writeChar(PCP_BCST_HOPS,0);
+		atom.writeChar(PCP_BCST_TTL,11);
+		atom.writeBytes(PCP_BCST_FROM,servMgr->sessionID.id,16);
+		atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
+		atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
+
+		if (version_ex)
+		{
 			atom.writeBytes(PCP_BCST_VERSION_EX_PREFIX,PCP_CLIENT_VERSION_EX_PREFIX,2);
 			atom.writeShort(PCP_BCST_VERSION_EX_NUMBER,PCP_CLIENT_VERSION_EX_NUMBER);
-#endif
-			atom.writeParent(PCP_CHAN,4);
-				atom.writeBytes(PCP_CHAN_ID,info.id.id,16);
-				atom.writeBytes(PCP_CHAN_BCID,chanMgr->broadcastID.id,16);
-				info.writeInfoAtoms(atom);
-				info.writeTrackAtoms(atom);
-			hit.writeAtoms(atom,info.id);
+		}
+		atom.writeParent(PCP_CHAN,4);
+		atom.writeBytes(PCP_CHAN_ID,info.id.id,16);
+		atom.writeBytes(PCP_CHAN_BCID,chanMgr->broadcastID.id,16);
+		info.writeInfoAtoms(atom);
+		info.writeTrackAtoms(atom);
+		hit.writeAtoms(atom,info.id);
 
 
 		pack.len = mem.pos;
@@ -1251,26 +1262,29 @@ void Channel::updateInfo(ChanInfo &newInfo)
 
 				AtomStream atom(mem);
 
-#ifndef VERSION_EX
-				atom.writeParent(PCP_BCST,8);
-#else
-				atom.writeParent(PCP_BCST,10);
-#endif
-					atom.writeChar(PCP_BCST_HOPS,0);
-					atom.writeChar(PCP_BCST_TTL,7);
-					atom.writeChar(PCP_BCST_GROUP,PCP_BCST_GROUP_RELAYS);
-					atom.writeBytes(PCP_BCST_FROM,servMgr->sessionID.id,16);
-					atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
-					atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
-#ifdef VERSION_EX
+				if (version_ex == 0)
+				{
+					atom.writeParent(PCP_BCST,8);
+				} else
+				{
+					atom.writeParent(PCP_BCST,10);
+				}
+				atom.writeChar(PCP_BCST_HOPS,0);
+				atom.writeChar(PCP_BCST_TTL,7);
+				atom.writeChar(PCP_BCST_GROUP,PCP_BCST_GROUP_RELAYS);
+				atom.writeBytes(PCP_BCST_FROM,servMgr->sessionID.id,16);
+				atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
+				atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
+				if (version_ex)
+				{
 					atom.writeBytes(PCP_BCST_VERSION_EX_PREFIX,PCP_CLIENT_VERSION_EX_PREFIX,2);
 					atom.writeShort(PCP_BCST_VERSION_EX_NUMBER,PCP_CLIENT_VERSION_EX_NUMBER);
-#endif
-					atom.writeBytes(PCP_BCST_CHANID,info.id.id,16);
-					atom.writeParent(PCP_CHAN,3);
-						atom.writeBytes(PCP_CHAN_ID,info.id.id,16);
-						info.writeInfoAtoms(atom);
-						info.writeTrackAtoms(atom);
+				}
+				atom.writeBytes(PCP_BCST_CHANID,info.id.id,16);
+				atom.writeParent(PCP_CHAN,3);
+				atom.writeBytes(PCP_CHAN_ID,info.id.id,16);
+				info.writeInfoAtoms(atom);
+				info.writeTrackAtoms(atom);
 
 				pack.len = mem.pos;
 				pack.type = ChanPacket::T_PCP;
@@ -1424,6 +1438,11 @@ bool ChannelStream::getStatus(Channel *ch,ChanPacket &pack)
 //	LOG_DEBUG("isPlaying-------------------------------------- %d %d", ch->isPlaying(), isPlaying);
 
 	hit.initLocal(newLocalListeners,newLocalRelays,ch->info.numSkips,ch->info.getUptime(),ch->isPlaying(), ch->isFull(), ch->info.bitrate, ch, oldp, newp);
+	{ //JP-MOD
+		if(!(ch->info.ppFlags & ServMgr::bcstClap))
+			ch->bClap = false;
+		hit.initLocal_pp(ch->stealth, ch->bClap ? 1 : 0);
+	}
 	hit.tracker = ch->isBroadcasting();
 
 	if	(	(((ctime-lastUpdate)>chanMgr->hostUpdateInterval) && chanMgr->hostUpdateInterval)
@@ -1434,13 +1453,19 @@ bool ChannelStream::getStatus(Channel *ch,ChanPacket &pack)
 		||	(ch->chDisp.relay != hit.relay)
 		||	(ch->chDisp.relayfull != hit.relayfull)
 		||	(ch->chDisp.chfull != hit.chfull)
-		||	(ch->chDisp.ratefull != hit.ratefull)	
+		||	(ch->chDisp.ratefull != hit.ratefull)
+		||	(ch->bClap && ((ctime-lastClapped) > 60)) //JP-MOD	
 	){
 		numListeners = newLocalListeners;
 		numRelays = newLocalRelays;
 		isPlaying = ch->isPlaying();
 		fwState = servMgr->getFirewall();
 		lastUpdate = ctime;
+
+		if(ch->bClap){ //JP-MOD
+			lastClapped = ctime;
+			ch->bClap = false;
+		}
 	
 		ch->chDisp = hit;
 
@@ -1456,23 +1481,26 @@ bool ChannelStream::getStatus(Channel *ch,ChanPacket &pack)
 		GnuID noID;
 		noID.clear();
 
-#ifndef VERSION_EX
+		if (version_ex == 0)
+		{
 			atom.writeParent(PCP_BCST,8);
-#else
+		} else
+		{
 			atom.writeParent(PCP_BCST,10);
-#endif
-			atom.writeChar(PCP_BCST_GROUP,PCP_BCST_GROUP_TRACKERS);
-			atom.writeChar(PCP_BCST_HOPS,0);
-			atom.writeChar(PCP_BCST_TTL,11);
-			atom.writeBytes(PCP_BCST_FROM,servMgr->sessionID.id,16);
-			atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
-			atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
-#ifdef VERSION_EX
+		}
+		atom.writeChar(PCP_BCST_GROUP,PCP_BCST_GROUP_TRACKERS);
+		atom.writeChar(PCP_BCST_HOPS,0);
+		atom.writeChar(PCP_BCST_TTL,11);
+		atom.writeBytes(PCP_BCST_FROM,servMgr->sessionID.id,16);
+		atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
+		atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
+		if (version_ex)
+		{
 			atom.writeBytes(PCP_BCST_VERSION_EX_PREFIX,PCP_CLIENT_VERSION_EX_PREFIX,2);
 			atom.writeShort(PCP_BCST_VERSION_EX_NUMBER,PCP_CLIENT_VERSION_EX_NUMBER);
-#endif
-			atom.writeBytes(PCP_BCST_CHANID,ch->info.id.id,16);
-			hit.writeAtoms(atom,noID);
+		}
+		atom.writeBytes(PCP_BCST_CHANID,ch->info.id.id,16);
+		hit.writeAtoms(atom,noID);
 
 		pack.len = pmem.pos;
 		pack.type = ChanPacket::T_PCP;
@@ -2363,7 +2391,11 @@ bool ChanMgr::writeVariable(Stream &out, const String &var, int index)
 	else if (var == "numChannels")
 		sprintf(buf,"%d",numChannels());
 	else if (var == "djMessage")
-		strcpy(buf,broadcastMsg.cstr());
+	{
+		String utf8 = broadcastMsg;
+		utf8.convertTo(String::T_UNICODESAFE);
+		strcpy(buf,utf8.cstr());
+	}
 	else if (var == "icyMetaInterval")
 		sprintf(buf,"%d",icyMetaInterval);
 	else if (var == "maxRelaysPerChannel")
@@ -2424,6 +2456,9 @@ bool Channel::writeVariable(Stream &out, const String &var, int index)
 		utf8 = info.comment;
 		utf8.convertTo(String::T_UNICODESAFE);
 		strcpy(buf,utf8.cstr());
+	}else if (var == "bcstClap") //JP-MOD
+	{
+		strcpy(buf,info.ppFlags & ServMgr::bcstClap ? "1":"0");
 	}else if (var == "uptime")
 	{
 		String uptime;
@@ -2456,7 +2491,8 @@ bool Channel::writeVariable(Stream &out, const String &var, int index)
 		sprintf(buf,"%d",totalRelays());
 	else if (var == "totalListeners")
 		sprintf(buf,"%d",totalListeners());
-
+	else if (var == "totalClaps") //JP-MOD
+		sprintf(buf,"%d",totalClaps());
 	else if (var == "status")
 		sprintf(buf,"%s",getStatusStr());
 	else if (var == "keep")
@@ -3125,6 +3161,7 @@ void ChanHit::init()
 
 	numListeners = 0;
 	numRelays = 0;
+	clap_pp = 0; //JP-MOD
 
 	dead = tracker = firewalled = stable = yp = false;
 	recv = cin = direct = relay = true;
@@ -3220,14 +3257,16 @@ void ChanHit::initLocal(int numl,int numr,int,int uptm,bool connected,bool isFul
 
 	version = PCP_CLIENT_VERSION;
 	version_vp = PCP_CLIENT_VERSION_VP;
-#ifdef VERSION_EX
-	strncpy(version_ex_prefix, PCP_CLIENT_VERSION_EX_PREFIX,2);
-	version_ex_number = PCP_CLIENT_VERSION_EX_NUMBER;
-#else
-	version_ex_prefix[0] = ' ';
-	version_ex_prefix[1] = ' ';
-	version_ex_number = 0;
-#endif
+	if (version_ex)
+	{
+		strncpy(version_ex_prefix, PCP_CLIENT_VERSION_EX_PREFIX,2);
+		version_ex_number = PCP_CLIENT_VERSION_EX_NUMBER;
+	} else
+	{
+		version_ex_prefix[0] = ' ';
+		version_ex_prefix[1] = ' ';
+		version_ex_number = 0;
+	}
 
 	status = ch->status;
 
@@ -3246,6 +3285,13 @@ void ChanHit::initLocal(int numl,int numr,int,int uptm,bool connected,bool isFul
 }
 
 // -----------------------------------
+void ChanHit::initLocal_pp(bool isStealth, int numClaps) //JP-MOD
+{
+	numListeners = numListeners && !isStealth ? 1 : 0;
+	clap_pp = numClaps;
+}
+
+// -----------------------------------
 void ChanHit::writeAtoms(AtomStream &atom,GnuID &chanID)
 {
 	bool addChan=chanID.isSet();
@@ -3259,32 +3305,35 @@ void ChanHit::writeAtoms(AtomStream &atom,GnuID &chanID)
 	if (tracker) fl1 |= PCP_HOST_FLAGS1_TRACKER;
 	if (firewalled) fl1 |= PCP_HOST_FLAGS1_PUSH;
 
-	atom.writeParent(PCP_HOST,13  + (addChan?1:0) + (uphostdata?3:0) + (version_ex_number?2:0));
+	atom.writeParent(PCP_HOST,13  + (addChan?1:0) + (uphostdata?3:0) + (version_ex_number?2:0) + (clap_pp?1:0/*JP-MOD*/));
 
-		if (addChan)
-			atom.writeBytes(PCP_HOST_CHANID,chanID.id,16);
-		atom.writeBytes(PCP_HOST_ID,sessionID.id,16);
-		atom.writeInt(PCP_HOST_IP,rhost[0].ip);
-		atom.writeShort(PCP_HOST_PORT,rhost[0].port);
-		atom.writeInt(PCP_HOST_IP,rhost[1].ip);
-		atom.writeShort(PCP_HOST_PORT,rhost[1].port);
-		atom.writeInt(PCP_HOST_NUML,numListeners);
-		atom.writeInt(PCP_HOST_NUMR,numRelays);
-		atom.writeInt(PCP_HOST_UPTIME,upTime);
-		atom.writeInt(PCP_HOST_VERSION,version);
-		atom.writeInt(PCP_HOST_VERSION_VP,version_vp);
-		if (version_ex_number){
-			atom.writeBytes(PCP_HOST_VERSION_EX_PREFIX,version_ex_prefix,2);
-			atom.writeShort(PCP_HOST_VERSION_EX_NUMBER,version_ex_number);
-		}
-		atom.writeChar(PCP_HOST_FLAGS1,fl1);
-		atom.writeInt(PCP_HOST_OLDPOS,oldestPos);
-		atom.writeInt(PCP_HOST_NEWPOS,newestPos);
-		if (uphostdata){
-			atom.writeInt(PCP_HOST_UPHOST_IP,uphost.ip);
-			atom.writeInt(PCP_HOST_UPHOST_PORT,uphost.port);
-			atom.writeInt(PCP_HOST_UPHOST_HOPS,uphostHops);
-		}
+	if (addChan)
+		atom.writeBytes(PCP_HOST_CHANID,chanID.id,16);
+	atom.writeBytes(PCP_HOST_ID,sessionID.id,16);
+	atom.writeInt(PCP_HOST_IP,rhost[0].ip);
+	atom.writeShort(PCP_HOST_PORT,rhost[0].port);
+	atom.writeInt(PCP_HOST_IP,rhost[1].ip);
+	atom.writeShort(PCP_HOST_PORT,rhost[1].port);
+	atom.writeInt(PCP_HOST_NUML,numListeners);
+	atom.writeInt(PCP_HOST_NUMR,numRelays);
+	atom.writeInt(PCP_HOST_UPTIME,upTime);
+	atom.writeInt(PCP_HOST_VERSION,version);
+	atom.writeInt(PCP_HOST_VERSION_VP,version_vp);
+	if (version_ex_number){
+		atom.writeBytes(PCP_HOST_VERSION_EX_PREFIX,version_ex_prefix,2);
+		atom.writeShort(PCP_HOST_VERSION_EX_NUMBER,version_ex_number);
+	}
+	atom.writeChar(PCP_HOST_FLAGS1,fl1);
+	atom.writeInt(PCP_HOST_OLDPOS,oldestPos);
+	atom.writeInt(PCP_HOST_NEWPOS,newestPos);
+	if (uphostdata){
+		atom.writeInt(PCP_HOST_UPHOST_IP,uphost.ip);
+		atom.writeInt(PCP_HOST_UPHOST_PORT,uphost.port);
+		atom.writeInt(PCP_HOST_UPHOST_HOPS,uphostHops);
+	}
+	if (clap_pp){	//JP-MOD
+		atom.writeInt(PCP_HOST_CLAP_PP,clap_pp);
+	}
 }
 // -----------------------------------
 bool	ChanHit::writeVariable(Stream &out, const String &var)
@@ -3319,7 +3368,7 @@ bool	ChanHit::writeVariable(Stream &out, const String &var)
 			strcat(buf,buf2);
 
 			char h_name[128];
-			if (ClientSocket::getHostname(h_name,rhost[0].ip))
+			if (ClientSocket::getHostname(h_name,sizeof(h_name),rhost[0].ip)) // BOF対策っぽい
 			{
 				strcat(buf,"[");
 				strcat(buf,h_name);
@@ -3657,7 +3706,23 @@ int	ChanHitList::numListeners()
 	while (ch)
 	{
 		if (ch->host.ip && !ch->dead && ch->numHops)
-			cnt += ch->numListeners;
+			cnt += (unsigned int)ch->numListeners > 3 ? 3 : ch->numListeners;
+		ch=ch->next;
+	}
+
+	return cnt;
+}
+
+// -----------------------------------
+int ChanHitList::numClaps()	//JP-MOD
+{
+	int cnt=0;
+	ChanHit *ch = hit;
+	while (ch)
+	{
+		if (ch->host.ip && !ch->dead && ch->numHops && (ch->clap_pp & 1)){
+			cnt++;
+		}
 		ch=ch->next;
 	}
 
@@ -4077,6 +4142,12 @@ bool ChanInfo::update(ChanInfo &info)
 		changed = true;
 	}
 
+	if(ppFlags != info.ppFlags) //JP-MOD
+	{
+		ppFlags = info.ppFlags;
+		changed = true;
+	}
+
 	if (!desc.isSame(info.desc)) //JP-EX
 	{
 		desc = info.desc;
@@ -4140,6 +4211,7 @@ void ChanInfo::init()
 	numSkips = 0;
 	bcID.clear();
 	createdTime = 0;
+	ppFlags = 0; //JP-MOD
 }
 // -----------------------------------
 void ChanInfo::readTrackXML(XML::Node *n)
@@ -4221,6 +4293,9 @@ void ChanInfo::readInfoAtoms(AtomStream &atom,int numc)
 			char type[16];
 			atom.readString(type,sizeof(type),d);
 			contentType = ChanInfo::getTypeFromStr(type);
+		}else if (id == PCP_CHAN_INFO_PPFLAGS) //JP-MOD
+		{
+			ppFlags = (unsigned int)atom.readInt();
 		}else
 			atom.skip(c,d);
 	}	
@@ -4229,14 +4304,16 @@ void ChanInfo::readInfoAtoms(AtomStream &atom,int numc)
 // -----------------------------------
 void ChanInfo::writeInfoAtoms(AtomStream &atom)
 {
-	atom.writeParent(PCP_CHAN_INFO,7);
+	atom.writeParent(PCP_CHAN_INFO,7 + (ppFlags ? 1:0/*JP-MOD*/));
 		atom.writeString(PCP_CHAN_INFO_NAME,name.cstr());
 		atom.writeInt(PCP_CHAN_INFO_BITRATE,bitrate);
 		atom.writeString(PCP_CHAN_INFO_GENRE,genre.cstr());
 		atom.writeString(PCP_CHAN_INFO_URL,url.cstr());
 		atom.writeString(PCP_CHAN_INFO_DESC,desc.cstr());
 		atom.writeString(PCP_CHAN_INFO_COMMENT,comment.cstr());
-		atom.writeString(PCP_CHAN_INFO_TYPE,getTypeStr(contentType));		
+		atom.writeString(PCP_CHAN_INFO_TYPE,getTypeStr(contentType));
+		if(ppFlags)
+			atom.writeInt(PCP_CHAN_INFO_PPFLAGS,ppFlags); //JP-MOD
 
 }
 // -----------------------------------
@@ -4395,6 +4472,13 @@ void ChanInfo::updateFromXML(XML::Node *n)
 	if (br)
 		bitrate = br;
 
+	{ //JP-MOD
+		ppFlags = ServMgr::bcstNone;
+
+		if (n->findAttrInt("bcstClap"))
+			ppFlags |= ServMgr::bcstClap;
+	}
+
 	readXMLString(typeStr,n,"type");
 	if (!typeStr.isEmpty())
 		contentType = getTypeFromStr(typeStr.cstr());
@@ -4455,7 +4539,7 @@ void PlayList::readASX(Stream &in)
 					char *hr = rf->findAttr("href");
 					if (hr)
 					{
-						addURL(hr,"");
+						addURL(hr,"","");
 						//LOG("asx url %s",hr);
 					}
 
@@ -4475,7 +4559,7 @@ void PlayList::readSCPLS(Stream &in)
 		{
 			char *p = strstr(tmp,"=");
 			if (p)
-				addURL(p+1,"");
+				addURL(p+1,"","");
 		}
 	}
 }
@@ -4486,7 +4570,7 @@ void PlayList::readPLS(Stream &in)
 	while (in.readLine(tmp,sizeof(tmp)))
 	{
 		if (tmp[0] != '#')
-			addURL(tmp,"");
+			addURL(tmp,"","");
 	}
 }
 // -----------------------------------
@@ -4518,12 +4602,63 @@ void PlayList::writeRAM(Stream &out)
 }
 
 // -----------------------------------
+#define isHTMLSPECIAL(a) ((a == '&') || (a == '\"') || (a == '\'') || (a == '<') || (a == '>'))
+static void SJIStoSJISSAFE(char *string, size_t size)
+{
+	size_t pos;
+	for(pos = 0;
+		(string[pos] != '\0') && (pos < size);
+		++pos)
+	{
+		if(isHTMLSPECIAL(string[pos]))
+			string[pos] = ' ';
+	}
+}
+
+// -----------------------------------
+static void WriteASXInfo(Stream &out, String &title, String &contacturl, String::TYPE tEncoding = String::T_UNICODESAFE) //JP-MOD
+{
+	if(!title.isEmpty())
+	{
+		String titleEncode;
+		titleEncode = title;
+		titleEncode.convertTo(tEncoding);
+		if(tEncoding == String::T_SJIS)
+			SJIStoSJISSAFE(titleEncode.cstr(), String::MAX_LEN);
+		out.writeLineF("<TITLE>%s</TITLE>", titleEncode.cstr());
+	}
+
+	if(!contacturl.isEmpty())
+	{
+		String contacturlEncode;
+		contacturlEncode = contacturl;
+		contacturlEncode.convertTo(tEncoding);
+		if(tEncoding == String::T_SJIS)
+			SJIStoSJISSAFE(contacturlEncode.cstr(), String::MAX_LEN);
+		out.writeLineF("<MOREINFO HREF = \"%s\" />", contacturlEncode.cstr());
+	}
+}
+
+// -----------------------------------
 void PlayList::writeASX(Stream &out)
 {
 	out.writeLine("<ASX Version=\"3.0\">");
+
+	String::TYPE tEncoding = String::T_SJIS;
+	if(servMgr->asxDetailedMode == 2)
+	{
+		out.writeLine("<PARAM NAME = \"Encoding\" VALUE = \"utf-8\" />"); //JP-MOD Memo: UTF-8 cannot be used in some recording software.
+		tEncoding = String::T_UNICODESAFE;
+	}
+
+	if(servMgr->asxDetailedMode)
+		WriteASXInfo(out, titles[0], contacturls[0], tEncoding); //JP-MOD
+
 	for(int i=0; i<numURLs; i++)
 	{
 		out.writeLine("<ENTRY>");
+		if(servMgr->asxDetailedMode)
+			WriteASXInfo(out, titles[i], contacturls[i], tEncoding); //JP-MOD
 		out.writeLineF("<REF href = \"%s\" />",urls[i].cstr());
 		out.writeLine("</ENTRY>");
 	}
@@ -4542,7 +4677,7 @@ void PlayList::addChannel(const char *path, ChanInfo &info)
 	char *nid = info.id.isSet()?idStr:info.name.cstr();
 
 	sprintf(url.cstr(),"%s/stream/%s%s",path,nid,ChanInfo::getTypeExt(info.contentType));
-	addURL(url.cstr(),info.name);
+	addURL(url.cstr(),info.name,info.url);
 }
 
 // -----------------------------------

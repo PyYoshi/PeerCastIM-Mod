@@ -38,8 +38,8 @@ static void termArgs(char *str)
 {
 	if (str)
 	{
-		int slen = strlen(str);
-		for(int i=0; i<slen; i++)
+		size_t slen = strlen(str);
+		for(size_t i=0; i<slen; i++)
 			if (str[i]=='&') str[i] = 0;
 	}
 }
@@ -162,8 +162,8 @@ void Servent::handshakeHTTP(HTTP &http, bool isHTTP)
 
 			if (pwdArg && songArg)
 			{
-				int i;
-				int slen = strlen(fn);
+				size_t i;
+				size_t slen = strlen(fn);
 				for(i=0; i<slen; i++)
 					if (fn[i]=='&') fn[i] = 0;
 
@@ -930,10 +930,14 @@ void Servent::handshakeCMD(char *cmd)
 				int newPort=servMgr->serverHost.port;
 				int enableGetName = 0;
 				int allowConnectPCST = 0;
+				int disableAutoBumpIfDirect = 0; //JP-MOD
+				int asxDetailedMode = 0; //JP-MOD
 
 				char *cp = cmd;
 				while (cp=nextCGIarg(cp,curr,arg))
 				{
+					LOG_DEBUG("ARG: %s = %s", curr, arg);
+
 					// server
 					if (strcmp(curr,"serveractive")==0)
 						servMgr->autoServe = getCGIargBOOL(arg);
@@ -1010,6 +1014,7 @@ void Servent::handshakeCMD(char *cmd)
 								{
 									servMgr->numFilters++;
 									servMgr->filters[servMgr->numFilters].init();	// clear new entry
+									LOG_DEBUG("numFilters = %d", servMgr->numFilters);
 								}
 
 							}else if (strncmp(fs,"bn",2)==0)
@@ -1110,6 +1115,10 @@ void Servent::handshakeCMD(char *cmd)
 
 					else if (strcmp(curr, "maxRelaysIndexTxt") ==0)		// for PCRaw (relay)
 						servMgr->maxRelaysIndexTxt = getCGIargINT(arg);
+					else if (strcmp(curr, "disableAutoBumpIfDirect") ==0) //JP-MOD
+						disableAutoBumpIfDirect = atoi(arg) ? 1 : 0;
+					else if (strcmp(curr, "asxDetailedMode") ==0) //JP-MOD
+						asxDetailedMode = getCGIargINT(arg);
 				}
 
 
@@ -1119,6 +1128,8 @@ void Servent::handshakeCMD(char *cmd)
 				servMgr->allowServer2 = allowServer2;
 				servMgr->enableGetName = enableGetName;
 				servMgr->allowConnectPCST = allowConnectPCST;
+				servMgr->disableAutoBumpIfDirect = disableAutoBumpIfDirect; //JP-MOD
+				servMgr->asxDetailedMode = asxDetailedMode; //JP-MOD
 				if (!(servMgr->allowServer1 & ALLOW_HTML) && !(servMgr->allowServer2 & ALLOW_HTML))
 					servMgr->allowServer1 |= ALLOW_HTML;
 
@@ -1199,6 +1210,9 @@ void Servent::handshakeCMD(char *cmd)
 					}else if (strcmp(curr,"type")==0)
 					{
 						info.contentType = ChanInfo::getTypeFromStr(arg);
+					}else if (strcmp(curr,"bcstClap")==0) //JP-MOD
+					{
+						info.ppFlags |= ServMgr::bcstClap;
 					}
 
 				}
@@ -1514,6 +1528,7 @@ void Servent::handshakeCMD(char *cmd)
 						Channel *c = chanMgr->findChannelByName(chname.cstr());
 						if (c && (c->isActive()) && (c->status == Channel::S_BROADCASTING)){
 							ChanInfo newInfo = c->info;
+							newInfo.ppFlags = ServMgr::bcstNone; //JP-MOD
 							while (cmd=nextCGIarg(cmd,curr,arg))
 							{
 								String chmeta;
@@ -1527,6 +1542,8 @@ void Servent::handshakeCMD(char *cmd)
 									newInfo.genre = chmeta.cstr();
 								else if (strcmp(curr,"comment")==0)
 									newInfo.comment = chmeta.cstr();
+								else if (strcmp(curr,"bcstClap")==0) //JP-MOD
+									newInfo.ppFlags |= ServMgr::bcstClap;
 								else if (strcmp(curr,"t_contact")==0)
 									newInfo.track.contact = chmeta.cstr();
 								else if (strcmp(curr,"t_title")==0)

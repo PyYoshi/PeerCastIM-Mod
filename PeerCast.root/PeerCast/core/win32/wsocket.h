@@ -22,7 +22,7 @@
 #define _WSOCKET_H
 
 #include <windows.h>
-#include "socket.h"
+#include "..\common\socket.h"
 //#include "winsock2.h"
 
 
@@ -71,7 +71,7 @@ public:
 	void	checkBuffering(bool, bool);
 
 	unsigned int writeCnt;
-	unsigned int sockNum;
+	SOCKET sockNum;
 	struct sockaddr_in remoteAddr;
 
 	enum {RBSIZE = 8192};

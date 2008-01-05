@@ -3147,7 +3147,7 @@ bool	Servent::writeVariable(Stream &s, const String &var)
 			}
 			strcat(buf,h_ip);
 			char h_name[128];
-			if (ClientSocket::getHostname(h_name,h.ip))
+			if (ClientSocket::getHostname(h_name,sizeof(h_name),h.ip)) //JP-MOD(BOFëŒçÙ)
 			{
 				strcat(buf,"[");
 				strcat(buf,h_name);

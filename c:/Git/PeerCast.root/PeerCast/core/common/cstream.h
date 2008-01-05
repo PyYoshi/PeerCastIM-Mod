@@ -217,6 +217,7 @@ public:
 	,fwState(0)
 	,lastUpdate(0)
 	,lastCheckTime(0)
+	,lastClapped(0) //JP-MOD
 	,parent(NULL)
 	{}
 	virtual ~ChannelStream() {}
@@ -240,6 +241,7 @@ public:
 	int	fwState;
 	unsigned int lastUpdate;
 	unsigned int lastCheckTime;
+	unsigned int lastClapped; //JP-MOD
 
 	Channel *parent;
 };

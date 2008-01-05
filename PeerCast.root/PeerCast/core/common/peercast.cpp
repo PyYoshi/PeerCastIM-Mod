@@ -8,7 +8,7 @@
 #define new DEBUG_NEW
 #endif
 
-
+#include "version2.h"
 
 // ---------------------------------
 // globals
@@ -20,6 +20,7 @@ ServMgr *servMgr;
 PeercastInstance *peercastInst=NULL;
 PeercastApplication *peercastApp=NULL;
 
+int version_ex = 0;
 
 // ---------------------------------
 void APICALL PeercastInstance::init()

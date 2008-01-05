@@ -181,10 +181,12 @@ void HTML::writeVariable(Stream &s,const String &varName, int loop)
 int HTML::getIntVariable(const String &varName,int loop)
 {
 	String val;
+	LOG_DEBUG("AAA %d %d %d %d", val[0], val[1], val[2], val[3]);
 	MemoryStream mem(val.cstr(),String::MAX_LEN);
 
 	writeVariable(mem,varName,loop);
 
+	LOG_DEBUG("AAA %d %d %d %d", val[0], val[1], val[2], val[3]);
 	return atoi(val.cstr());
 }
 // --------------------------------------
@@ -194,6 +196,10 @@ bool HTML::getBoolVariable(const String &varName,int loop)
 	MemoryStream mem(val.cstr(),String::MAX_LEN);
 
 	writeVariable(mem,varName,loop);
+
+	String tmp;
+	tmp = varName;
+	LOG_DEBUG("*** %s : %c", tmp.cstr(), val[0]);
 
 	// integer
 	if ((val[0] >= '0') && (val[0] <= '9'))
@@ -220,9 +226,11 @@ void	HTML::readIf(Stream &in,Stream *outp,int loop)
 		{
 			if (getBoolVariable(var,loop)==varCond)
 			{
+				LOG_DEBUG("==varCond, loop = %d", loop);
 				if (readTemplate(in,outp,loop))
 					readTemplate(in,NULL,loop);
 			}else{
+				LOG_DEBUG("!=varCond, loop = %d", loop);
 				if (readTemplate(in,NULL,loop))
 					readTemplate(in,outp,loop);
 			}
@@ -249,6 +257,8 @@ void	HTML::readLoop(Stream &in,Stream *outp,int loop)
 		if (c == '}')
 		{
 			int cnt = getIntVariable(var,loop);
+
+			LOG_DEBUG("loop_cnt : %s = %d", var.cstr(), cnt);
 
 			if (cnt)
 			{

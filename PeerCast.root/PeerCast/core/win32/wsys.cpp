@@ -23,10 +23,10 @@
 #include <process.h>
 #include <windows.h>
 #include <time.h>
-#include "win32/wsys.h"
-#include "win32/wsocket.h"
-#include "stats.h"
-#include "peercast.h"
+#include "wsys.h"
+#include "wsocket.h"
+#include "..\common\stats.h"
+#include "..\common\peercast.h"
 #include <sys/timeb.h>
 #include <time.h>
 #include "shellapi.h"
@@ -62,7 +62,7 @@ unsigned int WSys::getTime()
 {
 	time_t ltime;
 	time( &ltime );
-	return ltime;
+	return (unsigned)ltime;
 }
 
 // ---------------------------------

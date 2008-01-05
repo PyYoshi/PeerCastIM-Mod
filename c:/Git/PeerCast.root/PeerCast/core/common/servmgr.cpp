@@ -144,6 +144,26 @@ ServMgr::ServMgr()
 	chanLog="";
 
 	maxRelaysIndexTxt = 1;	// for PCRaw (relay)
+
+	{ //JP-MOD
+#ifdef WIN32
+		guiSimpleChannelList = false;
+		guiSimpleConnectionList = false;
+		guiTopMost = false;
+
+		guiChanListDisplays = 10;
+		guiConnListDisplays = 10;
+
+		guiTitleModify = false;
+		guiTitleModifyNormal = "PeerCast ŽóM:%rx.kbits.1%kbps ‘—M:%tx.kbits.1%kbps";
+		guiTitleModifyMinimized = "R:%rx.kbytes%KB/s T:%tx.kbytes%KB/s";
+
+		guiAntennaNotifyIcon = false;
+#endif
+
+		disableAutoBumpIfDirect = 1;
+		asxDetailedMode = 1;
+	}
 }
 // -----------------------------------
 BCID *ServMgr::findValidBCID(int index)
@@ -243,6 +263,7 @@ void ServMgr::setFilterDefaults()
 
 	numFilters++;
 
+	LOG_DEBUG("numFilters = %d", numFilters);
 }
 
 // -----------------------------------
@@ -1034,6 +1055,17 @@ void ServMgr::saveSettings(const char *fn)
 
 		iniFile.writeIntValue("maxRelaysIndexTxt", servMgr->maxRelaysIndexTxt);	// for PCRaw (relay)
 
+		{ //JP-MOD
+			iniFile.writeIntValue("disableAutoBumpIfDirect",servMgr->disableAutoBumpIfDirect);
+			iniFile.writeIntValue("asxDetailedMode",servMgr->asxDetailedMode);
+
+			iniFile.writeSection("PP");
+#ifdef WIN32
+			iniFile.writeBoolValue("ppClapSound", servMgr->ppClapSound);
+			iniFile.writeStrValue("ppClapSoundPath", servMgr->ppClapSoundPath.cstr());
+#endif
+		}
+
 		//JP-EX
 		iniFile.writeSection("Windows");
 		iniFile.writeBoolValue("getModulePath",servMgr->getModulePath);
@@ -1057,6 +1089,21 @@ void ServMgr::saveSettings(const char *fn)
 			iniFile.writeIntValue("guiRight", winPlace.rcNormalPosition.right);
 		}
 
+		{ //JP-MOD
+			iniFile.writeBoolValue("guiSimpleChannelList", servMgr->guiSimpleChannelList);
+			iniFile.writeBoolValue("guiSimpleConnectionList", servMgr->guiSimpleConnectionList);
+			iniFile.writeBoolValue("guiTopMost", servMgr->guiTopMost);
+
+			iniFile.writeIntValue("guiChanListDisplays", servMgr->guiChanListDisplays);
+			iniFile.writeIntValue("guiConnListDisplays", servMgr->guiConnListDisplays);
+
+			iniFile.writeBoolValue("guiTitleModify", servMgr->guiTitleModify);
+			iniFile.writeStrValue("guiTitleModifyNormal", servMgr->guiTitleModifyNormal.cstr());
+			iniFile.writeStrValue("guiTitleModifyMinimized", servMgr->guiTitleModifyMinimized.cstr());
+
+			iniFile.writeBoolValue("guiAntennaNotifyIcon", servMgr->guiAntennaNotifyIcon);
+		}
+
 		iniFile.writeBoolValue("topmostGui", servMgr->topmostGui);
 		iniFile.writeBoolValue("startWithGui", servMgr->startWithGui);
 #endif
@@ -1073,6 +1120,7 @@ void ServMgr::saveSettings(const char *fn)
 			iniFile.writeBoolValue("PeerCast",notifyMask&NT_PEERCAST);
 			iniFile.writeBoolValue("Broadcasters",notifyMask&NT_BROADCASTERS);
 			iniFile.writeBoolValue("TrackInfo",notifyMask&NT_TRACKINFO);
+			iniFile.writeBoolValue("Applause",notifyMask&NT_APPLAUSE); //JP-MOD
 		iniFile.writeLine("[End]");
 
 
@@ -1391,6 +1439,19 @@ void ServMgr::loadSettings(const char *fn)
 			else if (iniFile.isName("maxRelaysIndexTxt"))			// for PCRaw (relay)
 				servMgr->maxRelaysIndexTxt = iniFile.getIntValue();
 
+			//JP-MOD
+			else if (iniFile.isName("disableAutoBumpIfDirect"))
+				servMgr->disableAutoBumpIfDirect = iniFile.getIntValue();
+			else if (iniFile.isName("asxDetailedMode"))
+				servMgr->asxDetailedMode = iniFile.getIntValue();
+
+#ifdef WIN32
+			else if (iniFile.isName("ppClapSound"))
+				servMgr->ppClapSound = iniFile.getBoolValue();
+			else if (iniFile.isName("ppClapSoundPath"))
+				servMgr->ppClapSoundPath.set(iniFile.getStrValue(),String::T_ASCII);
+#endif
+
 			//JP-Windows
 			else if (iniFile.isName("getModulePath"))
 				servMgr->getModulePath = iniFile.getBoolValue();
@@ -1436,7 +1497,24 @@ void ServMgr::loadSettings(const char *fn)
 				if (servMgr->saveGuiPos){
 					guiFlg = true;
 				}
-			}
+			}else if (iniFile.isName("guiSimpleChannelList")) //JP-MOD
+				servMgr->guiSimpleChannelList = iniFile.getBoolValue();
+			else if (iniFile.isName("guiSimpleConnectionList")) //JP-MOD
+				servMgr->guiSimpleConnectionList = iniFile.getBoolValue();
+			else if (iniFile.isName("guiTopMost")) //JP-MOD
+				servMgr->guiTopMost = iniFile.getBoolValue();
+			else if (iniFile.isName("guiChanListDisplays")) //JP-MOD
+				servMgr->guiChanListDisplays = iniFile.getIntValue();
+			else if (iniFile.isName("guiConnListDisplays")) //JP-MOD
+				servMgr->guiConnListDisplays = iniFile.getIntValue();
+			else if (iniFile.isName("guiTitleModify")) //JP-MOD
+				servMgr->guiTitleModify = iniFile.getBoolValue();
+			else if (iniFile.isName("guiTitleModifyNormal")) //JP-MOD
+				servMgr->guiTitleModifyNormal.set(iniFile.getStrValue(),String::T_ASCII);
+			else if (iniFile.isName("guiTitleModifyMinimized")) //JP-MOD
+				servMgr->guiTitleModifyMinimized.set(iniFile.getStrValue(),String::T_ASCII);
+			else if (iniFile.isName("guiAntennaNotifyIcon")) //JP-MOD
+				servMgr->guiAntennaNotifyIcon = iniFile.getBoolValue();
 
 			else if (iniFile.isName("topmostGui"))
 			{
@@ -1470,6 +1548,7 @@ void ServMgr::loadSettings(const char *fn)
 
 				if (numFilters < (MAX_FILTERS-1))
 					numFilters++;
+				LOG_DEBUG("*** numFilters = %d", numFilters);
 			}
 			else if (iniFile.isName("[Notify]"))
 			{
@@ -1484,6 +1563,8 @@ void ServMgr::loadSettings(const char *fn)
 						notifyMask |= iniFile.getBoolValue()?NT_BROADCASTERS:0;
 					else if (iniFile.isName("TrackInfo"))
 						notifyMask |= iniFile.getBoolValue()?NT_TRACKINFO:0;
+					else if (iniFile.isName("Applause")) //JP-MOD
+						notifyMask |= iniFile.getBoolValue()?NT_APPLAUSE:0;
 				}
 
 			}
@@ -1583,6 +1664,7 @@ void ServMgr::loadSettings(const char *fn)
 	if (!numFilters)
 		setFilterDefaults();
 
+	LOG_DEBUG("numFilters = %d", numFilters);
 }
 
 // --------------------------------------------------
@@ -1825,11 +1907,13 @@ bool ServMgr::start()
 #else
 	priv = "";
 #endif
-#ifdef VERSION_EX
-	LOG_DEBUG("Peercast %s, %s %s",PCX_VERSTRING_EX,peercastApp->getClientTypeOS(),priv);
-#else
-	LOG_DEBUG("Peercast %s, %s %s",PCX_VERSTRING,peercastApp->getClientTypeOS(),priv);
-#endif
+	if (version_ex)
+	{
+		LOG_DEBUG("Peercast %s, %s %s",PCX_VERSTRING_EX,peercastApp->getClientTypeOS(),priv);
+	} else
+	{
+		LOG_DEBUG("Peercast %s, %s %s",PCX_VERSTRING,peercastApp->getClientTypeOS(),priv);
+	}
 
 	sessionID.toStr(idStr);
 	LOG_DEBUG("SessionID: %s",idStr);
@@ -1954,10 +2038,11 @@ int ServMgr::broadcastPushRequest(ChanHit &hit, Host &to, GnuID &chanID, Servent
 		atom.writeBytes(PCP_BCST_FROM,servMgr->sessionID.id,16);
 		atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
 		atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
-#ifdef VERSION_EX
-		atom.writeBytes(PCP_BCST_VERSION_EX_PREFIX,PCP_CLIENT_VERSION_EX_PREFIX,2);
-		atom.writeShort(PCP_BCST_VERSION_EX_NUMBER,PCP_CLIENT_VERSION_EX_NUMBER);
-#endif
+		if (version_ex)
+		{
+			atom.writeBytes(PCP_BCST_VERSION_EX_PREFIX,PCP_CLIENT_VERSION_EX_PREFIX,2);
+			atom.writeShort(PCP_BCST_VERSION_EX_NUMBER,PCP_CLIENT_VERSION_EX_NUMBER);
+		}
 		atom.writeParent(PCP_PUSH,3);
 			atom.writeInt(PCP_PUSH_IP,to.ip);
 			atom.writeShort(PCP_PUSH_PORT,to.port);
@@ -1996,22 +2081,25 @@ void ServMgr::broadcastRootSettings(bool getUpdate)
 		ChanPacket pack;
 		MemoryStream mem(pack.data,sizeof(pack.data));
 		AtomStream atom(mem);
-#ifndef VERSION_EX
+		if (version_ex == 0)
+		{
 			atom.writeParent(PCP_BCST,7);
-#else
+		} else
+		{
 			atom.writeParent(PCP_BCST,9);
-#endif
-			atom.writeChar(PCP_BCST_GROUP,PCP_BCST_GROUP_TRACKERS);
-			atom.writeChar(PCP_BCST_HOPS,0);
-			atom.writeChar(PCP_BCST_TTL,7);
-			atom.writeBytes(PCP_BCST_FROM,sessionID.id,16);
-			atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
-			atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
-#ifdef VERSION_EX
+		}
+		atom.writeChar(PCP_BCST_GROUP,PCP_BCST_GROUP_TRACKERS);
+		atom.writeChar(PCP_BCST_HOPS,0);
+		atom.writeChar(PCP_BCST_TTL,7);
+		atom.writeBytes(PCP_BCST_FROM,sessionID.id,16);
+		atom.writeInt(PCP_BCST_VERSION,PCP_CLIENT_VERSION);
+		atom.writeInt(PCP_BCST_VERSION_VP,PCP_CLIENT_VERSION_VP);
+		if (version_ex)
+		{
 			atom.writeBytes(PCP_BCST_VERSION_EX_PREFIX,PCP_CLIENT_VERSION_EX_PREFIX,2);
 			atom.writeShort(PCP_BCST_VERSION_EX_NUMBER,PCP_CLIENT_VERSION_EX_NUMBER);
-#endif
-			writeRootAtoms(atom,getUpdate);
+		}
+		writeRootAtoms(atom,getUpdate);
 
 		mem.len = mem.pos;
 		mem.rewind();
@@ -2318,11 +2406,13 @@ bool ServMgr::writeVariable(Stream &out, const String &var)
 	String str;
 
 	if (var == "version")
-#ifdef VERSION_EX
-		strcpy(buf,PCX_VERSTRING_EX);
-#else
-		strcpy(buf,PCX_VERSTRING);
-#endif
+		if (version_ex)
+		{
+			strcpy(buf,PCX_VERSTRING_EX);
+		} else
+		{
+			strcpy(buf,PCX_VERSTRING);
+		}
 	else if (var == "uptime")
 	{
 		str.setFromStopwatch(getUptime());
@@ -2352,8 +2442,10 @@ bool ServMgr::writeVariable(Stream &out, const String &var)
 		sprintf(buf,"%d",getFirewall()==FW_UNKNOWN?0:1);
 	else if (var == "rootMsg")
 		strcpy(buf,rootMsg);
-	else if (var == "isRoot")
+	else if (var == "isRoot"){
+		LOG_DEBUG("isRoot = %d", isRoot);
 		sprintf(buf,"%d",isRoot?1:0);
+	}
 	else if (var == "isPrivate")
 		sprintf(buf,"%d",(PCP_BROADCAST_FLAGS&1)?1:0);
 	else if (var == "forceYP")
@@ -2370,8 +2462,10 @@ bool ServMgr::writeVariable(Stream &out, const String &var)
 		sprintf(buf,"%d",maxControl);
 	else if (var == "maxServIn")
 		sprintf(buf,"%d",maxServIn);
-	else if (var == "numFilters")
+	else if (var == "numFilters") {
+		LOG_DEBUG("*-* numFilters = %d", numFilters);
 		sprintf(buf,"%d",numFilters+1);
+	}
 	else if (var == "maxPGNUIn")
 		sprintf(buf,"%d",maxGnuIncoming);
 	else if (var == "minPGNUIn")
@@ -2423,6 +2517,19 @@ bool ServMgr::writeVariable(Stream &out, const String &var)
 		strcpy(buf, (allowConnectPCST == 1) ? "1":"0");
 	else if (var == "enableGetName")
 		strcpy(buf, (enableGetName == 1)? "1":"0");
+
+	//JP-MOD
+	else if (var == "disableAutoBumpIfDirect")
+		strcpy(buf, (disableAutoBumpIfDirect == 1) ? "1":"0");
+	else if (var.startsWith("asxDetailedMode"))
+	{
+		if (var == "asxDetailedMode.0")
+			strcpy(buf, (asxDetailedMode == 0) ? "1":"0");
+		else if (var == "asxDetailedMode.1")
+			strcpy(buf, (asxDetailedMode == 1) ? "1":"0");
+		else if (var == "asxDetailedMode.2")
+			strcpy(buf, (asxDetailedMode == 2) ? "1":"0");
+	}
 
 	// VP-EX
 	else if (var == "ypAddress2")

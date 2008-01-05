@@ -197,7 +197,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	hInst = hInstance;
 
-	version_ex = 0; // PP版拡張機能を無効に
+	version_ex = 1; // PP版拡張機能を無効に←大嘘。バージョン表記をEXに
 
 	iniFileName.set(".\\peercast.ini");
 

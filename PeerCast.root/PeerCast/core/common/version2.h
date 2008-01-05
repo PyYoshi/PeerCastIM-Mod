@@ -39,7 +39,7 @@ static const char *PCX_AGENTJP 		= "PeerCast/0.1218-J";
 static const char *PCX_AGENTVP		= "PeerCast/0.1218(VP0027)";
 static const char *PCX_VERSTRING	= "v0.1218(VP0027)";
 
-extern int version_ex; // PP版拡張機能有効化フラグ(たぶん)
+extern int version_ex; // PP版拡張機能有効化フラグ(たぶん)←大嘘[VERSION_EX有効化フラグ]
 
 #if 1 /* for VP extend version */
 //#define VERSION_EX 1

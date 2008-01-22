@@ -2762,7 +2762,7 @@ int ServMgr::kickUnrelayableHost(GnuID &chid, ChanHit &sendhit)
 			Host h = s->getHost();
 
 			ChanHit hit = s->serventHit;
-			if (!hit.relay && hit.numRelays == 0)
+			if (!hit.relay && hit.numRelays == 0 || hit.firewalled)
 			{
 				char hostName[256];
 				h.toStr(hostName);

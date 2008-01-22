@@ -249,13 +249,16 @@ public:
 	int		getTotalRelays();
 	int		getTotalFirewalled();
 
+	unsigned int getSeq();
+
 	bool	used;
 	ChanInfo	info;
 	ChanHit	*hit;
 	unsigned int lastHitTime;
 	ChanHitList *next;
 
-
+	WLock seqLock;
+	unsigned int riSequence;
 };
 // ----------------------------------
 class ChanHitSearch

@@ -187,6 +187,7 @@ public:
 
 	int		numPending() {return writePos-readPos;}
 
+	unsigned int getFirstDataPos();
 	unsigned int	getLatestPos();
 	unsigned int	getOldestPos();
 	unsigned int	findOldestPos(unsigned int);

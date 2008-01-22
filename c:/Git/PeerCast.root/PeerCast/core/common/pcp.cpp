@@ -547,7 +547,7 @@ void PCPStream::readHostAtoms(AtomStream &atom, int numc, BroadcastState &bcs, C
 		if (sv && sv->getHost().ip == hit.host.ip){
 //			LOG_DEBUG("set servent's waitPort = %d", hit.host.port);
 			sv->waitPort = hit.host.port;
-			hit.lastSendSeq = sv->serventHit.lastSendSeq;
+			//hit.lastSendSeq = sv->serventHit.lastSendSeq;
 			sv->serventHit = hit;
 		}
 	}
@@ -761,7 +761,7 @@ int PCPStream::readBroadcastAtoms(AtomStream &atom,int numc,BroadcastState &bcs)
 				((hit.numHops == 1 && (hit.rhost[0].ip == sv->getHost().ip
 				&& hit.uphost.ip == servMgr->serverHost.ip && hit.uphost.port == servMgr->serverHost.port)
 				|| (hit.rhost[1].localIP() && hit.rhost[1].ip == sv->getHost().ip))
-				|| chanMgr->findParentHit(hit)))
+				|| (hit.numHops != 1 && chanMgr->findParentHit(hit))))
 			{
 				int oldPos = pmem.pos;
 				hit.writeAtoms(patom, hit.chanID);

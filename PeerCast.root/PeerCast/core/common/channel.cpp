@@ -608,6 +608,10 @@ void PeercastSource::stream(Channel *ch)
 	bool next_yp = false;
 	bool tracker_check = (ch->trackerHit.host.ip != 0);
 	int connFailCnt = 0;
+	int keepDownstreamTime = 7;
+
+	if (isIndexTxt(&ch->info))
+		keepDownstreamTime = 30;
 
 	ch->lastStopTime = 0;
 	ch->bumped = false;
@@ -720,7 +724,9 @@ void PeercastSource::stream(Channel *ch)
 
 			chanMgr->hitlistlock.off();
 
-			if (servMgr->keepDownstreams && ch->lastStopTime && ch->lastStopTime < sys->getTime() - 7) {
+			if (servMgr->keepDownstreams && ch->lastStopTime
+				&& ch->lastStopTime < sys->getTime() - keepDownstreamTime)
+			{
 				ch->lastStopTime = 0;
 				LOG_DEBUG("------------ disconnect all downstreams");
 				ChanPacket pack;
@@ -902,7 +908,7 @@ yp0:
 				ch->trackerHit.lastContact = ctime - 30 + (rand() % 30);
 
 			// broadcast source host
-			if (!error && ch->sourceHost.host.ip) { // if closed normally
+			if (!got503 && !error && ch->sourceHost.host.ip) { // if closed normally
 				ChanPacket pack;
 				MemoryStream mem(pack.data,sizeof(pack.data));
 				AtomStream atom(mem);
@@ -916,7 +922,7 @@ yp0:
 			}
 
 			// broadcast quit to any connected downstream servents
-			if (!servMgr->keepDownstreams || (ch->sourceHost.tracker && !got503) || !error) {
+			if (!servMgr->keepDownstreams || !got503 && (ch->sourceHost.tracker || !error)) {
 				ChanPacket pack;
 				MemoryStream mem(pack.data,sizeof(pack.data));
 				AtomStream atom(mem);
@@ -1385,6 +1391,17 @@ bool ChannelStream::getStatus(Channel *ch,ChanPacket &pack)
 {
 	unsigned int ctime = sys->getTime();
 
+	if ((ch->isPlaying() == isPlaying)){
+		if ((ctime-lastUpdate) < 10){
+			return false;
+		}
+
+		if ((ctime-lastCheckTime) < 5){
+			return false;
+		}
+		lastCheckTime = ctime;
+	}
+
 	ChanHitList *chl = chanMgr->findHitListByID(ch->info.id);
 
 	if (!chl)
@@ -1418,17 +1435,6 @@ bool ChannelStream::getStatus(Channel *ch,ChanPacket &pack)
 
 	int newLocalListeners = ch->localListeners();
 	int newLocalRelays = ch->localRelays();
-
-	if ((ch->isPlaying() == isPlaying)){
-		if ((ctime-lastUpdate) < 10){
-			return false;
-		}
-
-		if ((ctime-lastCheckTime) < 10){
-			return false;
-		}
-		lastCheckTime = ctime;
-	}
 
 	unsigned int oldp = ch->rawData.getOldestPos();
 	unsigned int newp = ch->rawData.getLatestPos();
@@ -1611,9 +1617,11 @@ int Channel::readStream(Stream &in,ChannelStream *source)
 						setStatus(Channel::S_RECEIVING);
 						bumped = false;
 					}
-					source->updateStatus(this);
+					//source->updateStatus(this);
 				}
 			}
+			if (rawData.lastWriteTime > 0 || rawData.lastSkipTime > 0)
+				source->updateStatus(this);
 
 			unsigned int t = sys->getTime();
 			if (t != ptime) {
@@ -1886,9 +1894,11 @@ bool ChanPacketBuffer::findPacket(unsigned int spos, ChanPacket &pack)
 	lock.on();
 
 	unsigned int bound = packets[0].len * ChanPacketBuffer::MAX_PACKETS * 2; // max packets to wait
-	unsigned int fpos = getStreamPos(firstPos);
-	unsigned int lpos = getStreamPos(lastPos);
-	if (spos < fpos && (fpos < lpos || spos > lpos + bound))
+	unsigned int fpos = getFirstDataPos();
+	unsigned int lpos = getLatestPos();
+	if ((spos < fpos && fpos <= lpos && spos != getStreamPosEnd(lastPos)) // --s-----f---l--
+		|| (spos < fpos && lpos < fpos && spos > lpos + bound)            // -l-------s--f--
+		|| (spos > lpos && lpos >= fpos && spos - lpos > bound))          // --f---l------s-
 		spos = fpos;
 
 
@@ -1915,6 +1925,18 @@ unsigned int	ChanPacketBuffer::getLatestPos()
 	else
 		return getStreamPos(lastPos);
 		
+}
+// -----------------------------------
+unsigned int	ChanPacketBuffer::getFirstDataPos()
+{
+	if (!writePos)
+		return 0;
+	for(unsigned int i=firstPos; i<=lastPos; i++)
+	{
+		if (packets[i%MAX_PACKETS].type == ChanPacket::T_DATA)
+			return packets[i%MAX_PACKETS].pos;
+	}
+	return 0;
 }
 // -----------------------------------
 unsigned int	ChanPacketBuffer::getOldestPos()
@@ -3897,6 +3919,15 @@ int ChanHitList::pickSourceHits(ChanHitSearch &chs)
 	return 0;
 }
 
+// -----------------------------------
+unsigned int ChanHitList::getSeq()
+{
+	unsigned int seq;
+	seqLock.on();
+	seq = riSequence = (riSequence + 1) & 0xffffff;
+	seqLock.off();
+	return seq;
+}
 
 // -----------------------------------
 const char *ChanInfo::getTypeStr(TYPE t)
@@ -4703,40 +4734,18 @@ int ChanHitSearch::getRelayHost(Host host1, Host host2, GnuID exID, ChanHitList 
 	int index = 0;
 	int prob;
 	int rnd;
-	static int base = 0x400;
+	int base = 0x400;
 	ChanHit tmpHit[MAX_RESULTS];
-	static WLock seqLock;
-	static unsigned int riSequence = 0;
 
 	//srand(seed);
 	//seed += 11;
 
-	unsigned int seq;
-	seqLock.on();
-	seq = riSequence++;
-	riSequence &= 0xffffff;
-	seqLock.off();
-
-	Servent *s = servMgr->servents;
-	while (s) {
-		if (s->serventHit.rhost[0].port && s->type == Servent::T_RELAY
-			&& s->chanID.isSame(chl->info.id)) {
-				int i = index % MAX_RESULTS;
-				if (index < MAX_RESULTS
-					|| tmpHit[i].lastSendSeq > s->serventHit.lastSendSeq) {
-						s->serventHit.lastSendSeq = seq;
-						tmpHit[i] = s->serventHit;
-						tmpHit[i].host = s->serventHit.rhost[0];
-						index++;
-				}
-		}
-		s = s->next;
-	}
+	unsigned int seq = chl->getSeq();
 
 	ChanHit *hit = chl->hit;
 
 	while(hit){
-		if (hit->host.ip && !hit->dead){
+		if (hit->rhost[0].ip && !hit->dead) {
 			if (
 				(!exID.isSame(hit->sessionID))
 //			&&	(hit->relay)
@@ -4764,7 +4773,6 @@ int ChanHitSearch::getRelayHost(Host host1, Host host2, GnuID exID, ChanHitList 
 				//rnd = (float)rand() / (float)RAND_MAX;
 				rnd = rand() % base;
 				if (hit->numHops == 1){
-#if 0
 					if (tmpHit[index % MAX_RESULTS].numHops == 1){
 						if (rnd < prob){
 							tmpHit[index % MAX_RESULTS] = *hit;
@@ -4776,9 +4784,8 @@ int ChanHitSearch::getRelayHost(Host host1, Host host2, GnuID exID, ChanHitList 
 						tmpHit[index % MAX_RESULTS].host = hit->rhost[0];
 						index++;
 					}
-#endif
 				} else {
-					if ((tmpHit[index % MAX_RESULTS].numHops != 1) && (rnd < prob) || rnd == 0){
+					if ((tmpHit[index % MAX_RESULTS].numHops != 1) && (rnd < prob)){
 						tmpHit[index % MAX_RESULTS] = *hit;
 						tmpHit[index % MAX_RESULTS].host = hit->rhost[0];
 						index++;
@@ -4822,15 +4829,9 @@ int ChanHitSearch::getRelayHost(Host host1, Host host2, GnuID exID, ChanHitList 
 		best[use[i]] = tmpHit[i];
 	}*/
 
-	int use[MAX_RESULTS];
-	int i;
-	for (i = 0; i < cnt; i++) {
-		use[i] = (i + seq) % cnt;
-	}
-
-	for (i = 0; i < cnt; i++){
+	for (int i = 0; i < cnt; i++){
 //		LOG_DEBUG("%d", use[i]);
-		best[use[i]] = tmpHit[i];
+		best[(i + seq) % cnt] = tmpHit[i];
 	}
 //	for (i = 0; i < cnt; i++){
 //		char tmp[50];

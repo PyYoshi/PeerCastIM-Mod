@@ -878,20 +878,24 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 		}
 
 		chanID = chanInfo.id;
-		serventHit.rhost[0].ip = getHost().ip;
-		serventHit.rhost[0].port = listenPort;
-		serventHit.host = serventHit.rhost[0];
+		serventHit.host.ip = getHost().ip;
+		serventHit.host.port = listenPort;
+		if (serventHit.host.globalIP())
+			serventHit.rhost[0] = serventHit.host;
+		else
+			serventHit.rhost[1] = serventHit.host;
 		serventHit.chanID = chanID;
 
 		canStreamLock.on();
  		chanReady = canStream(ch);
-		if (/*0 && */!chanReady)
+		if (0 && !chanReady && ch->isPlaying())
 		{
-			if (servMgr->numStreams(chanID, Servent::T_RELAY, false) == 0)
+			if (ch->info.getUptime() > 60
+				&& servMgr->numStreams(chanID, Servent::T_RELAY, false) == 0)
 			{
 				sourceHit = &ch->sourceHost;  // send source host info
 
-				if (listenPort && ch->info.getUptime() > 60)  // if stable
+				if (listenPort)
 				{
 					// connect "this" host later
 					chanMgr->addHit(serventHit);
@@ -1054,11 +1058,18 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 
 			int error = PCP_ERROR_QUIT+PCP_ERROR_UNAVAILABLE;
 
+			if (sourceHit) {
+				sourceHit->writeAtoms(atom2,chanInfo.id);	
+				char tmp[50];
+				sourceHit->host.toStr(tmp);
+				LOG_DEBUG("relay info(sourceHit): %s", tmp);
+			}
+
 			chanMgr->hitlistlock.on();
 
 			chl = chanMgr->findHitList(chanInfo);
 
-			if (chl)
+			if (chl && !sourceHit)
 			{
 				ChanHit best;
 				
@@ -1117,25 +1128,18 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 					cnt++;
 				}
 
-				if (sourceHit) {
-					char tmp[50];
-					sourceHit->writeAtoms(atom2, chanInfo.id);
-					sourceHit->host.toStr(tmp);
-					LOG_DEBUG("relay info(sourceHit): %s", tmp);
-					best.host.ip = sourceHit->host.ip;
-				}
-
 				if (!best.host.ip){
 					char tmp[50];
 //					chanMgr->hitlistlock.on();
-					int cnt = chs.getRelayHost(servMgr->serverHost, rhost, remoteID, chl);
+					int rhcnt = chs.getRelayHost(servMgr->serverHost, rhost, remoteID, chl);
 //					chanMgr->hitlistlock.off();
-					for (int i = 0; i < cnt; i++){
+					for (int i = 0; i < rhcnt; i++){
 						chs.best[i].writeAtoms(atom2, chanInfo.id);
 						chs.best[i].host.toStr(tmp);
 						LOG_DEBUG("relay info: %s hops = %d", tmp, chs.best[i].numHops);
 						best.host.ip = chs.best[i].host.ip;
 					}
+					cnt += rhcnt;
 				}
 
 				if (cnt)
@@ -1352,6 +1356,13 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 		{
 			handshakeIncomingPCP(atom,rhost,remoteID,agent);
 			atom.writeInt(PCP_OK,0);
+			if (rhost.globalIP())
+				serventHit.rhost[0] = rhost;
+			else
+				serventHit.rhost[1] = rhost;
+			serventHit.sessionID = remoteID;
+			serventHit.numHops = 1;
+			chanMgr->addHit(serventHit);
 		}
 
 	}

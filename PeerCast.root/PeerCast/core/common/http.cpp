@@ -107,7 +107,7 @@ int	HTTP::getArgInt()
 		return 0;
 }
 //-----------------------------------------
-void HTTP::getAuthUserPass(char *user, char *pass)
+void HTTP::getAuthUserPass(char *user, char *pass, size_t szUser, size_t szPass)
 {
 	if (arg)
 	{
@@ -125,9 +125,15 @@ void HTTP::getAuthUserPass(char *user, char *pass)
 			{
 				*s = 0;
 				if (user)
-					strcpy(user,str.cstr());
+				{
+					strncpy(user, str.cstr(), szUser);
+					user[szUser-1] = '\0';
+				}
 				if (pass)
-					strcpy(pass,s+1);
+				{
+					strncpy(pass, s+1, szPass);
+					pass[szPass-1] = '\0';
+				}
 			}			
 		}
 	}

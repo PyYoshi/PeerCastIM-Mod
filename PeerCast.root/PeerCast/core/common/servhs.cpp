@@ -726,7 +726,7 @@ bool Servent::handshakeAuth(HTTP &http,const char *args,bool local)
 		{
 			case ServMgr::AUTH_HTTPBASIC:
 				if (http.isHeader("Authorization"))
-					http.getAuthUserPass(user,pass);
+					http.getAuthUserPass(user, pass, sizeof(user), sizeof(pass));
 				break;
 			case ServMgr::AUTH_COOKIE:
 				if (http.isHeader("Cookie"))
@@ -1708,7 +1708,7 @@ void Servent::handshakeXML()
 
 }
 // -----------------------------------
-void Servent::readICYHeader(HTTP &http, ChanInfo &info, char *pwd)
+void Servent::readICYHeader(HTTP &http, ChanInfo &info, char *pwd, size_t szPwd)
 {
 	char *arg = http.getArgStr();
 	if (!arg) return;
@@ -1733,7 +1733,7 @@ void Servent::readICYHeader(HTTP &http, ChanInfo &info, char *pwd)
 		info.desc.convertTo(String::T_UNICODE);
 
 	}else if (http.isHeader("Authorization"))
-		http.getAuthUserPass(NULL,pwd);
+		http.getAuthUserPass(NULL, pwd, 0, sizeof(pwd));
 	else if (http.isHeader(PCX_HS_CHANNELID))
 		info.id.fromStr(arg);
 	else if (http.isHeader("ice-password"))
@@ -1804,7 +1804,7 @@ void Servent::handshakeICY(Channel::SRC_TYPE type, bool isHTTP)
 	while (http.nextHeader())
 	{
 		LOG_DEBUG("ICY %s",http.cmdLine);
-		readICYHeader(http,info,loginPassword.cstr());
+		readICYHeader(http, info, loginPassword.cstr(), loginPassword.MAX_LEN);
 	}
 
 

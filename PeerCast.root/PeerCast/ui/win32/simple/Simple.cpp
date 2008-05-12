@@ -294,7 +294,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			HWND oldWin = FindWindow(szWindowClass,NULL);
 			if (oldWin)
 			{
-						SendMessage(oldWin,WM_SHOWGUI,0,0);
+						//SendMessage(oldWin,WM_SHOWGUI,0,0);
 				if (killMe)
 				{
 					SendMessage(oldWin,WM_DESTROY,0,0);

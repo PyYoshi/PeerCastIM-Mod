@@ -19,6 +19,7 @@
 #define IDR_VERMENU                     133
 #define IDD_CHANINFO                    136
 #define IDR_LTRAYMENU                   137
+#define IDD_TRAFFIC                     143
 #define IDC_LIST1                       1000
 #define IDC_BUTTON7                     1001
 #define IDC_ABOUTVER                    1002
@@ -52,8 +53,9 @@
 #define IDC_BUTTON5                     1020
 #define IDC_EDIT_MAXRELAYS              1020
 #define IDC_BUTTON6                     1021
-#define IDC_APPLY_MAX_RELAYS            1021
 #define IDC_APPLY_MAXRELAYS             1021
+#define IDC_STATIC_UP                   1023
+#define IDC_STATIC_DOWN                 1024
 #define IDC_EDIT3                       1025
 #define IDC_EDIT5                       1027
 #define IDC_LOGDEBUG                    1037
@@ -104,15 +106,17 @@
 #define ID_POPUP_TOPMOST                32828
 #define ID_32829                        32829
 #define ID_POPUP_START_WITH_GUI         32830
+#define ID_POPUP_32831                  32831
+#define ID_POPUP_TRAFFIC                32832
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        143
-#define _APS_NEXT_COMMAND_VALUE         32831
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_RESOURCE_VALUE        144
+#define _APS_NEXT_COMMAND_VALUE         32833
+#define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

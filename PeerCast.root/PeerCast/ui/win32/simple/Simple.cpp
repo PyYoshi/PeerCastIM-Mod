@@ -32,6 +32,8 @@
 #include "version2.h"
 #include "gdiplus.h"
 #include "time.h"
+#include "stats.h"
+#include "sys.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
@@ -75,8 +77,13 @@ bool chanInfoIsRelayed;
 String exePath;
 ULONG_PTR gdiplusToken;
 
+extern Stats stats;
+ThreadInfo trafficDlgThread;
+HWND trafficDlg = NULL;
+
 // プロトタイプ宣言
 void createGUI(HWND);
+LRESULT CALLBACK TrafficDlgProc(HWND, UINT, WPARAM, LPARAM);
 
 // ---------------------------------
 Sys * APICALL MyPeercastInst::createSys()
@@ -1268,6 +1275,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					peercastInst->saveSettings();
 					break;
 
+				case ID_POPUP_TRAFFIC:
+					// トラフィックモニタ起動
+					if (winDistinctionNT)
+						DialogBox(hInst, (LPCTSTR)IDD_TRAFFIC, hWnd, (DLGPROC)TrafficDlgProc);
+					else
+					{
+						HWND WKDLG; //JP-Patch
+						WKDLG = CreateDialog(hInst, (LPCTSTR)IDD_CHANINFO, hWnd, (DLGPROC)TrafficDlgProc); //JP-Patch
+						ShowWindow(WKDLG,SW_SHOWNORMAL); //JP-Patch
+					}
+					break;
+
 				case ID_POPUP_EXIT_CONFIRM:
 				case IDM_EXIT:
 				   DestroyWindow(hWnd);
@@ -1495,4 +1514,103 @@ LRESULT CALLBACK ChanInfoProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 
 	}
     return FALSE;
+}
+
+// control thread (Traffic dialog)
+THREAD_PROC trafficDlgUpdate(ThreadInfo *thread)
+{
+	thread->finish = false;
+
+	while (trafficDlg && thread->active)
+	{
+		SendMessage(trafficDlg, WM_UPDATETRAFFIC, 0, 0);
+		Sleep(1000);
+	}
+
+	thread->finish = true;
+
+	return 0;
+}
+
+// Dialog procedure (Traffic dialog)
+LRESULT CALLBACK TrafficDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		// 既に開いてる
+		if (trafficDlg || trafficDlgThread.active)
+		{
+			if (winDistinctionNT)
+				EndDialog(hDlg, 0);
+			else
+				DestroyWindow(hDlg);
+			return FALSE;
+		}
+
+		trafficDlg = hDlg;
+		trafficDlgThread.func = trafficDlgUpdate;
+		if (!sys->startThread(&trafficDlgThread)){
+			MessageBox(NULL,"Unable to start GUI","PeerCast",MB_OK|MB_ICONERROR);
+			PostMessage(hDlg,WM_DESTROY,0,0);
+		}
+
+		break;
+
+	case WM_UPDATETRAFFIC:
+		{
+			enum unitSymbol { B, KB, MB, GB };
+			const unsigned long int unit[] = { 1, 1024, 1024*1024, 1024*1024*1024 };
+			char suffix[][3] = { "B", "KB", "MB", "GB" };
+			const int bufsize = 60;
+			char szUp[bufsize], szDown[bufsize];
+			unsigned int totalDown = stats.getCurrent(Stats::BYTESIN) - stats.getCurrent(Stats::LOCALBYTESIN);
+			unsigned int totalUp = stats.getCurrent(Stats::BYTESOUT) - stats.getCurrent(Stats::LOCALBYTESOUT);
+
+			// up
+			for (int i=GB; i>0; --i)
+			{
+				if (totalUp >= unit[i])
+				{
+					sprintf_s<bufsize>(szUp, "%.2f%s", (double)totalUp/unit[i], suffix[i]);
+					break;
+				}
+
+				if (i == 1)
+					sprintf_s<bufsize>(szUp, "%d%s", totalUp, suffix[0]);
+			}
+
+			// down
+			for (int i=GB; i>0; --i)
+			{
+				if (totalDown >= unit[i])
+				{
+					sprintf_s<bufsize>(szDown, "%.2f%s", (double)totalDown/unit[i], suffix[i]);
+					break;
+				}
+
+				if (i == 1)
+					sprintf_s<bufsize>(szDown, "%d%s", totalDown, suffix[0]);
+			}
+
+			SetDlgItemText(hDlg, IDC_STATIC_UP, szUp);
+			SetDlgItemText(hDlg, IDC_STATIC_DOWN, szDown);
+		}
+		break;
+
+	case WM_CLOSE:
+		trafficDlg = NULL;
+		trafficDlgThread.active = false;
+		if (winDistinctionNT)
+			EndDialog(hDlg, 0);
+		else
+			DestroyWindow(hDlg);
+
+		break;
+
+	case WM_DESTROY:
+		break;
+	}
+
+	return FALSE;
 }

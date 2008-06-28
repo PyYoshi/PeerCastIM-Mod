@@ -1564,8 +1564,8 @@ LRESULT CALLBACK TrafficDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 			char suffix[][3] = { "B", "KB", "MB", "GB" };
 			const int bufsize = 60;
 			char szUp[bufsize], szDown[bufsize];
-			unsigned int totalDown = stats.getCurrent(Stats::BYTESIN) - stats.getCurrent(Stats::LOCALBYTESIN);
-			unsigned int totalUp = stats.getCurrent(Stats::BYTESOUT) - stats.getCurrent(Stats::LOCALBYTESOUT);
+			unsigned long long int totalDown = stats.getCurrent(Stats::BYTESIN) - stats.getCurrent(Stats::LOCALBYTESIN);
+			unsigned long long int totalUp = stats.getCurrent(Stats::BYTESOUT) - stats.getCurrent(Stats::LOCALBYTESOUT);
 
 			// up
 			for (int i=GB; i>0; --i)

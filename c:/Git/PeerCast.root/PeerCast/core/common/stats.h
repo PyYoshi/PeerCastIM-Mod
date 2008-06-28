@@ -74,9 +74,10 @@ public:
 	void	clear(STAT s) {current[s]=0;}
 	void	add(STAT s,int n=1) {current[s]+=n;}
 	unsigned int getPerSecond(STAT s) {return perSec[s];}
-	unsigned int getCurrent(STAT s) {return current[s];}
+	unsigned long long int getCurrent(STAT s) {return current[s];}
 
-	unsigned int	current[Stats::MAX],last[Stats::MAX],perSec[Stats::MAX];
+	unsigned long long int	current[Stats::MAX],last[Stats::MAX];
+	unsigned int perSec[Stats::MAX];
 	unsigned int	lastUpdate;
 };
 

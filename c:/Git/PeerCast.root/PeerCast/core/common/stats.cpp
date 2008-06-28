@@ -52,7 +52,7 @@ void	Stats::update()
 		
 		for(int i=0; i<Stats::MAX; i++)
 		{
-			perSec[i] = (current[i]-last[i])/diff;
+			perSec[i] = (unsigned)(current[i]-last[i])/diff;
 			last[i] = current[i];
 		}
 

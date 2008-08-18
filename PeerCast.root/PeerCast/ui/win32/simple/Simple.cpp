@@ -80,6 +80,7 @@ ULONG_PTR gdiplusToken;
 extern Stats stats;
 ThreadInfo trafficDlgThread;
 HWND trafficDlg = NULL;
+FileStream fs;
 
 // プロトタイプ宣言
 void createGUI(HWND);
@@ -178,20 +179,19 @@ HWND chWnd=NULL;
 void LOG2(const char *fmt,...)
 {
 	va_list ap;
-  	va_start(ap, fmt);
+	va_start(ap, fmt);
 	char str[4096];
 	vsprintf(str,fmt,ap);
 	OutputDebugString(str);
-   	va_end(ap);	
+	va_end(ap);	
 }
 
 
-
-// ---------------------------------------
-int APIENTRY WinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
-                     int       nCmdShow)
+// --------------------------------------------------
+int WinMainDummy(HINSTANCE hInstance,
+				 HINSTANCE hPrevInstance,
+				 LPSTR lpCmdLine,
+				 int nCmdShow)
 {
 #ifdef _DEBUG
 	// memory leak check
@@ -270,7 +270,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			*end = 0;
 	}
 
-	
+
 	if (strnicmp(tmpURL,"peercast://",11)==0)
 	{
 		if (strnicmp(tmpURL+11,"pls/",4)==0)
@@ -295,13 +295,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	if (!allowMulti)
 	{
 		HANDLE mutex = CreateMutex(NULL,TRUE,szWindowClass);
-		
+
 		if (GetLastError() == ERROR_ALREADY_EXISTS)
 		{
 			HWND oldWin = FindWindow(szWindowClass,NULL);
 			if (oldWin)
 			{
-						//SendMessage(oldWin,WM_SHOWGUI,0,0);
+				//SendMessage(oldWin,WM_SHOWGUI,0,0);
 				if (killMe)
 				{
 					SendMessage(oldWin,WM_DESTROY,0,0);
@@ -326,7 +326,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	if (killMe)
 		return 0;
-	
+
 	MyRegisterClass(hInstance);
 	MyRegisterClass2(hInstance);
 
@@ -390,7 +390,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		}
 	}
 
-    Shell_NotifyIcon(NIM_DELETE, (NOTIFYICONDATA*)&trayIcon);
+	Shell_NotifyIcon(NIM_DELETE, (NOTIFYICONDATA*)&trayIcon);
 
 	peercastInst->saveSettings();
 	peercastInst->quit();
@@ -398,6 +398,242 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	Gdiplus::GdiplusShutdown(gdiplusToken);
 
 	return msg.wParam;
+}
+
+
+// ---------------------------------------
+int APIENTRY WinMain(HINSTANCE hInstance,
+					 HINSTANCE hPrevInstance,
+					 LPSTR     lpCmdLine,
+					 int       nCmdShow)
+{
+	// SEH handling
+	__try
+	{
+#if 0
+#ifdef _DEBUG
+		// memory leak check
+		::_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+		char tmpURL[8192];
+		tmpURL[0]=0;
+		char *chanURL=NULL;
+
+		hInst = hInstance;
+
+		version_ex = 1; // PP版拡張機能を無効に←大嘘。バージョン表記をEXに
+
+		iniFileName.set(".\\peercast.ini");
+
+		WIN32_FIND_DATA fd; //JP-EX
+		HANDLE hFind; //JP-EX
+
+		OSVERSIONINFO osInfo; //JP-EX
+		osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO); //JP-EX
+		GetVersionEx(&osInfo);
+		if (osInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
+			winDistinctionNT = true;
+		else
+			winDistinctionNT = false;
+
+		// off by default now
+		showGUI = false;
+
+		if (strlen(lpCmdLine) > 0)
+		{
+			char *p;
+			if ((p = strstr(lpCmdLine,"-inifile"))!=NULL) 
+				iniFileName.setFromString(p+8);
+
+			if (strstr(lpCmdLine,"-zen")) 
+				showGUI = false;
+
+			if (strstr(lpCmdLine,"-multi")) 
+				allowMulti = true;
+
+			if (strstr(lpCmdLine,"-kill")) 
+				killMe = true;
+
+			if ((p = strstr(lpCmdLine,"-url"))!=NULL)
+			{
+				p+=4;
+				while (*p)
+				{
+					if (*p=='"')
+					{
+						p++;
+						break;
+					}				
+					if (*p != ' ')
+						break;
+					p++;
+				}
+				if (*p)
+					strncpy(tmpURL,p,sizeof(tmpURL)-1);
+			}
+		}
+
+		// get current path
+		{
+			exePath = iniFileName;
+			char *s = exePath.cstr();
+			char *end = NULL;
+			while (*s)
+			{
+				if (*s++ == '\\')
+					end = s;
+			}
+			if (end)
+				*end = 0;
+		}
+
+
+		if (strnicmp(tmpURL,"peercast://",11)==0)
+		{
+			if (strnicmp(tmpURL+11,"pls/",4)==0)
+				chanURL = tmpURL+11+4;
+			else
+				chanURL = tmpURL+11;
+			showGUI = false;
+		}
+
+
+		MSG msg;
+		HACCEL hAccelTable;
+
+		// Initialize global strings
+		//LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+		//LoadString(hInstance, IDC_APP_TITLE, szWindowClass, MAX_LOADSTRING);
+
+		strcpy(szTitle,"PeerCast");
+		strcpy(szWindowClass,"PeerCast");
+		strcpy(szWindowClass2,"Main");
+
+		if (!allowMulti)
+		{
+			HANDLE mutex = CreateMutex(NULL,TRUE,szWindowClass);
+
+			if (GetLastError() == ERROR_ALREADY_EXISTS)
+			{
+				HWND oldWin = FindWindow(szWindowClass,NULL);
+				if (oldWin)
+				{
+					//SendMessage(oldWin,WM_SHOWGUI,0,0);
+					if (killMe)
+					{
+						SendMessage(oldWin,WM_DESTROY,0,0);
+						return 0;
+					}
+
+					if (chanURL)
+					{
+						COPYDATASTRUCT copy;
+						copy.dwData = WM_PLAYCHANNEL;
+						copy.cbData = strlen(chanURL)+1;			// plus null term
+						copy.lpData = chanURL;
+						SendMessage(oldWin,WM_COPYDATA,NULL,(LPARAM)&copy);
+					}else{
+						if (showGUI)
+							SendMessage(oldWin,WM_SHOWGUI,0,0);
+					}
+				}
+				return 0;
+			}
+		}
+
+		if (killMe)
+			return 0;
+
+		MyRegisterClass(hInstance);
+		MyRegisterClass2(hInstance);
+
+		// Perform application initialization:
+		if (!InitInstance (hInstance, nCmdShow)) 
+			return FALSE;
+
+		peercastInst = new MyPeercastInst();
+		peercastApp = new MyPeercastApp();
+
+		peercastInst->init();
+
+		LOG_DEBUG("Set OS Type: %s",winDistinctionNT?"WinNT":"Win9x");
+
+		if (peercastApp->clearTemp()) //JP-EX
+		{
+			DeleteFile("play.pls");
+			hFind = FindFirstFile("*.asx",&fd);
+			if (hFind != INVALID_HANDLE_VALUE)
+			{
+				do
+				{
+					DeleteFile((char *)&fd.cFileName);
+				}
+				while (FindNextFile(hFind,&fd));
+
+				FindClose(hFind);
+			}
+		}
+
+		if (chanURL)
+		{
+			ChanInfo info;
+			servMgr->procConnectArgs(chanURL,info);
+			chanMgr->findAndPlayChannel(info,false);
+		}
+
+		hAccelTable = LoadAccelerators(hInstance, (LPCTSTR)IDC_SIMPLE);
+
+		// setup menu notifes
+		int mask = peercastInst->getNotifyMask();
+		if (mask & ServMgr::NT_PEERCAST)
+			CheckMenuItem(trayMenu,ID_POPUP_SHOWMESSAGES_PEERCAST,MF_CHECKED|MF_BYCOMMAND);
+		if (mask & ServMgr::NT_BROADCASTERS)
+			CheckMenuItem(trayMenu,ID_POPUP_SHOWMESSAGES_BROADCASTERS,MF_CHECKED|MF_BYCOMMAND);
+		if (mask & ServMgr::NT_TRACKINFO)
+			CheckMenuItem(trayMenu,ID_POPUP_SHOWMESSAGES_TRACKINFO,MF_CHECKED|MF_BYCOMMAND);
+
+		if (servMgr->startWithGui)
+		{
+			createGUI((HWND)0);
+		}
+
+		// Main message loop:
+		while (GetMessage(&msg, NULL, 0, 0)) 
+		{
+			if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) 
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
+
+		Shell_NotifyIcon(NIM_DELETE, (NOTIFYICONDATA*)&trayIcon);
+
+		peercastInst->saveSettings();
+		peercastInst->quit();
+
+		Gdiplus::GdiplusShutdown(gdiplusToken);
+
+		return msg.wParam;
+#endif
+		WinMainDummy(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+
+	} __except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		fs.openWriteReplace(".\\dump.html");
+		sys->logBuf->dumpHTML(fs);
+		fs.close();
+
+		MessageBox(NULL, "一般保護違反の為、プログラムは強制終了されます。\n"
+			"問題解決のためにダンプデータ(dump.html)を提供してください。", "SEH",
+			MB_OK|MB_ICONWARNING);
+
+		return GetExceptionCode();
+	}
+
+	// dummy
+	return 0;
 }
 
 
@@ -1037,6 +1273,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					CheckMenuItem(trayMenu, ID_POPUP_START_WITH_GUI, MF_UNCHECKED|MF_BYCOMMAND);
 				}
 
+				// スクリーンセーバー抑止
+				if (servMgr->preventSS)
+				{
+					CheckMenuItem(trayMenu, ID_POPUP_PREVENT_SS, MF_CHECKED|MF_BYCOMMAND);
+				} else
+				{
+					CheckMenuItem(trayMenu, ID_POPUP_PREVENT_SS, MF_UNCHECKED|MF_BYCOMMAND);
+				}
+
 				SetForegroundWindow(hWnd);    
 				bool skipMenu=false;
 
@@ -1287,6 +1532,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 					break;
 
+				case ID_POPUP_PREVENT_SS:
+					// スクリーンセーバー抑止
+					if (servMgr->preventSS)
+					{
+						servMgr->preventSS = false;
+						CheckMenuItem(trayMenu, ID_POPUP_PREVENT_SS, MF_UNCHECKED|MF_BYCOMMAND);
+					} else
+					{
+						servMgr->preventSS = true;
+						CheckMenuItem(trayMenu, ID_POPUP_PREVENT_SS, MF_CHECKED|MF_BYCOMMAND);
+					}
+					peercastInst->saveSettings();
+					break;
+
 				case ID_POPUP_EXIT_CONFIRM:
 				case IDM_EXIT:
 				   DestroyWindow(hWnd);
@@ -1298,6 +1557,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
+
+		case WM_SYSCOMMAND:
+			// なんかアクティブじゃないと送られてこないらしい
+			if (servMgr->preventSS && (wParam == SC_SCREENSAVE) && chanMgr->isBroadcasting())
+				return 1;
+			else
+				return DefWindowProc(hWnd, message, wParam, lParam);
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
    }

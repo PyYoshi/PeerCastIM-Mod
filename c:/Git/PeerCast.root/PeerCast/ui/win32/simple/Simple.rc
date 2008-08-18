@@ -113,6 +113,7 @@ BEGIN
             MENUITEM "再接続時下流維持",                    ID_POPUP_SHOWGUI, CHECKED
             MENUITEM "常に手前に表示",                     ID_POPUP_TOPMOST
             MENUITEM "起動時、GUIを表示",                  ID_POPUP_START_WITH_GUI
+            MENUITEM "配信時、ScreenSaverを抑止",          ID_POPUP_PREVENT_SS, GRAYED
         END
         MENUITEM SEPARATOR
         POPUP "終了"

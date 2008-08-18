@@ -140,6 +140,7 @@ ServMgr::ServMgr()
 
 	topmostGui = false;
 	startWithGui = false;
+	preventSS = false;
 
 	chanLog="";
 
@@ -1106,6 +1107,7 @@ void ServMgr::saveSettings(const char *fn)
 
 		iniFile.writeBoolValue("topmostGui", servMgr->topmostGui);
 		iniFile.writeBoolValue("startWithGui", servMgr->startWithGui);
+		iniFile.writeBoolValue("preventSS", servMgr->preventSS);
 #endif
 		int i;
 
@@ -1517,12 +1519,11 @@ void ServMgr::loadSettings(const char *fn)
 				servMgr->guiAntennaNotifyIcon = iniFile.getBoolValue();
 
 			else if (iniFile.isName("topmostGui"))
-			{
 				servMgr->topmostGui = iniFile.getBoolValue();
-			} else if (iniFile.isName("startWithGui"))
-			{
+			else if (iniFile.isName("startWithGui"))
 				servMgr->startWithGui = iniFile.getBoolValue();
-			}
+			else if (iniFile.isName("preventSS"))
+				servMgr->preventSS = iniFile.getBoolValue();
 #endif
 
 			// debug

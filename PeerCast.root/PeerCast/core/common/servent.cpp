@@ -3015,6 +3015,16 @@ int Servent::serverProc(ThreadInfo *thread)
 			if (servMgr->numActiveOnPort(sv->sock->host.port) < servMgr->maxServIn)
 			{
 				ClientSocket *cs = sv->sock->accept();
+
+				// 不正なソースアドレス(IPv4マルチキャスト)を除外
+				if (cs && (((cs->host.ip >> 24) & 0xF0) == 0xE0))
+				{
+					char ip[64];
+					cs->host.toStr(ip);
+					cs->close();
+					LOG_ERROR("reject incoming multicast address: %s", ip);
+					peercastApp->notifyMessage(ServMgr::NT_PEERCAST, "reject multicast address");
+				} else
 				if (cs)
 				{	
 					LOG_DEBUG("accepted incoming");

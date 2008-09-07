@@ -22,6 +22,9 @@
 
 #define _WIN32_WINNT 0x0500
 
+#include "ws2tcpip.h" // getnameinfo
+#include "wspiapi.h" // compatibility for Win2k and earlier
+
 #include <windows.h>
 #include "stdio.h"
 #include "string.h"
@@ -111,29 +114,88 @@ bool gbAllOpen = false;
 THREAD_PROC GetHostName(ThreadInfo *thread){
 	IdData *id = (IdData*)(thread->data);
 
-	HOSTENT *he;
-	unsigned int ip;
+	//HOSTENT *he;
+	u_long ip;
+	struct sockaddr_in sa;
+	char host[256];
+	char *tmp;
 	bool flg = TRUE;
+	bool findFlg;
+	int error;
 
 	ip = htonl(id->getIpAddr());
 
-	for (int i=0; i<5 && flg; i++){
-		he = gethostbyaddr((char *)&ip,sizeof(ip),AF_INET);
+	memset(&sa, 0, sizeof(sa));
+	sa.sin_addr.S_un.S_addr = ip;
+	sa.sin_family = AF_INET;
 
+	for (int i=0; i<10 && flg; i++){
+		error = getnameinfo(reinterpret_cast<sockaddr*>(&sa), sizeof(sa), host, sizeof(host)/sizeof(host[0]), NULL, 0, NI_NAMEREQD);
+		switch (error)
+		{
+		case 0:
+			// success
+			flg = FALSE;
+			break;
+
+		case WSAHOST_NOT_FOUND:
+			LOG_ERROR("cannot resolve host for %s",
+				((tmp = inet_ntoa(sa.sin_addr)) ? tmp : ""));
+			flg = TRUE;
+			break;
+
+		default:
+			LOG_ERROR("an error occurred while resolving hostname of %s (%ld)",
+				((tmp = inet_ntoa(sa.sin_addr)) ? tmp : ""), error);
+		}
+	}
+
+	if (error)
+		return 0;
+
+	for (flg=TRUE, findFlg=FALSE; flg; )
+	{
 		ChannelDataLock.on();
 		ChannelData* cd = channelDataTop;
-		if (he)
-		{
-			while(cd){
-				if (cd->setName(id->getServentId(), he->h_name)){
+
+		while(cd){
+			if (cd->getChannelId() == id->getChannelId())
+			{
+				findFlg = TRUE;
+
+				if (cd->findServentData(id->getServentId()))
+				{
+					if (cd->setName(id->getServentId(), host))
+					{
+						LOG_DEBUG("successfully resolved(%d)", id->getServentId());
+						flg = FALSE;
+						break;
+					} else
+					{
+						LOG_ERROR("cannot update servent data with resolved information");
+						flg = FALSE;
+						break;
+					}
+				} else
+				{
+					LOG_DEBUG("servent data has been removed");
 					flg = FALSE;
 					break;
 				}
-				cd = cd->getNextData();
 			}
+
+			cd = cd->getNextData();
 		}
+
 //		::delete id;
 		ChannelDataLock.off();
+
+		if (!findFlg)
+		{
+			LOG_DEBUG("servent data has been removed(channel)");
+			flg = FALSE;
+		}
+
 		sys->sleep(1000);
 	}
 
@@ -925,10 +987,12 @@ THREAD_PROC GUIDataUpdate(ThreadInfo *thread){
 							cd->addServentData(sv);
 							// ホスト名を取得する
 							IdData *id = ::new IdData(cd->getChannelId(), sv->getServentId(), sv->getHost().ip);
-							ThreadInfo t;
-							t.func = GetHostName;
-							t.data = (void*)id;
-							sys->startThread(&t);
+							ThreadInfo *t;
+							t = ::new ThreadInfo();
+							t->func = GetHostName;
+							t->data = (void*)id;
+							sys->startThread(t);
+							LOG_DEBUG("resolving thread was started(%d)", id->getServentId());
 							// ループ終了
 							break;
 						}

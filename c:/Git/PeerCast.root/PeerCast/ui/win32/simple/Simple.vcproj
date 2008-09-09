@@ -168,6 +168,7 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -187,7 +188,9 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;C:\Visual Studio Projects\PeCa-IMAS7651\core\win32\lib\Release&quot;"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/PeerCast.pdb"
+				GenerateMapFile="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"

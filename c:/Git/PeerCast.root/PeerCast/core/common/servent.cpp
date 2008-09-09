@@ -40,6 +40,8 @@
 #define new DEBUG_NEW
 #endif
 
+#include "win32/seh.h"
+
 
 const int DIRECT_WRITE_TIMEOUT = 60;
 
@@ -1668,7 +1670,7 @@ void Servent::processRoot()
 }	
 
 // -----------------------------------
-int Servent::givProc(ThreadInfo *thread)
+int Servent::givProcMain(ThreadInfo *thread)
 {
 //	thread->lock();
 	Servent *sv = (Servent*)thread->data;
@@ -1685,6 +1687,12 @@ int Servent::givProc(ThreadInfo *thread)
 	sv->kill();
 	sys->endThread(thread);
 	return 0;
+}
+
+// -----------------------------------
+int Servent::givProc(ThreadInfo *thread)
+{
+	SEH_THREAD(givProcMain, Servent::givProc);
 }
 
 // -----------------------------------
@@ -2128,7 +2136,7 @@ void Servent::processIncomingPCP(bool suggestOthers)
 }
 
 // -----------------------------------
-int Servent::outgoingProc(ThreadInfo *thread)
+int Servent::outgoingProcMain(ThreadInfo *thread)
 {
 //	thread->lock();
 	LOG_DEBUG("COUT started");
@@ -2309,7 +2317,12 @@ int Servent::outgoingProc(ThreadInfo *thread)
 	return 0;
 }
 // -----------------------------------
-int Servent::incomingProc(ThreadInfo *thread)
+int Servent::outgoingProc(ThreadInfo *thread)
+{
+	SEH_THREAD(outgoingProcMain, Servent::outgoingProc);
+}
+// -----------------------------------
+int Servent::incomingProcMain(ThreadInfo *thread)
 {
 //	thread->lock();
 
@@ -2340,6 +2353,11 @@ int Servent::incomingProc(ThreadInfo *thread)
 	sv->kill();
 	sys->endThread(thread);
 	return 0;
+}
+// -----------------------------------
+int Servent::incomingProc(ThreadInfo *thread)
+{
+	SEH_THREAD(incomingProcMain, Servent::incomingProc);
 }
 // -----------------------------------
 void Servent::processServent()
@@ -2986,7 +3004,7 @@ void Servent::sendPCPChannel()
 }
 
 // -----------------------------------
-int Servent::serverProc(ThreadInfo *thread)
+int Servent::serverProcMain(ThreadInfo *thread)
 {
 //	thread->lock();
 
@@ -3052,6 +3070,12 @@ int Servent::serverProc(ThreadInfo *thread)
 	sv->kill();
 	sys->endThread(thread);
 	return 0;
+}
+
+// -----------------------------------
+int Servent::serverProc(ThreadInfo *thread)
+{
+	SEH_THREAD(serverProcMain, Servent::serverProc);
 }
  
 // -----------------------------------

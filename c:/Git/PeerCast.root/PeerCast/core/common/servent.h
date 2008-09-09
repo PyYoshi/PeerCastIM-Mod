@@ -144,9 +144,13 @@ public:
 
 	// static funcs that do the actual work in the servent thread
 	static	THREAD_PROC		serverProc(ThreadInfo *);
+	static THREAD_PROC serverProcMain(ThreadInfo *);
 	static	THREAD_PROC		outgoingProc(ThreadInfo *);
+	static THREAD_PROC outgoingProcMain(ThreadInfo *);
 	static	THREAD_PROC		incomingProc(ThreadInfo *);
+	static THREAD_PROC incomingProcMain(ThreadInfo *);
 	static	THREAD_PROC		givProc(ThreadInfo *);
+	static THREAD_PROC givProcMain(ThreadInfo *);
 	static	THREAD_PROC		pcpProc(ThreadInfo *);
 	static	THREAD_PROC		fetchProc(ThreadInfo *);
 

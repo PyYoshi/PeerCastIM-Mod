@@ -212,6 +212,7 @@
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -1374,6 +1375,10 @@
 			Name="Win32 Source"
 			>
 			<File
+				RelativePath="..\seh.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\wsocket.cpp"
 				>
 				<FileConfiguration
@@ -1457,6 +1462,10 @@
 		<Filter
 			Name="Win32 Includes"
 			>
+			<File
+				RelativePath="..\seh.h"
+				>
+			</File>
 			<File
 				RelativePath="..\wsocket.h"
 				>

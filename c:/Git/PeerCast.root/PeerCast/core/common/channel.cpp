@@ -50,6 +50,8 @@
 #define new DEBUG_NEW
 #endif
 
+#include "win32/seh.h"
+
 // -----------------------------------
 char *Channel::srcTypes[]=
 {
@@ -423,7 +425,7 @@ void Channel::checkReadDelay(unsigned int len)
 
 
 // -----------------------------------
-THREAD_PROC	Channel::stream(ThreadInfo *thread)
+THREAD_PROC Channel::streamMain(ThreadInfo *thread)
 {
 //	thread->lock();
 
@@ -483,10 +485,16 @@ THREAD_PROC	Channel::stream(ThreadInfo *thread)
 		ch->endThread(true);
 	}
 	return 0;
+}
+
+// -----------------------------------
+THREAD_PROC	Channel::stream(ThreadInfo *thread)
+{
+	SEH_THREAD(streamMain, Channel::stream);
 }	
 
 // -----------------------------------
-THREAD_PROC Channel::waitFinish(ThreadInfo *thread)
+THREAD_PROC Channel::waitFinishMain(ThreadInfo *thread)
 {
 	Channel *ch = (Channel*)thread->data;
 	LOG_DEBUG("Wait channel finish");
@@ -505,6 +513,13 @@ THREAD_PROC Channel::waitFinish(ThreadInfo *thread)
 	delete thread;
 	return 0;
 }
+
+// -----------------------------------
+THREAD_PROC Channel::waitFinish(ThreadInfo *thread)
+{
+	SEH_THREAD(waitFinishMain, Channel::waitFinish);
+}
+
 
 // -----------------------------------
 bool Channel::acceptGIV(ClientSocket *givSock)
@@ -3041,7 +3056,7 @@ public:
 	bool	keep;
 };
 // -----------------------------------
-THREAD_PROC findAndPlayChannelProc(ThreadInfo *th)
+THREAD_PROC findAndPlayChannelProcMain(ThreadInfo *th)
 {
 	ChanFindInfo *cfi = (ChanFindInfo *)th;
 
@@ -3069,6 +3084,13 @@ THREAD_PROC findAndPlayChannelProc(ThreadInfo *th)
 	delete cfi;
 	return 0;
 }
+
+// -----------------------------------
+THREAD_PROC findAndPlayChannelProc(ThreadInfo *thread)
+{
+	SEH_THREAD(findAndPlayChannelProcMain, findAndPlayChannel);
+}
+
 // -----------------------------------
 void ChanMgr::findAndPlayChannel(ChanInfo &info, bool keep)
 {

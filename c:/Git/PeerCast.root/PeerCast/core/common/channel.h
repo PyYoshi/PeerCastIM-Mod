@@ -443,8 +443,10 @@ public:
 	bool	isIdle() {return isActive() && (status==S_IDLE);}
 
 	static THREAD_PROC	stream(ThreadInfo *);
+	static THREAD_PROC streamMain(ThreadInfo *);
 
 	static THREAD_PROC  waitFinish(ThreadInfo *);
+	static THREAD_PROC waitFinishMain(ThreadInfo *);
 
 	void	setStatus(STATUS s);
 	const char  *getSrcTypeStr() {return srcTypes[srcType];}

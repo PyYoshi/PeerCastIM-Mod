@@ -190,6 +190,7 @@
 				AdditionalLibraryDirectories="&quot;C:\Visual Studio Projects\PeCa-IMAS7651\core\win32\lib\Release&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/PeerCast.pdb"
+				StripPrivateSymbols="PeerCast-dist.pdb"
 				GenerateMapFile="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"

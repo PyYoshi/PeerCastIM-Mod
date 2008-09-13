@@ -769,9 +769,13 @@ int PCPStream::readBroadcastAtoms(AtomStream &atom,int numc,BroadcastState &bcs)
 				r = readAtom(patom,bcs);
 			} else {
 				char tmp[80], tmp2[80], tmp3[80];
+				memset(tmp, 0, 80);
+				memset(tmp2, 0, 80);
+				memset(tmp3, 0, 80);
 				hit.uphost.toStr(tmp);
 				hit.host.toStr(tmp2);
-				sv->getHost().toStr(tmp3);
+				if (sv)
+					sv->getHost().toStr(tmp3);
 				LOG_DEBUG("### Invalid bcst: hops=%d, l/r = %d/%d, ver=%d(VP%04d), ttl=%d",
 					bcs.numHops,hit.numListeners, hit.numRelays, ver,ver_vp,bcs.ttl);
 				LOG_DEBUG("### %s <- %s <- sv(%s)",

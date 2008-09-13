@@ -15,7 +15,11 @@ void SEHdump(_EXCEPTION_POINTERS *lpExcept)
 	if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
 	{
 		dump = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile,
-			(MINIDUMP_TYPE)(MiniDumpWithIndirectlyReferencedMemory|MiniDumpScanMemory),
+			(MINIDUMP_TYPE)
+			(MiniDumpWithIndirectlyReferencedMemory
+			|MiniDumpWithPrivateReadWriteMemory
+			|MiniDumpWithThreadInfo
+			|MiniDumpWithUnloadedModules),
 			&minidumpInfo, NULL, NULL);
 		CloseHandle(hFile);
 	}

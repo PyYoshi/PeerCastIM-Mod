@@ -3108,7 +3108,7 @@ void ChanMgr::playChannel(ChanInfo &info)
 
 	char str[128],fname[256],idStr[128];
 
-	sprintf(str,"http://localhost:%d",servMgr->serverHost.port);
+	sprintf(str,"http://127.0.0.1:%d",servMgr->serverHost.port);
 	info.id.toStr(idStr);
 
 	PlayList::TYPE type;

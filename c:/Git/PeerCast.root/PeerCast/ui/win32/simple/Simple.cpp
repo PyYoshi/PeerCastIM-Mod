@@ -186,6 +186,82 @@ void LOG2(const char *fmt,...)
 	va_end(ap);	
 }
 
+// --------------------------------------------------
+void WINAPI ServiceMain(DWORD argc, LPSTR *argv)
+{
+	//hInst = hInstance;
+
+	version_ex = 1; // PP版拡張機能を無効に←大嘘。バージョン表記をEXに
+
+	//iniFileName.set(".\\peercast.ini");
+
+	WIN32_FIND_DATA fd; //JP-EX
+	HANDLE hFind; //JP-EX
+
+	OSVERSIONINFO osInfo; //JP-EX
+	osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO); //JP-EX
+	GetVersionEx(&osInfo);
+	if (osInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
+		winDistinctionNT = true;
+	else
+		winDistinctionNT = false;
+
+	// off by default now
+	showGUI = false;
+
+	// get current path
+	{
+		TCHAR buf[1024];
+		DWORD ret;
+
+		ret = GetModuleFileName(NULL, buf, sizeof(buf)/sizeof(TCHAR));
+		if (ret)
+		{
+			exit(-1);
+		}
+		for (int i=_tcslen(buf); i>0; --i)
+		{
+			if (buf[i] == '\\')
+			{
+				buf[i+1] = '\0';
+				break;
+			}
+		}
+
+		exePath = buf;
+	}
+
+	iniFileName.set(exePath.cstr());
+	iniFileName.append("\\peercast.ini");
+
+	_chdir(exePath);
+
+	peercastInst = new MyPeercastInst();
+	peercastApp = new MyPeercastApp();
+
+	peercastInst->init();
+
+	LOG_DEBUG("Set OS Type: %s",winDistinctionNT?"WinNT":"Win9x");
+
+	if (peercastApp->clearTemp()) //JP-EX
+	{
+		DeleteFile("play.pls");
+		hFind = FindFirstFile("*.asx",&fd);
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			do
+			{
+				DeleteFile((char *)&fd.cFileName);
+			}
+			while (FindNextFile(hFind,&fd));
+
+			FindClose(hFind);
+		}
+	}
+
+	peercastInst->saveSettings();
+	peercastInst->quit();
+}
 
 // --------------------------------------------------
 int WinMainDummy(HINSTANCE hInstance,
@@ -411,8 +487,22 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	_EXCEPTION_POINTERS *lpExcept;
 	__try
 	{
-		WinMainDummy(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+#if 0
+		// switch to service
+		if (lstrlen(lpCmdLine) && strstr(lpCmdLine, "-D") != NULL)
+		{
+			SERVICE_TABLE_ENTRY svctbl[] = {
+				{"PeerCast", (LPSERVICE_MAIN_FUNCTION)ServiceMain},
+				{NULL, NULL}
+			};
 
+			if (!StartServiceCtrlDispatcher(svctbl)) 
+			{ 
+				//SvcReportEvent(TEXT("StartServiceCtrlDispatcher")); 
+			}
+		} else
+#endif
+			WinMainDummy(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 	} __except(lpExcept = GetExceptionInformation(), EXCEPTION_EXECUTE_HANDLER)
 	{
 		DWORD nParams;

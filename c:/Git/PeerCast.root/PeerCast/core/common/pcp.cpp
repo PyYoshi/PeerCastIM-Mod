@@ -25,6 +25,7 @@
 #define DEBUG_NEW new(__FILE__, __LINE__)
 #define new DEBUG_NEW
 #endif
+#include <ctime>
 
 // ------------------------------------------
 void PCPStream::init(GnuID &rid)
@@ -801,6 +802,22 @@ int PCPStream::readBroadcastAtoms(AtomStream &atom,int numc,BroadcastState &bcs)
 		destID.toStr(destStr);
 	char tmp[64];
 	bcs.chanID.toStr(tmp);
+
+	// Broadcast flood
+	if (servMgr->lastPCPFromID.isSame(fromID)
+		&& time(NULL) - servMgr->lastPCPBcstTime < 3)
+	{
+		memcpy(servMgr->lastPCPFromID.id, fromID.id, 16);
+		servMgr->lastPCPBcstTime = time(NULL);
+		LOG_DEBUG("PCP bcst reject: group=%d, hops=%d, ver=%d(%c%c%04d), from=%s, dest=%s ttl=%d",
+			bcs.group,bcs.numHops,ver,ver_ex_prefix[0],ver_ex_prefix[1],ver_ex_number,fromStr,destStr,bcs.ttl);
+
+		return r;
+	}
+	memcpy(servMgr->lastPCPFromID.id, fromID.id, 16);
+	servMgr->lastPCPBcstTime = time(NULL);
+
+	servMgr->lastPCPFromID.toStr(destStr);
 
 //	LOG_DEBUG(tmp);
 

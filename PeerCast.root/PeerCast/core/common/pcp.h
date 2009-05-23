@@ -267,7 +267,6 @@ public:
 	//int	error;
 	GnuIDList	routeList;
 	GnuID	remoteID;
-
 };
 
 #endif

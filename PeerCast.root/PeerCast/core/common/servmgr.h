@@ -449,6 +449,10 @@ public:
 		bcstClap		= 0x00000001
 	};
 
+	// PCP broadcast flood
+	GnuID lastPCPFromID;
+	time_t lastPCPBcstTime;
+
 private:
 	FW_STATE	firewalled;
 };

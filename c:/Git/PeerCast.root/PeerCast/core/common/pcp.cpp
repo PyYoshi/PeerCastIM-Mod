@@ -817,8 +817,6 @@ int PCPStream::readBroadcastAtoms(AtomStream &atom,int numc,BroadcastState &bcs)
 	memcpy(servMgr->lastPCPFromID.id, fromID.id, 16);
 	servMgr->lastPCPBcstTime = time(NULL);
 
-	servMgr->lastPCPFromID.toStr(destStr);
-
 //	LOG_DEBUG(tmp);
 
 	if (ver_ex_number){

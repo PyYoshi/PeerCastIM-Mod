@@ -110,6 +110,8 @@
 #define ID_POPUP_TRAFFIC                32832
 #define ID_32833                        32833
 #define ID_POPUP_PREVENT_SS             32834
+#define ID_32835                        32835
+#define ID_POPUP_NO_VER_CHECK           32836
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -117,7 +119,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        144
-#define _APS_NEXT_COMMAND_VALUE         32835
+#define _APS_NEXT_COMMAND_VALUE         32837
 #define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

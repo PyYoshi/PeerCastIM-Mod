@@ -114,6 +114,7 @@ BEGIN
             MENUITEM "常に手前に表示",                     ID_POPUP_TOPMOST
             MENUITEM "起動時、GUIを表示",                  ID_POPUP_START_WITH_GUI
             MENUITEM "配信時、ScreenSaverを抑止",          ID_POPUP_PREVENT_SS, GRAYED
+            MENUITEM "バージョンチェックを行わない",              ID_POPUP_NO_VER_CHECK
         END
         MENUITEM SEPARATOR
         POPUP "終了"

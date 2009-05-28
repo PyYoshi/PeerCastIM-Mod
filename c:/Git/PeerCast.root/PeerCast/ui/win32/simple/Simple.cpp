@@ -191,8 +191,6 @@ void WINAPI ServiceMain(DWORD argc, LPSTR *argv)
 {
 	//hInst = hInstance;
 
-	version_ex = 1; // PP版拡張機能を無効に←大嘘。バージョン表記をEXに
-
 	//iniFileName.set(".\\peercast.ini");
 
 	WIN32_FIND_DATA fd; //JP-EX
@@ -279,8 +277,6 @@ int WinMainDummy(HINSTANCE hInstance,
 	char *chanURL=NULL;
 
 	hInst = hInstance;
-
-	version_ex = 1; // PP版拡張機能を無効に←大嘘。バージョン表記をEXに
 
 	iniFileName.set(".\\peercast.ini");
 
@@ -1202,6 +1198,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					CheckMenuItem(trayMenu, ID_POPUP_PREVENT_SS, MF_UNCHECKED|MF_BYCOMMAND);
 				}
 
+				// バージョンチェックの有無
+				if (servMgr->noVersionCheck)
+				{
+					CheckMenuItem(trayMenu, ID_POPUP_NO_VER_CHECK, MF_CHECKED|MF_BYCOMMAND);
+				} else
+				{
+					CheckMenuItem(trayMenu, ID_POPUP_NO_VER_CHECK, MF_UNCHECKED|MF_BYCOMMAND);
+				}
+
 				SetForegroundWindow(hWnd);    
 				bool skipMenu=false;
 
@@ -1462,6 +1467,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					{
 						servMgr->preventSS = true;
 						CheckMenuItem(trayMenu, ID_POPUP_PREVENT_SS, MF_CHECKED|MF_BYCOMMAND);
+					}
+					peercastInst->saveSettings();
+					break;
+
+				case ID_POPUP_NO_VER_CHECK:
+					// バージョンチェックの有無
+					if (servMgr->noVersionCheck)
+					{
+						servMgr->noVersionCheck = false;
+						CheckMenuItem(trayMenu, ID_POPUP_NO_VER_CHECK, MF_UNCHECKED|MF_BYCOMMAND);
+					} else
+					{
+						servMgr->noVersionCheck = true;
+						CheckMenuItem(trayMenu, ID_POPUP_NO_VER_CHECK, MF_CHECKED|MF_BYCOMMAND);
 					}
 					peercastInst->saveSettings();
 					break;

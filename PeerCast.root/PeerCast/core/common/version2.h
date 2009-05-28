@@ -39,14 +39,16 @@ static const char *PCX_AGENTJP 		= "PeerCast/0.1218-J";
 static const char *PCX_AGENTVP		= "PeerCast/0.1218(VP0027)";
 static const char *PCX_VERSTRING	= "v0.1218(VP0027)";
 
-extern int version_ex; // PP版拡張機能有効化フラグ(たぶん)←大嘘[VERSION_EX有効化フラグ]
+extern int version_ex; // VERSION_EX有効化フラグ
 
 #if 1 /* for VP extend version */
 //#define VERSION_EX 1
 static const char *PCP_CLIENT_VERSION_EX_PREFIX = "IM"; // 2bytes only
-static const int  PCP_CLIENT_VERSION_EX_NUMBER = 35;
+static const int  PCP_CLIENT_VERSION_EX_NUMBER = 36;
 static const char *PCX_AGENTEX = "PeerCast/0.1218(IM0035)";
 static const char *PCX_VERSTRING_EX = "v0.1218(IM0035)";
+
+static const char *PCP_CLIENT_DIST_URL = "http://peercastim.s353.xrea.com/";
 #endif
 
 // ------------------------------------------------

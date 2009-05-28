@@ -738,6 +738,17 @@ int PCPStream::readBroadcastAtoms(AtomStream &atom,int numc,BroadcastState &bcs)
 		{
 			ver_ex_number = atom.readShort();
 			patom.writeShort(id,ver_ex_number);
+
+			// version check
+			if (!servMgr->noVersionCheck
+				&& !strncmp(ver_ex_prefix, PCP_CLIENT_VERSION_EX_PREFIX, 2)
+				&& ver_ex_number > PCP_CLIENT_VERSION_EX_NUMBER)
+			{
+				strcpy(servMgr->downloadURL, PCP_CLIENT_DIST_URL);
+				peercastApp->notifyMessage(ServMgr::NT_UPGRADE,"新しいバージョンのPeercastが検出されました。更新を確認してください。");
+				
+				LOG_DEBUG("PCP got version check: %d / %d", ver_ex_number, PCP_CLIENT_VERSION_EX_NUMBER);
+			}
 		}else if (id == PCP_HOST)
 		{
 			ChanHit hit;

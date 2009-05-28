@@ -141,6 +141,7 @@ ServMgr::ServMgr()
 	topmostGui = false;
 	startWithGui = false;
 	preventSS = false;
+	noVersionCheck = false;
 
 	chanLog="";
 
@@ -1108,6 +1109,7 @@ void ServMgr::saveSettings(const char *fn)
 		iniFile.writeBoolValue("topmostGui", servMgr->topmostGui);
 		iniFile.writeBoolValue("startWithGui", servMgr->startWithGui);
 		iniFile.writeBoolValue("preventSS", servMgr->preventSS);
+		iniFile.writeBoolValue("noVersionCheck", servMgr->noVersionCheck);
 #endif
 		int i;
 
@@ -1524,6 +1526,8 @@ void ServMgr::loadSettings(const char *fn)
 				servMgr->startWithGui = iniFile.getBoolValue();
 			else if (iniFile.isName("preventSS"))
 				servMgr->preventSS = iniFile.getBoolValue();
+			else if (iniFile.isName("noVersionCheck"))
+				servMgr->noVersionCheck = iniFile.getBoolValue();
 #endif
 
 			// debug

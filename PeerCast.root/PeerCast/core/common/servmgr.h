@@ -420,6 +420,7 @@ public:
 	bool topmostGui; // 最前面
 	bool startWithGui; // 起動時にGUI
 	bool preventSS; // スクリーンセーバーを抑止
+	bool noVersionCheck; // bcstAtomによるバージョンチェックを行わない
 
 	int maxRelaysIndexTxt;	// for PCRaw (relay)
 

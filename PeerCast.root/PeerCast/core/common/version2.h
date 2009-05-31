@@ -44,9 +44,9 @@ extern int version_ex; // VERSION_EX—LŒø‰»ƒtƒ‰ƒO
 #if 1 /* for VP extend version */
 //#define VERSION_EX 1
 static const char *PCP_CLIENT_VERSION_EX_PREFIX = "IM"; // 2bytes only
-static const int  PCP_CLIENT_VERSION_EX_NUMBER = 36;
-static const char *PCX_AGENTEX = "PeerCast/0.1218(IM0036)";
-static const char *PCX_VERSTRING_EX = "v0.1218(IM0036)";
+static const int  PCP_CLIENT_VERSION_EX_NUMBER = 37;
+static const char *PCX_AGENTEX = "PeerCast/0.1218(IM0037)";
+static const char *PCX_VERSTRING_EX = "v0.1218(IM0037)";
 
 static const char *PCP_CLIENT_DIST_URL = "http://peercastim.s353.xrea.com/";
 #endif

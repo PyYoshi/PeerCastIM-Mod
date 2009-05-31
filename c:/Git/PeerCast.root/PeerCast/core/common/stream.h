@@ -442,12 +442,15 @@ public:
 	}
 
 	WriteBufferStream(int l, Stream *out_)
-	:buf(new char[l])
+	:buf(NULL)
 	,own(true)
 	,len(l)
 	,pos(0)
 	,out(out_)
 	{
+		buf = (char*)malloc(l);
+		if (!buf)
+			throw GeneralException("cannot allocate memory", 0x1234);
 	}
 
 	virtual ~WriteBufferStream()
@@ -478,7 +481,7 @@ public:
 	{
 		if (own && buf)
 		{
-			delete buf;
+			::free(buf);
 			buf = NULL;
 			own = false;
 		}

@@ -95,7 +95,7 @@ BEGIN
             MENUITEM "PeerCast",                    ID_POPUP_SHOWMESSAGES_PEERCAST
             MENUITEM "配信者",                         ID_POPUP_SHOWMESSAGES_BROADCASTERS
             MENUITEM "トラック情報",                      ID_POPUP_SHOWMESSAGES_TRACKINFO
-            MENUITEM "アップデート情報",                    ID_POPUP_POPUPMESSAGES_UPGRADEALERTS, CHECKED, GRAYED
+            MENUITEM "アップデート情報",                    ID_POPUP_SHOWGUI, CHECKED, GRAYED
         END
         POPUP "高度"
         BEGIN

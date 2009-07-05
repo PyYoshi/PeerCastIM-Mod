@@ -977,7 +977,7 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 						}*/
 
 						ChanHitList *chl = chanMgr->findHitList(chanInfo);
-						ChanHit *hit = chl->hit;
+						ChanHit *hit = (chl ? chl->hit : NULL);
 						while(hit){
 							if (hit->host.isValid() && (h.ip == hit->host.ip))
 							{

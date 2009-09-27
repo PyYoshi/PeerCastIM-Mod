@@ -376,6 +376,7 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -721,8 +722,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy exe to program files"
-				CommandLine="copy           debug\peercast.exe           &quot;c:\program files\peercast&quot;"
+				Description="Copy exe to pimp"
+				CommandLine="copy                   debug\peercast.exe                   ..\pimp\&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -771,6 +772,7 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -823,6 +825,7 @@
 				Name="VCPostBuildEventTool"
 				Description="Copy exe to program files"
 				CommandLine="copy           debug\peercast.exe           &quot;c:\program files\peercast&quot;"
+				ExcludedFromBuild="true"
 			/>
 		</Configuration>
 	</Configurations>

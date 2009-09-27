@@ -279,12 +279,13 @@ void Stream::writeLineF(const char *fmt,...)
 
 	write(fmt,ap);
 
+	// special thanks: –¼–³‚µ‚Ì’N‚©
+   	va_end(ap);
+
 	if (writeCRLF)
 	    write("\r\n",2);
 	else
 		write("\n",1);
-
-   	va_end(ap);	
 }
 
 // -------------------------------------

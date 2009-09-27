@@ -353,8 +353,11 @@ int ChannelData::drawChannel(Graphics *g, int x, int y){
 	// ステータス表示
 	Gdiplus::Image *img = NULL;
 	unsigned int nowTime = sys->getTime();
-	Channel *ch = chanMgr->findChannelByChannelID(this->channel_id);
-	switch(this->getStatus()){
+	if (this->type != Servent::T_COUT)
+	{
+		// COUT以外
+		Channel *ch = chanMgr->findChannelByChannelID(this->channel_id);
+		switch(this->getStatus()){
 		case Channel::S_IDLE:
 			img = img_idle;
 			break;
@@ -401,7 +404,13 @@ int ChannelData::drawChannel(Graphics *g, int x, int y){
 		default:
 			img = img_idle;
 			break;
+		}
+	} else
+	{
+		// COUT用
+		img = img_broad_ok;
 	}
+
 	// 描画基点
 	PointF origin(xx, yy);
 	// ステータス表示位置
@@ -430,127 +439,146 @@ int ChannelData::drawChannel(Graphics *g, int x, int y){
 			strBrush = ::new SolidBrush(Color::Black);
 		}
 	}
-	// チャンネル名表示
-	g->SetTextRenderingHint(TextRenderingHintAntiAlias);
-	_bstr_t bstr1(getName());
-	// 文字描画範囲指定
-	RectF r1(origin.X, origin.Y, 120.0f, 13.0f);
-	StringFormat format;
-	format.SetAlignment(StringAlignmentNear);
-	g->DrawString(bstr1, -1, &font, r1, &format, strBrush);
-	// 次の基点
-	origin.X += r1.Width;
 
-	//// 上流IP/リスナー数/リレー数表示
-	//// NOTE:
-	////    ぴあかすの動作勉強用。リリースビルドでは元のコードを使用の事。
-	////    文字表示範囲は幅220ぐらいでおｋ
-	//char tmp[512]; // 表示用バッファ
-	//char hostip[256]; // IPアドレスバッファ
-	//chDisp.uphost.toStr(hostip); // 上流IP
-	//sprintf(tmp, "%d/%d - [%d/%d] - %s",
-	//	getTotalListeners(),
-	//	getTotalRelays(),
-	//	getLocalListeners(),
-	//	getLocalRelays(),
-	//	hostip
-	//	);
+	if (this->type != Servent::T_COUT)
+	{
+		// COUT以外
 
-	// リスナー数/リレー数表示
-	char tmp[256];
-	sprintf(tmp, "%d/%d - [%d/%d]", getTotalListeners(), getTotalRelays(), getLocalListeners(), getLocalRelays());
-	_bstr_t bstr2(tmp);
-	// 文字表示範囲指定
-	RectF r2(origin.X, origin.Y, 100.0f, 13.0f);
-	format.SetAlignment(StringAlignmentCenter);
-	g->DrawString(bstr2, -1, &font, r2, &format, strBrush);
-	// 次の基点
-	origin.X += r2.Width;
+		// チャンネル名表示
+		g->SetTextRenderingHint(TextRenderingHintAntiAlias);
+		_bstr_t bstr1(getName());
+		// 文字描画範囲指定
+		RectF r1(origin.X, origin.Y, 120.0f, 13.0f);
+		StringFormat format;
+		format.SetAlignment(StringAlignmentNear);
+		g->DrawString(bstr1, -1, &font, r1, &format, strBrush);
+		// 次の基点
+		origin.X += r1.Width;
 
-	// bps表示
-	Font *f;
-	if (isStayConnected()){
-		f = ::new Font(L"Arial", 9.0f, FontStyleItalic|FontStyleBold, UnitPoint);
-	} else {
-		f = ::new Font(L"Arial", 9.0f);
-	}
-	sprintf(tmp, "%dkbps", getBitRate());
-	_bstr_t bstr3(tmp);
-	format.SetAlignment(StringAlignmentFar);
-	// 文字表示範囲指定
-	RectF r3(origin.X, origin.Y, 80.0f, 13.0f);
-	g->DrawString(bstr3, -1, f, r3, &format, strBrush);
-	// フォント開放
-	::delete f;
+		//// 上流IP/リスナー数/リレー数表示
+		//// NOTE:
+		////    ぴあかすの動作勉強用。リリースビルドでは元のコードを使用の事。
+		////    文字表示範囲は幅220ぐらいでおｋ
+		//char tmp[512]; // 表示用バッファ
+		//char hostip[256]; // IPアドレスバッファ
+		//chDisp.uphost.toStr(hostip); // 上流IP
+		//sprintf(tmp, "%d/%d - [%d/%d] - %s",
+		//	getTotalListeners(),
+		//	getTotalRelays(),
+		//	getLocalListeners(),
+		//	getLocalRelays(),
+		//	hostip
+		//	);
 
-	// 次の基点
-	origin.X += r3.Width;
+		// リスナー数/リレー数表示
+		char tmp[256];
+		sprintf(tmp, "%d/%d - [%d/%d]", getTotalListeners(), getTotalRelays(), getLocalListeners(), getLocalRelays());
+		_bstr_t bstr2(tmp);
+		// 文字表示範囲指定
+		RectF r2(origin.X, origin.Y, 100.0f, 13.0f);
+		format.SetAlignment(StringAlignmentCenter);
+		g->DrawString(bstr2, -1, &font, r2, &format, strBrush);
+		// 次の基点
+		origin.X += r2.Width;
 
-	// ブラシ削除
-	::delete strBrush;
+		// bps表示
+		Font *f;
+		if (isStayConnected()){
+			f = ::new Font(L"Arial", 9.0f, FontStyleItalic|FontStyleBold, UnitPoint);
+		} else {
+			f = ::new Font(L"Arial", 9.0f);
+		}
+		sprintf(tmp, "%dkbps", getBitRate());
+		_bstr_t bstr3(tmp);
+		format.SetAlignment(StringAlignmentFar);
+		// 文字表示範囲指定
+		RectF r3(origin.X, origin.Y, 80.0f, 13.0f);
+		g->DrawString(bstr3, -1, f, r3, &format, strBrush);
+		// フォント開放
+		::delete f;
 
-	
-	// Servent表示
-	if (!openFlg){
-		int count = getServentCount();
-		// Servent表示部の背景を白にする
-		SolidBrush b(Color(160,255,255,255));
-		g->FillRectangle(&b, (INT)origin.X, (INT)origin.Y, 14*count, 14);
+		// 次の基点
+		origin.X += r3.Width;
 
-		sd = serventDataTop;
-		int index = 0;
-		while(sd){
-			SolidBrush *serventBrush;
-			if (sd->getInfoFlg()){
-				ChanHit *hit = sd->getChanHit();
-				if (hit->firewalled){
-					SolidBrush bb(Color(180,255,0,0));
-					g->FillRectangle(&bb, (INT)origin.X + 14*index, (INT)origin.Y, 14, 14);
-				}
-				if (hit->relay){
-					// リレーＯＫ
-					serventBrush = ::new SolidBrush(Color::Green);
-				} else {
-					// リレー不可
-					if (hit->numRelays){
-						// リレー一杯
-						serventBrush = ::new SolidBrush(Color::Blue);
-					} else {
-						// リレーなし
-						serventBrush = ::new SolidBrush(Color::Purple);
+		// ブラシ削除
+		::delete strBrush;
+
+
+		// Servent表示
+		if (!openFlg){
+			int count = getServentCount();
+			// Servent表示部の背景を白にする
+			SolidBrush b(Color(160,255,255,255));
+			g->FillRectangle(&b, (INT)origin.X, (INT)origin.Y, 14*count, 14);
+
+			sd = serventDataTop;
+			int index = 0;
+			while(sd){
+				SolidBrush *serventBrush;
+				if (sd->getInfoFlg()){
+					ChanHit *hit = sd->getChanHit();
+					if (hit->firewalled){
+						SolidBrush bb(Color(180,255,0,0));
+						g->FillRectangle(&bb, (INT)origin.X + 14*index, (INT)origin.Y, 14, 14);
 					}
+					if (hit->relay){
+						// リレーＯＫ
+						serventBrush = ::new SolidBrush(Color::Green);
+					} else {
+						// リレー不可
+						if (hit->numRelays){
+							// リレー一杯
+							serventBrush = ::new SolidBrush(Color::Blue);
+						} else {
+							// リレーなし
+							serventBrush = ::new SolidBrush(Color::Purple);
+						}
+					}
+				} else {
+					// 情報なし
+					serventBrush = ::new SolidBrush(Color::Black);
 				}
-			} else {
-				// 情報なし
-				serventBrush = ::new SolidBrush(Color::Black);
+				// 四角描画
+				backGra->FillRectangle(serventBrush, (INT)origin.X + index*14 + 1, (INT)origin.Y + 1, 12, 12);
+
+				::delete serventBrush;
+				sd = sd->getNextData();
+				index++;
 			}
-			// 四角描画
-			backGra->FillRectangle(serventBrush, (INT)origin.X + index*14 + 1, (INT)origin.Y + 1, 12, 12);
+		}
 
-			::delete serventBrush;
+		// 次の基点
+		origin.Y += 15;
+
+		// サイズを保存
+		setWidth((int)origin.X - posX);
+		setHeight((int)origin.Y - posY);
+
+		// ServentData表示
+		sd = serventDataTop;
+		while(sd){
+			if (openFlg || sd->getSelected()){
+				sd->drawServent(g, (INT)x+12, (INT)origin.Y);
+				// 次の基点
+				origin.Y += 15;
+			}
 			sd = sd->getNextData();
-			index++;
 		}
+	} else
+	{
+		// COUT
+		g->SetTextRenderingHint(TextRenderingHintAntiAlias);
+		RectF r1(origin.X, origin.Y, 120.0f+100.0f+80.0f, 13.0f);
+		origin.X += r1.Width;
+		StringFormat format;
+		format.SetAlignment(StringAlignmentNear);
+		_bstr_t bstr1("COUT");
+		g->DrawString(bstr1, -1, &font, r1, &format, strBrush);
+		::delete strBrush;
+		origin.Y += 15;
+		setWidth((int)origin.X - posX);
+		setHeight((int)origin.Y - posY);
 	}
-
-	// 次の基点
-	origin.Y += 15;
-
-	// サイズを保存
-	setWidth((int)origin.X - posX);
-	setHeight((int)origin.Y - posY);
-
-	// ServentData表示
-	sd = serventDataTop;
-	while(sd){
-		if (openFlg || sd->getSelected()){
-			sd->drawServent(g, (INT)x+12, (INT)origin.Y);
-			// 次の基点
-			origin.Y += 15;
-		}
-		sd = sd->getNextData();
-	}
-	
 
 	return (int)(origin.Y);
 }
@@ -881,6 +909,90 @@ THREAD_PROC GUIDataUpdate(ThreadInfo *thread){
 			c = c->next;
 		}
 
+#if 1
+		// COUTを検索
+		{
+			bool foundFlg = false;
+			bool foundFlg2 = false;
+			Servent *s = servMgr->servents;
+			while (s)
+			{
+				if (s->type == Servent::T_COUT && s->status == Servent::S_CONNECTED)
+				{
+					foundFlg = true;
+
+					// ChannelData末尾まで探索
+					ChannelData *prev = NULL;
+					cd = channelDataTop;
+					while (cd)
+					{
+						if (cd->type == Servent::T_COUT && cd->servent_id == s->servent_id)
+						{
+							foundFlg2 = true;
+							cd->setEnableFlg(true);
+							break;
+						}
+						prev = cd;
+						cd = cd->getNextData();
+					}
+					cd = prev;
+
+					if (foundFlg2)
+						break;
+
+					// ノード追加
+					if (channelDataTop)
+					{
+						// channelDataが空でない。cdはここでリスト末尾を指してる（はず）
+						cd->setNextData(::new ChannelData());
+						cd = cd->getNextData();
+						memset(cd, 0, sizeof(cd));
+						cd->setNextData(NULL);
+					} else
+					{
+						// channelDataが空
+						channelDataTop = ::new ChannelData();
+						channelDataTop->setNextData(NULL);
+						cd = channelDataTop;
+					}
+
+					// データ設定
+					cd->type = s->type;
+					cd->servent_id = s->servent_id;
+					cd->setEnableFlg(true);
+				}
+
+				s = s->next;
+			}
+
+			// COUTが切れてたら削除
+			if (!foundFlg)
+			{
+				cd = channelDataTop;
+				ChannelData *prev = NULL;
+				while (cd)
+				{
+					// COUTの情報を削除
+					if (cd->type == Servent::T_COUT)
+					{
+						// 先頭
+						if (!prev)
+						{
+							channelDataTop = cd->getNextData();
+						} else
+						{
+							prev->setNextData(cd->getNextData());
+						}
+						//::delete cd;
+					}
+
+					prev = cd;
+					cd = cd->getNextData();
+				}
+			}
+		}
+#endif
+
 		// チャンネルがなくなっている場合の処理
 		cd = channelDataTop;
 		ChannelData *prev = NULL; 
@@ -892,6 +1004,7 @@ THREAD_PROC GUIDataUpdate(ThreadInfo *thread){
 				next = cd->getNextData();
 				if (!prev){
 					// 先頭のデータを削除
+					// ここメモリリークしそう by えるー
 					channelDataTop = next;
 				} else {
 					// 途中のデータを削除
@@ -1192,6 +1305,11 @@ void PopupServentMenu(int servent_id){
 	ServentData *sd = NULL;
 	ChannelData *cd = channelDataTop;
 	while(cd){
+		// COUT
+		if (cd->type == Servent::T_COUT
+			&& cd->servent_id == servent_id)
+			break;
+
 		sd = cd->findServentData(servent_id);
 		if (sd){
 			break;
@@ -1199,7 +1317,9 @@ void PopupServentMenu(int servent_id){
 		cd = cd->getNextData();
 	}
 
-	if (cd == NULL || sd == NULL){
+	if (cd == NULL || sd == NULL
+		&& cd->type != Servent::T_COUT) // COUT
+	{
 		return;
 	}
 
@@ -1216,6 +1336,11 @@ void PopupServentMenu(int servent_id){
 
 	cd = channelDataTop;
 	while(cd){
+		// COUT
+		if (cd->type == Servent::T_COUT
+			&& cd->servent_id == servent_id)
+			break;
+
 		sd = cd->findServentData(servent_id);
 		if (sd){
 			break;
@@ -1223,7 +1348,9 @@ void PopupServentMenu(int servent_id){
 		cd = cd->getNextData();
 	}
 
-	if (cd == NULL || sd == NULL){
+	if (cd == NULL || sd == NULL
+		&& cd->type != Servent::T_COUT) // COUT
+	{
 		return;
 	}
 
@@ -1236,6 +1363,11 @@ void PopupServentMenu(int servent_id){
 	switch(dwID){
 		case 1001:	// 切断
 			s->thread.active = false;
+
+			// COUT切断
+			if (s->type == Servent::T_COUT)
+				s->thread.finish = true;
+
 			break;
 
 	}
@@ -1558,6 +1690,14 @@ void WmRButtonDownProc(HWND hwnd, LPARAM lParam){
 			cd->setSelected(TRUE);
 			channel_id = cd->getChannelId();
 			channel_selected = TRUE;
+
+			// COUT識別
+			if (cd->type == Servent::T_COUT)
+			{
+				channel_selected = FALSE;
+				servent_selected = TRUE;
+				servent_id = cd->servent_id;
+			}
 		} else {
 			if (cd->isSelected()){
 				changeFlg = TRUE;

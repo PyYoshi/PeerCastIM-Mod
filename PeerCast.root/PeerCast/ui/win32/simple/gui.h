@@ -22,6 +22,7 @@
 #include "sys.h"
 #include "gdiplus.h"
 #include "channel.h"
+#include "servent.h"
 
 extern LRESULT CALLBACK GUIProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 extern void ADDLOG(const char *str,int id,bool sel,void *data, LogBuffer::TYPE type);
@@ -175,6 +176,8 @@ public:
 		selected = FALSE;
 		serventDataTop = NULL;
 		openFlg = FALSE;
+		type = Servent::T_NONE;
+		servent_id = -1;
 	}
 	int drawChannel(Gdiplus::Graphics *g, int x, int y);
 
@@ -219,6 +222,9 @@ public:
 	int getServentCount();
 
 	bool checkDown(int x, int y);
+
+	Servent::TYPE type; // COUTのサーバント情報保持用
+	int servent_id; // 同上。channel_idで代用できたけどPublicにしたくない
 };
 
 

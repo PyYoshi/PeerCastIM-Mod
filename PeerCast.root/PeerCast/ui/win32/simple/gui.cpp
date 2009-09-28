@@ -1135,7 +1135,7 @@ THREAD_PROC GUIDataUpdate(ThreadInfo *thread){
 		}
 
 		// 0.1•b~10‚Å1•b‘Ò‚¿
-		for(i=0; i<10; i++)
+		for(i=0; i<2; i++)
 		{
 			if (!thread->active)
 				break;
@@ -1243,8 +1243,12 @@ void PopupChannelMenu(int channel_id){
 			break;
 
 		case 1001:	// Ø’f
-			c->thread.active = false;
-			c->thread.finish = true;
+			// bump’†‚ÍØ’f‚µ‚È‚¢
+			if (!c->bumped)
+			{
+				c->thread.active = false;
+				c->thread.finish = true;
+			}
 			break;
 
 		case 1002:	// ÄÚ‘±

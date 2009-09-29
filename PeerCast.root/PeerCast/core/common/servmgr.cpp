@@ -143,6 +143,23 @@ ServMgr::ServMgr()
 	preventSS = false;
 	noVersionCheck = false;
 
+	// retrieve newest version number from DNS
+	// for windows ONLY. Linux or other OS is NOT supported.
+#ifdef WIN32
+	{
+		struct hostent *he;
+
+		he = gethostbyname(PCP_CLIENT_VERSION_URL);
+		if (he && he->h_addrtype == AF_INET)
+		{
+			versionDNS = ((struct in_addr*)he->h_addr_list[0])->S_un.S_un_b.s_b3;
+		} else
+			versionDNS = 0;
+	}
+#else
+	versionDNS = 0;
+#endif
+
 	chanLog="";
 
 	maxRelaysIndexTxt = 1;	// for PCRaw (relay)

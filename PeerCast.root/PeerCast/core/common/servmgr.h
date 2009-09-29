@@ -422,6 +422,8 @@ public:
 	bool preventSS; // スクリーンセーバーを抑止
 	bool noVersionCheck; // bcstAtomによるバージョンチェックを行わない
 
+	int versionDNS; // DNSから取得した最新バージョンの番号
+
 	int maxRelaysIndexTxt;	// for PCRaw (relay)
 
 #ifdef WIN32 //JP-MOD

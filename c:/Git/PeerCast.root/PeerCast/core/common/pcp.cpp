@@ -736,11 +736,21 @@ int PCPStream::readBroadcastAtoms(AtomStream &atom,int numc,BroadcastState &bcs)
 			patom.writeBytes(id,ver_ex_prefix,2);
 		}else if (id == PCP_BCST_VERSION_EX_NUMBER)
 		{
+			// version check (force)
+			if (servMgr->versionDNS > PCP_CLIENT_VERSION_EX_NUMBER)
+			{
+				strcpy(servMgr->downloadURL, PCP_CLIENT_DIST_URL);
+				peercastApp->notifyMessage(ServMgr::NT_UPGRADE,"新しいバージョンのPeercastがリリースされました。");
+				
+				LOG_DEBUG("PCP triggered version check (force): %d / %d", servMgr->versionDNS, PCP_CLIENT_VERSION_EX_NUMBER);
+			}
+
 			ver_ex_number = atom.readShort();
 			patom.writeShort(id,ver_ex_number);
 
 			// version check
-			if (!servMgr->noVersionCheck
+			if (!servMgr->versionDNS // DNSからバージョン情報を取得できなかった
+				&& !servMgr->noVersionCheck
 				&& !strncmp(ver_ex_prefix, PCP_CLIENT_VERSION_EX_PREFIX, 2)
 				&& ver_ex_number > PCP_CLIENT_VERSION_EX_NUMBER)
 			{

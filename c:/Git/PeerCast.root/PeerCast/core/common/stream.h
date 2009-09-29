@@ -540,5 +540,28 @@ public:
 	Stream *out;
 };
 
+// writeされたものを捨ててバイト数だけカウントするストリーム
+class DummyStream : public Stream
+{
+private:
+	unsigned long length;
+
+public:
+	DummyStream() : length(0) {};
+
+	void write(const void *p, int l)
+	{
+		length += l;
+	}
+
+	unsigned long getLength()
+	{
+		return length;
+	}
+
+	// dummy functions
+	int read(void *, int) { return 0; }
+};
+
 #endif
 

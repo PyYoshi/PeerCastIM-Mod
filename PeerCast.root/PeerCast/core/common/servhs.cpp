@@ -1697,13 +1697,26 @@ void Servent::handshakeXML()
 	rn->add(hc);
 
 
+	// calculate content-length
+	DummyStream ds;
+	xml.write(ds);
+
+	// set line-feed code to CRLF (for HTTP header)
+	bool bWriteCRLF = sock->writeCRLF;
+	sock->writeCRLF = true;
+
+	// write HTTP response header
     sock->writeLine(HTTP_SC_OK);
 	sock->writeLineF("%s %s",HTTP_HS_SERVER,PCX_AGENT);
     sock->writeLineF("%s %s",HTTP_HS_CONTENT,MIME_XML);
+	sock->writeLineF("%s %d", HTTP_HS_LENGTH, ds.getLength());
 	sock->writeLine("Connection: close");
-
     sock->writeLine("");
 
+	// revert setting
+	sock->writeCRLF = bWriteCRLF;
+
+	// write HTTP body
 	xml.write(*sock);
 
 }

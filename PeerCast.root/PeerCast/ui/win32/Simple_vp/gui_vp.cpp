@@ -1127,12 +1127,21 @@ LRESULT CALLBACK GUIProc (HWND hwnd, UINT message,
 				HWND hwndList;
 				
 				hwndList = GetDlgItem(guiWnd, chanID);
+#ifndef WIN64
 				wndOldListBox = (WNDPROC)GetWindowLong(hwndList, GWL_WNDPROC);
 				SetWindowLong(hwndList, GWL_WNDPROC, (DWORD)ListBoxProc);
 
 				hwndList = GetDlgItem(guiWnd, statusID);
 				wndOldConnListBox = (WNDPROC)GetWindowLong(hwndList, GWL_WNDPROC);
 				SetWindowLong(hwndList, GWL_WNDPROC, (DWORD)ConnListBoxProc);
+#else
+				wndOldListBox = (WNDPROC)GetWindowLongPtr(hwndList, GWLP_WNDPROC);
+				SetWindowLongPtr(hwndList, GWLP_WNDPROC, (DWORD)ListBoxProc);
+
+				hwndList = GetDlgItem(guiWnd, statusID);
+				wndOldConnListBox = (WNDPROC)GetWindowLongPtr(hwndList, GWLP_WNDPROC);
+				SetWindowLongPtr(hwndList, GWLP_WNDPROC, (DWORD)ConnListBoxProc);
+#endif
 			}
 
 			break;

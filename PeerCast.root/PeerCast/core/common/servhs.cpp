@@ -382,7 +382,59 @@ void Servent::handshakeHTTP(HTTP &http, bool isHTTP)
 		handshakeICY(Channel::SRC_ICECAST,isHTTP);
 		sock = NULL;	// socket is taken over by channel, so don`t close it
 
-	}else if (http.isRequest(servMgr->password))
+	} else if (http.isRequest("HEAD")) // for android client
+	{
+		char *str = in + 4;
+
+		if (str = stristr(str, "/stream/"))
+		{
+			int cnt = 0;
+
+			str += 8;
+			while (*str && (('0' <= *str && *str <= '9') || ('A' <= *str && *str <= 'F') || ('a' <= *str && *str <= 'f')))
+				++cnt, ++str;
+
+			if (cnt == 32 && !strncmp(str, ".wmv", 4))
+			{
+				// interpret "HEAD /stream/[0-9a-fA-F]{32}.wmv" as GET
+				LOG_DEBUG("INFO: interpret as GET");
+
+				char *fn = in+5;
+
+				char *pt = strstr(fn,HTTP_PROTO1);
+				if (pt)
+					pt[-1] = 0;
+
+				if (!sock->host.isLocalhost())
+					if (!isAllowed(ALLOW_DIRECT) || !isFiltered(ServFilter::F_DIRECT))
+						throw HTTPException(HTTP_SC_UNAVAILABLE,503);
+
+				triggerChannel(fn+8,ChanInfo::SP_HTTP,isPrivate());
+
+				return;
+			}
+		}
+
+		if (http.isRequest(servMgr->password))
+		{
+			if (!isAllowed(ALLOW_BROADCAST))
+				throw HTTPException(HTTP_SC_UNAVAILABLE,503);
+
+			loginPassword.set(servMgr->password);	// pwd already checked
+
+			sock->writeLine("OK2");
+			sock->writeLine("icy-caps:11");
+			sock->writeLine("");
+			LOG_DEBUG("ShoutCast client");
+
+			handshakeICY(Channel::SRC_SHOUTCAST,isHTTP);
+			sock = NULL;	// socket is taken over by channel, so don`t close it
+
+		}else
+		{
+			throw HTTPException(HTTP_SC_BADREQUEST,400);
+		}
+	} else if (http.isRequest(servMgr->password))
 	{
 		if (!isAllowed(ALLOW_BROADCAST))
 			throw HTTPException(HTTP_SC_UNAVAILABLE,503);

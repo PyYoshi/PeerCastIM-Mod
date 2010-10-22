@@ -1335,10 +1335,17 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 					sock->writeLineF("%s %s",HTTP_HS_CONTENT,MIME_MMS);
 				}else
 				{
-					sock->writeLine("Content-Type: application/vnd.ms.wms-hdr.asfv1");
-					if (ch)
-						sock->writeLineF("Content-Length: %d",ch->headPack.len);
-					sock->writeLine("Connection: Keep-Alive");
+					if (agent.contains("Android"))
+					{
+						LOG_DEBUG("INFO: Android client detected.");
+						sock->writeLineF("%s %s", HTTP_HS_CONTENT, MIME_WMV);
+					} else
+					{
+						sock->writeLine("Content-Type: application/vnd.ms.wms-hdr.asfv1");
+						if (ch)
+							sock->writeLineF("Content-Length: %d",ch->headPack.len);
+						sock->writeLine("Connection: Keep-Alive");
+					}
 				}
 			
 			} else if (outputProtocol == ChanInfo::SP_PCP)

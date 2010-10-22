@@ -82,6 +82,8 @@ ThreadInfo trafficDlgThread;
 HWND trafficDlg = NULL;
 FileStream fs;
 
+bool jumpListEnabled = false; // jumplist flag (only for win7 or later)
+
 // プロトタイプ宣言
 void createGUI(HWND);
 LRESULT CALLBACK TrafficDlgProc(HWND, UINT, WPARAM, LPARAM);
@@ -283,13 +285,26 @@ int WinMainDummy(HINSTANCE hInstance,
 	WIN32_FIND_DATA fd; //JP-EX
 	HANDLE hFind; //JP-EX
 
-	OSVERSIONINFO osInfo; //JP-EX
-	osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO); //JP-EX
-	GetVersionEx(&osInfo);
+	OSVERSIONINFOEX osInfo; //JP-EX
+	osInfo.dwOSVersionInfoSize = sizeof(osInfo); //JP-EX
+	GetVersionEx(reinterpret_cast<LPOSVERSIONINFO>(&osInfo));
 	if (osInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
 		winDistinctionNT = true;
 	else
 		winDistinctionNT = false;
+
+	// for Windows7 or later
+	if ((osInfo.wProductType == VER_NT_WORKSTATION
+		&& osInfo.dwMajorVersion == 6
+		&& osInfo.dwMinorVersion == 1)
+		||
+		(osInfo.dwMajorVersion == 6
+		&& osInfo.dwMinorVersion > 1)
+		||
+		osInfo.dwMajorVersion > 6)
+	{
+		jumpListEnabled = true;
+	}
 
 	// off by default now
 	showGUI = false;

@@ -1767,6 +1767,27 @@ bool ServMgr::getChannel(char *str,ChanInfo &info, bool relay)
 		info = ch->info;	// get updated channel info 
 
 		return true;
+	} else if (ch && ch->thread.finish)
+	{
+		// wait until deleting channel
+		do
+		{
+			sys->sleep(500);
+			ch = chanMgr->findChannelByNameID(info);
+		} while (ch);
+
+		// same as else block
+		if (relay)
+		{
+			wb.off();
+			ch = chanMgr->findAndRelay(info);
+			if (ch)
+			{
+				// «Exception point
+				info = ch->info; //get updated channel info 
+				return true;
+			}
+		}
 	}else
 	{
 		if (relay)

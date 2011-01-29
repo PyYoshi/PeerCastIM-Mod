@@ -23,7 +23,7 @@
 
 
 //#include "stdafx.h"
-//#include "winsock2.h"
+#include "winsock2.h"
 #include <windows.h>
 #include <stdio.h>
 #include "wsocket.h"
@@ -640,7 +640,7 @@ void WSAClientSocket::close()
 	sockLock.on();
 	if (sockNum)
 	{
-//		shutdown(sockNum,SD_SEND);
+		shutdown(sockNum,SD_SEND); // fix from rev5
 
 		setReadTimeout(2000);
 		unsigned int stime = sys->getTime();

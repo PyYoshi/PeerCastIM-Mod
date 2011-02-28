@@ -5,9 +5,6 @@
 	Name="Simple"
 	ProjectGUID="{7D4833CE-1286-4587-9470-52E098B29C12}"
 	RootNamespace="Simple"
-	SccProjectName="&quot;$/PeerCast.root/PeerCast&quot;, JCAAAAAA"
-	SccLocalPath="..\..\.."
-	SccProvider="MSSCCI:Microsoft Visual SourceSafe"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>

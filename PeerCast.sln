@@ -6,14 +6,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		memo.txt = memo.txt
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "corelib", "..\..\core\win32\lib\corelib.vcproj", "{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "corelib", "core\win32\lib\corelib.vcproj", "{7BCFE65B-8757-45F3-8DFB-1E7D683950D1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple", "simple\Simple.vcproj", "{7D4833CE-1286-4587-9470-52E098B29C12}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple", "ui\win32\simple\Simple.vcproj", "{7D4833CE-1286-4587-9470-52E098B29C12}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1} = {7BCFE65B-8757-45F3-8DFB-1E7D683950D1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple_vp", "Simple_vp\Simple_vp.vcproj", "{E60173A7-1FC8-444B-BBAB-BB3D663D5C05}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Simple_vp", "ui\win32\Simple_vp\Simple_vp.vcproj", "{E60173A7-1FC8-444B-BBAB-BB3D663D5C05}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7BCFE65B-8757-45F3-8DFB-1E7D683950D1} = {7BCFE65B-8757-45F3-8DFB-1E7D683950D1}
 	EndProjectSection

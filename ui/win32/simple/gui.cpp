@@ -1398,6 +1398,12 @@ void PopupOtherMenu(){
 	info.fMask = MIIM_ID | MIIM_TYPE;
 	info.fType = MFT_STRING;
 
+	info.wID = 1107;
+	info.dwTypeData = "非リレー中のチャンネルを削除";
+	InsertMenuItem(hMenu, -1, true, &info);
+
+	InsertMenuItem(hMenu, -1, true, &separator);
+
 	if (!gbDispTop){
 		info.wID = 1101;
 		info.dwTypeData = "最前面表示";
@@ -1474,6 +1480,28 @@ void PopupOtherMenu(){
 			servMgr->autoServe = false;
 			break;
 
+		case 1107:  // 非リレー中のチャンネル情報を全て削除
+			{
+				LOG_DEBUG("Start cleaning up unused channels");
+				while (cd)
+				{
+					if (cd->getStatus() == Channel::S_NOTFOUND
+						|| cd->getStatus() == Channel::S_IDLE)
+					{
+						Channel *c = chanMgr->findChannelByChannelID(cd->getChannelId());
+
+						if (c && !c->bumped)
+						{
+							c->thread.active = false;
+							c->thread.finish = true;
+						}
+					}
+
+					cd = cd->getNextData();
+				}
+				LOG_DEBUG("Finish a cleanup of unused channels");
+			}
+			break;
 	}
 }
 

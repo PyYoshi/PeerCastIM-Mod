@@ -1327,7 +1327,7 @@
 				OutputFile="Release/PeerCast.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;C:\Visual Studio Projects\PeCa-IMAS7651\core\win32\lib\Release&quot;"
+				AdditionalLibraryDirectories="../../../core\win32\lib\Release"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/PeerCast.pdb"
 				StripPrivateSymbols="PeerCast-dist.pdb"
@@ -1362,6 +1362,7 @@
 				Name="VCPostBuildEventTool"
 				Description="Copy exe to pimp"
 				CommandLine="copy                   release\peercast.exe                   ..\pimp\&#x0D;&#x0A;"
+				ExcludedFromBuild="true"
 			/>
 		</Configuration>
 		<Configuration
@@ -1437,7 +1438,7 @@
 				OutputFile="Release/PeerCast.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;C:\Visual Studio Projects\PeCa-IMAS7651\core\win32\lib\Release&quot;"
+				AdditionalLibraryDirectories="../../../core\win32\lib\Release"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Release/PeerCast.pdb"
 				StripPrivateSymbols="PeerCast-dist.pdb"
@@ -1471,6 +1472,7 @@
 				Name="VCPostBuildEventTool"
 				Description="Copy exe to pimp"
 				CommandLine="copy                   release\peercast.exe                   ..\pimp\&#x0D;&#x0A;"
+				ExcludedFromBuild="true"
 			/>
 		</Configuration>
 		<Configuration

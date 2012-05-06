@@ -160,6 +160,16 @@ ServMgr::ServMgr()
 	versionDNS = 0;
 #endif
 
+	// init gray/black-lists
+#ifdef _WIN32
+	IP_graylist = new WTSVector<addrCont>();
+	IP_blacklist = new WTSVector<addrCont>();
+#else
+	// TODO for linux
+#endif
+	dosInterval = 30;
+	dosThreashold = 20;
+
 	chanLog="";
 
 	maxRelaysIndexTxt = 1;	// for PCRaw (relay)
@@ -182,6 +192,15 @@ ServMgr::ServMgr()
 
 		disableAutoBumpIfDirect = 1;
 		asxDetailedMode = 1;
+	}
+
+	// start thread (graylist)
+	{
+		ThreadInfo t;
+
+		t.func = ServMgr::graylistThreadFunc;
+		t.active = true;
+		sys->startThread(&t);
 	}
 }
 // -----------------------------------
@@ -2844,6 +2863,44 @@ int ServMgr::kickUnrelayableHost(GnuID &chid, ChanHit &sendhit)
 
 		return 1;
 	}
+
+	return 0;
+}
+
+int WINAPI ServMgr::graylistThreadFunc(ThreadInfo *t)
+{
+	while (t->active)
+	{
+		LOG_DEBUG("******************** check graylist: begin");
+
+		servMgr->IP_graylist->lock();
+		servMgr->IP_blacklist->lock();
+
+
+		for (size_t i=0; i<servMgr->IP_graylist->count; ++i)
+		{
+			addrCont addr = servMgr->IP_graylist->at(i);
+			LOG_NETWORK("######## %d.%d.%d.%d  # %d", (addr.addr >> 24), (addr.addr >> 16) & 0xFF, (addr.addr >> 8) & 0xFF, addr.addr & 0xFF, addr.count);
+			if (addr.count >= servMgr->dosThreashold)
+			{
+				servMgr->IP_blacklist->push_back(addr);
+				LOG_DEBUG("BANNED: %d.%d.%d.%d", (addr.addr >> 24), (addr.addr >> 16) & 0xFF, (addr.addr >> 8) & 0xFF, addr.addr & 0xFF);
+			}
+		}
+
+		servMgr->IP_graylist->clear();
+
+
+		servMgr->IP_graylist->unlock();
+		servMgr->IP_blacklist->unlock();
+
+		LOG_DEBUG("******************** check graylist: end");
+
+		sys->sleep(servMgr->dosInterval*1000);
+	}
+
+	t->finish = true;
+	sys->endThread(t);
 
 	return 0;
 }

@@ -540,19 +540,19 @@ void Servent::handshakeIncoming()
 
 	if (stristr(buf,RTSP_PROTO1))
 	{
-		LOG_DEBUG("RTSP from %s '%s'",sb,buf);
+		LOG_DEBUG("RTSP from %s '%.100s'",sb,buf);
 		RTSP rtsp(*sock);
 		rtsp.initRequest(buf);
 		handshakeRTSP(rtsp);
 	}else if (stristr(buf,HTTP_PROTO1))
 	{
-		LOG_DEBUG("HTTP from %s '%s'",sb,buf);
+		LOG_DEBUG("HTTP from %s '%.100s'",sb,buf);
 		HTTP http(*sock);
 		http.initRequest(buf);
 		handshakeHTTP(http,true);
 	}else
 	{
-		LOG_DEBUG("Connect from %s '%s'",sb,buf);
+		LOG_DEBUG("Connect from %s '%.100s'",sb,buf);
 		HTTP http(*sock);
 		http.initRequest(buf);
 		handshakeHTTP(http,false);
@@ -1868,7 +1868,7 @@ void Servent::handshakeICY(Channel::SRC_TYPE type, bool isHTTP)
 
 	while (http.nextHeader())
 	{
-		LOG_DEBUG("ICY %s",http.cmdLine);
+		LOG_DEBUG("ICY %.100s",http.cmdLine);
 		readICYHeader(http, info, loginPassword.cstr(), loginPassword.MAX_LEN);
 	}
 

@@ -4456,6 +4456,10 @@
 			Name="Core Includes"
 			>
 			<File
+				RelativePath="..\..\common\addrCont.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\common\asf.h"
 				>
 			</File>
@@ -4557,6 +4561,10 @@
 			</File>
 			<File
 				RelativePath="..\..\common\sys.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\common\ts_vector.h"
 				>
 			</File>
 			<File
@@ -4863,6 +4871,10 @@
 			>
 			<File
 				RelativePath="..\seh.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ts_vector.h"
 				>
 			</File>
 			<File

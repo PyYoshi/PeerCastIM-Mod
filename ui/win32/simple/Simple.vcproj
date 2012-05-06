@@ -1014,7 +1014,7 @@
 				OutputFile="Debug/PeerCast.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;C:\Visual Studio Projects\PeCa-IMAS7651\core\win32\lib\Debug&quot;"
+				AdditionalLibraryDirectories="../../../core\win32\lib\Release"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/PeerCast.pdb"
 				SubSystem="2"
@@ -1045,8 +1045,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copy exe to pimp"
-				CommandLine="copy                   debug\peercast.exe                   ..\pimp\&#x0D;&#x0A;"
+				Description=""
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration

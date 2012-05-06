@@ -113,8 +113,6 @@ public:
 class ServMgr
 {
 
-
-
 public:
 
 	enum NOTIFY_TYPE
@@ -322,6 +320,9 @@ public:
 		return maxBitrateOut ? (BYTES_TO_KBPS(totalOutput(false))+br) > maxBitrateOut  : false;
 	}
 
+	// thread func (graylist)
+	static int WINAPI graylistThreadFunc(ThreadInfo *t);
+
 	unsigned int		totalOutput(bool);
 	unsigned int		totalInput(bool);
 
@@ -423,6 +424,11 @@ public:
 	bool noVersionCheck; // bcstAtomによるバージョンチェックを行わない
 
 	int versionDNS; // DNSから取得した最新バージョンの番号
+
+	ITSVector<addrCont> *IP_graylist; // gray/black-lists for DoS atk
+	ITSVector<addrCont> *IP_blacklist;
+	unsigned dosThreashold;
+	unsigned dosInterval;
 
 	int maxRelaysIndexTxt;	// for PCRaw (relay)
 

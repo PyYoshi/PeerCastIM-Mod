@@ -29,6 +29,10 @@
 #include "http.h"
 #include "rtsp.h"
 #include "pcp.h"
+#include "addrCont.h"
+#ifdef _WIN32
+#include "win32/ts_vector.h"
+#endif
 
 class HTML;
 

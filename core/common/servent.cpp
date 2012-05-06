@@ -380,7 +380,6 @@ void Servent::initIncoming(ClientSocket *s, unsigned int a)
 		sock->host.toStr(ipStr);
 		LOG_DEBUG("Incoming from %s",ipStr);
 
-
 		if (!sys->startThread(&thread))
 			throw StreamException("Can`t start thread");
 	}catch(StreamException &e)
@@ -3051,7 +3050,46 @@ int Servent::serverProcMain(ThreadInfo *thread)
 					peercastApp->notifyMessage(ServMgr::NT_PEERCAST, "reject multicast address");
 				} else
 				if (cs)
-				{	
+				{
+					// countermeasure against DoS Atk
+					if (cs->host.ip != (0x7F000001)) // bypass loopback
+					{
+						// check blacklist
+						addrCont clientAddr(cs->host.ip);
+						servMgr->IP_blacklist->lock();
+						if (servMgr->IP_blacklist->find(clientAddr))
+						{
+							// blacklisted
+							servMgr->IP_blacklist->unlock();
+
+							LOG_DEBUG("REFUSED: %d.%d.%d.%d", (cs->host.ip >> 24), (cs->host.ip >> 16) & 0xFF, (cs->host.ip >> 8) & 0xFF, cs->host.ip & 0xFF);
+							cs->close();
+							sys->sleep(100);
+
+							continue;
+						}
+
+						servMgr->IP_blacklist->unlock();
+						LOG_DEBUG("ACCEPT: %d.%d.%d.%d", (cs->host.ip >> 24), (cs->host.ip >> 16) & 0xFF, (cs->host.ip >> 8) & 0xFF, cs->host.ip & 0xFF);
+
+
+						// check graylist
+						servMgr->IP_graylist->lock();
+						size_t idx;
+						if (servMgr->IP_graylist->find(clientAddr, &idx))
+						{
+							// update
+							++(servMgr->IP_graylist->at(idx));
+							LOG_DEBUG("UPDATE: %d.%d.%d.%d", (cs->host.ip >> 24), (cs->host.ip >> 16) & 0xFF, (cs->host.ip >> 8) & 0xFF, cs->host.ip & 0xFF);
+						} else
+						{
+							// graylisted
+							servMgr->IP_graylist->push_back(clientAddr);
+							LOG_DEBUG("GRAYED: %d.%d.%d.%d", (cs->host.ip >> 24), (cs->host.ip >> 16) & 0xFF, (cs->host.ip >> 8) & 0xFF, cs->host.ip & 0xFF);
+						}
+						servMgr->IP_graylist->unlock();
+					}
+
 					LOG_DEBUG("accepted incoming");
 					Servent *ns = servMgr->allocServent();
 					if (ns)
@@ -3064,7 +3102,7 @@ int Servent::serverProcMain(ThreadInfo *thread)
 						LOG_ERROR("Out of servents");
 				}
 			}
-			sys->sleep(100);
+			sys->sleep(10);
 		}
 	}catch(StreamException &e)
 	{

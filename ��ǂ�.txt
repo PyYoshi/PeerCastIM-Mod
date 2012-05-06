@@ -1,4 +1,4 @@
-PeerCast IM0044 (released on 20110309 by えるー)
+PeerCast IM0045 (released on 20120506 by えるー)
 based on PeerCast IM7651 by Trill, Original: (c) 2005-2007 giles/peercast.org
 
 
@@ -46,6 +46,9 @@ based on PeerCast IM7651 by Trill, Original: (c) 2005-2007 giles/peercast.org
 
 
 = 改訂履歴
+  - IM0045 (120506)
+    + DoS攻撃への耐性を向上。
+
   - IM0044 (110309)
     + GUIの右クリックメニューからリレーしていないチャンネル情報を
       一括削除できるようになりました。

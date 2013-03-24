@@ -31,13 +31,13 @@ void SEHdump(_EXCEPTION_POINTERS *lpExcept)
 	fs.close();
 	if (dump)
 	{
-		MessageBox(NULL, "��ʕی�ᔽ�ׁ̈A�v���O�����͋����I������܂��B\n"
-			"�������̂��߃_���v�f�[�^(dump.html, dump.dmp)��񋟂��Ă��������B", "SEH",
+		MessageBox(NULL, "一般保護違反の為、プログラムは強制終了されます。\n"
+			"問題解決のためダンプデータ(dump.html, dump.dmp)を提供してください。", "SEH",
 			MB_OK|MB_ICONWARNING);
 	} else
 	{
-		MessageBox(NULL, "��ʕی�ᔽ�ׁ̈A�v���O�����͋����I������܂��B\n"
-			"�������̂��߂Ƀ_���v�f�[�^(dump.html)��񋟂��Ă��������B", "SEH",
+		MessageBox(NULL, "一般保護違反の為、プログラムは強制終了されます。\n"
+			"問題解決のためにダンプデータ(dump.html)を提供してください。", "SEH",
 			MB_OK|MB_ICONWARNING);
 	}
 

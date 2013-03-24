@@ -1,0 +1,5 @@
+peercast-build-desktop-PATH*
+.directory
+*~
+*.o
+*.pro.user

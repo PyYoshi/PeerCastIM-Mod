@@ -19,9 +19,9 @@
 // ------------------------------------------------
 
 
-#include "stream.h"
-#include "common.h"
-#include "sys.h"
+#include "common/stream.h"
+#include "common/common.h"
+#include "common/sys.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
@@ -279,7 +279,7 @@ void Stream::writeLineF(const char *fmt,...)
 
 	write(fmt,ap);
 
-	// special thanks: –¼–³‚µ‚Ì’N‚©
+	// special thanks: åç„¡ã—ã®èª°ã‹
    	va_end(ap);
 
 	if (writeCRLF)

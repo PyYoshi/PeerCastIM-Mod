@@ -21,7 +21,7 @@
 #define _XML_H
 
 //-----------------------
-#include "common.h"
+#include "common/common.h"
 #include <stdarg.h>
 
 //-----------------------

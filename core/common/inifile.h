@@ -20,7 +20,7 @@
 #ifndef _INIFILE
 #define _INIFILE
 
-#include "stream.h"
+#include "common/stream.h"
 
 // -----------------------------------------
 class IniFile 

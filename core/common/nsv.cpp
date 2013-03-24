@@ -16,7 +16,7 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "nsv.h"
+#include "common/nsv.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

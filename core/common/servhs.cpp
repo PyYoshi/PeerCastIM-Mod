@@ -20,13 +20,13 @@
 
 
 #include <stdlib.h>
-#include "servent.h"
-#include "servmgr.h"
-#include "html.h"
-#include "stats.h"
-#include "peercast.h"
-#include "pcp.h"
-#include "version2.h"
+#include "common/servent.h"
+#include "common/servmgr.h"
+#include "common/html.h"
+#include "common/stats.h"
+#include "common/peercast.h"
+#include "common/pcp.h"
+#include "common/version2.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

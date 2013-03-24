@@ -1,6 +1,6 @@
 /*
  *
- * Š¿ŽšƒR[ƒh‚Ì”»•Ê‚µAiconv —p‚Ì•¶ŽšƒGƒ“ƒR[ƒfƒBƒ“ƒO•¶Žš—ñ‚ð•Ô‚·
+ * æ¼¢å­—ã‚³ãƒ¼ãƒ‰ã®åˆ¤åˆ¥ã—ã€iconv ç”¨ã®æ–‡å­—ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°æ–‡å­—åˆ—ã‚’è¿”ã™
  *
  * 2001/10/24  Remove static variables
  *             Kazuhiko Iwama <iwama@ymc.ne.jp>

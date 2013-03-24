@@ -20,7 +20,7 @@
 #ifndef _SERVMGR_H
 #define _SERVMGR_H
 
-#include "servent.h"
+#include "common/servent.h"
 
 // ----------------------------------
 
@@ -321,7 +321,7 @@ public:
 	}
 
 	// thread func (graylist)
-	static int WINAPI graylistThreadFunc(ThreadInfo *t);
+	//static int WINAPI graylistThreadFunc(ThreadInfo *t);
 
 	unsigned int		totalOutput(bool);
 	unsigned int		totalInput(bool);
@@ -418,12 +418,12 @@ public:
 	bool	saveGuiPos;
 	bool	keepDownstreams;
 
-	bool topmostGui; // Å‘O–Ê
-	bool startWithGui; // ‹N“®‚ÉGUI
-	bool preventSS; // ƒXƒNƒŠ[ƒ“ƒZ[ƒo[‚ğ—}~
-	bool noVersionCheck; // bcstAtom‚É‚æ‚éƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒN‚ğs‚í‚È‚¢
+	bool topmostGui; // æœ€å‰é¢
+	bool startWithGui; // èµ·å‹•æ™‚ã«GUI
+	bool preventSS; // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚»ãƒ¼ãƒãƒ¼ã‚’æŠ‘æ­¢
+	bool noVersionCheck; // bcstAtomã«ã‚ˆã‚‹ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã‚ãªã„
 
-	int versionDNS; // DNS‚©‚çæ“¾‚µ‚½ÅVƒo[ƒWƒ‡ƒ“‚Ì”Ô†
+	int versionDNS; // DNSã‹ã‚‰å–å¾—ã—ãŸæœ€æ–°ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®ç•ªå·
 
 	ITSVector<addrCont> *IP_graylist; // gray/black-lists for DoS atk
 	ITSVector<addrCont> *IP_blacklist;

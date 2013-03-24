@@ -16,10 +16,10 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "atom.h"
-#include "pcp.h"
-#include "peercast.h"
-#include "version2.h"
+#include "common/atom.h"
+#include "common/pcp.h"
+#include "common/peercast.h"
+#include "common/version2.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
@@ -514,7 +514,9 @@ void PCPStream::readHostAtoms(AtomStream &atom, int numc, BroadcastState &bcs, C
 				if(c && c->isBroadcasting()){
 					String sjis;
 					sjis = c->info.name;
+#ifdef _WIN32
 					sjis.convertTo(String::T_SJIS);
+#endif
 					peercastApp->notifyMessage(ServMgr::NT_APPLAUSE, sjis);
 				}
 			}
@@ -736,29 +738,8 @@ int PCPStream::readBroadcastAtoms(AtomStream &atom,int numc,BroadcastState &bcs)
 			patom.writeBytes(id,ver_ex_prefix,2);
 		}else if (id == PCP_BCST_VERSION_EX_NUMBER)
 		{
-			// version check (force)
-			if (servMgr->versionDNS > PCP_CLIENT_VERSION_EX_NUMBER)
-			{
-				strcpy(servMgr->downloadURL, PCP_CLIENT_DIST_URL);
-				peercastApp->notifyMessage(ServMgr::NT_UPGRADE,"新しいバージョンのPeercastがリリースされました。");
-				
-				LOG_DEBUG("PCP triggered version check (force): %d / %d", servMgr->versionDNS, PCP_CLIENT_VERSION_EX_NUMBER);
-			}
-
 			ver_ex_number = atom.readShort();
 			patom.writeShort(id,ver_ex_number);
-
-			// version check
-			if (!servMgr->versionDNS // DNSからバージョン情報を取得できなかった
-				&& !servMgr->noVersionCheck
-				&& !strncmp(ver_ex_prefix, PCP_CLIENT_VERSION_EX_PREFIX, 2)
-				&& ver_ex_number > PCP_CLIENT_VERSION_EX_NUMBER)
-			{
-				strcpy(servMgr->downloadURL, PCP_CLIENT_DIST_URL);
-				peercastApp->notifyMessage(ServMgr::NT_UPGRADE,"新しいバージョンのPeercastが検出されました。更新を確認してください。");
-				
-				LOG_DEBUG("PCP got version check: %d / %d", ver_ex_number, PCP_CLIENT_VERSION_EX_NUMBER);
-			}
 		}else if (id == PCP_HOST)
 		{
 			ChanHit hit;

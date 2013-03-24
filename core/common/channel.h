@@ -19,12 +19,12 @@
 #ifndef _CHANNEL_H
 #define _CHANNEL_H
 
-#include "sys.h"
-#include "stream.h"
-#include "gnutella.h"
-#include "xml.h"
-#include "asf.h"
-#include "cstream.h"
+#include "common/sys.h"
+#include "common/stream.h"
+#include "common/gnutella.h"
+#include "common/xml.h"
+#include "common/asf.h"
+#include "common/cstream.h"
 
 class AtomStream;
 class ChanHitSearch;
@@ -443,10 +443,8 @@ public:
 	bool	isIdle() {return isActive() && (status==S_IDLE);}
 
 	static THREAD_PROC	stream(ThreadInfo *);
-	static THREAD_PROC streamMain(ThreadInfo *);
 
 	static THREAD_PROC  waitFinish(ThreadInfo *);
-	static THREAD_PROC waitFinishMain(ThreadInfo *);
 
 	void	setStatus(STATUS s);
 	const char  *getSrcTypeStr() {return srcTypes[srcType];}
@@ -546,7 +544,7 @@ public:
 	unsigned int lastSkipTime;
 	unsigned int lastStopTime;
 
-	int maxRelays; // ƒ`ƒƒƒ“ƒlƒ‹ŒÅ—L‚ÌƒŠƒŒ[Å‘å”(ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Å‰Šú‰»)
+	int maxRelays; // ãƒãƒ£ãƒ³ãƒãƒ«å›ºæœ‰ã®ãƒªãƒ¬ãƒ¼æœ€å¤§æ•°(ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§åˆæœŸåŒ–)
 };
 
 // ----------------------------------

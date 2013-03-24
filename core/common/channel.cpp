@@ -22,35 +22,33 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "common.h"
-#include "socket.h"
-#include "channel.h"
-#include "gnutella.h"
-#include "servent.h"
-#include "servmgr.h"
-#include "sys.h"
-#include "xml.h"
-#include "http.h"
-#include "peercast.h"
-#include "atom.h"
-#include "pcp.h"
+#include "common/common.h"
+#include "common/socket.h"
+#include "common/channel.h"
+#include "common/gnutella.h"
+#include "common/servent.h"
+#include "common/servmgr.h"
+#include "common/sys.h"
+#include "common/xml.h"
+#include "common/http.h"
+#include "common/peercast.h"
+#include "common/atom.h"
+#include "common/pcp.h"
 
-#include "mp3.h"
-#include "ogg.h"
-#include "mms.h"
-#include "nsv.h"
+#include "common/mp3.h"
+#include "common/ogg.h"
+#include "common/mms.h"
+#include "common/nsv.h"
 
-#include "icy.h"
-#include "url.h"
+#include "common/icy.h"
+#include "common/url.h"
 
-#include "version2.h"
+#include "common/version2.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
 #define new DEBUG_NEW
 #endif
-
-#include "win32/seh.h"
 
 // -----------------------------------
 char *Channel::srcTypes[]=
@@ -117,7 +115,7 @@ int canStreamIndexTxt(Channel *ch)
 {
 	int ret;
 
-	// é©ï™Ç™îzêMÇµÇƒÇ¢ÇÈèÍçáÇÕä÷åWÇ»Ç¢
+	// Ëá™ÂàÜ„ÅåÈÖç‰ø°„Åó„Å¶„ÅÑ„ÇãÂ†¥Âêà„ÅØÈñ¢‰øÇ„Å™„ÅÑ
 	if(!ch || ch->isBroadcasting())
 		return -1;
 
@@ -311,7 +309,7 @@ bool	Channel::isFull()
 	}
 	// for PCRaw (relay) end.
 
-	// É`ÉÉÉìÉlÉãå≈óLÇÃÉäÉåÅ[è„å¿ê›íËÇ™Ç†ÇÈÇ©
+	// „ÉÅ„É£„É≥„Éç„É´Âõ∫Êúâ„ÅÆ„É™„É¨„Éº‰∏äÈôêË®≠ÂÆö„Åå„ÅÇ„Çã„Åã
 	if (maxRelays > 0)
 	{
 		return localRelays() >= maxRelays;
@@ -425,7 +423,7 @@ void Channel::checkReadDelay(unsigned int len)
 
 
 // -----------------------------------
-THREAD_PROC Channel::streamMain(ThreadInfo *thread)
+THREAD_PROC	Channel::stream(ThreadInfo *thread)
 {
 //	thread->lock();
 
@@ -485,16 +483,10 @@ THREAD_PROC Channel::streamMain(ThreadInfo *thread)
 		ch->endThread(true);
 	}
 	return 0;
-}
-
-// -----------------------------------
-THREAD_PROC	Channel::stream(ThreadInfo *thread)
-{
-	SEH_THREAD(streamMain, Channel::stream);
 }	
 
 // -----------------------------------
-THREAD_PROC Channel::waitFinishMain(ThreadInfo *thread)
+THREAD_PROC Channel::waitFinish(ThreadInfo *thread)
 {
 	Channel *ch = (Channel*)thread->data;
 	LOG_DEBUG("Wait channel finish");
@@ -513,13 +505,6 @@ THREAD_PROC Channel::waitFinishMain(ThreadInfo *thread)
 	delete thread;
 	return 0;
 }
-
-// -----------------------------------
-THREAD_PROC Channel::waitFinish(ThreadInfo *thread)
-{
-	SEH_THREAD(waitFinishMain, Channel::waitFinish);
-}
-
 
 // -----------------------------------
 bool Channel::acceptGIV(ClientSocket *givSock)
@@ -1201,8 +1186,8 @@ void Channel::broadcastTrackerUpdate(GnuID &svID, bool force)
 		if (!chl)
 			throw StreamException("Broadcast channel has no hitlist");
 
-		int numListeners = stealth ? -1 : totalListeners(); //JP-MOD ÉäÉXÉiÅ[êîâBï¡ã@î\
-		int numRelays = stealth ? -1 : totalRelays(); //JP-MOD ÉäÉåÅ[êîâBï¡ã@î\
+        int numListeners = stealth ? -1 : totalListeners(); //JP-MOD „É™„Çπ„Éä„ÉºÊï∞Èö†ËîΩÊ©üËÉΩ
+        int numRelays = stealth ? -1 : totalRelays(); //JP-MOD „É™„É¨„ÉºÊï∞Èö†ËîΩÊ©üËÉΩ
 
 		unsigned int oldp = rawData.getOldestPos();
 		unsigned int newp = rawData.getLatestPos();
@@ -3056,7 +3041,7 @@ public:
 	bool	keep;
 };
 // -----------------------------------
-THREAD_PROC findAndPlayChannelProcMain(ThreadInfo *th)
+THREAD_PROC findAndPlayChannelProc(ThreadInfo *th)
 {
 	ChanFindInfo *cfi = (ChanFindInfo *)th;
 
@@ -3084,13 +3069,6 @@ THREAD_PROC findAndPlayChannelProcMain(ThreadInfo *th)
 	delete cfi;
 	return 0;
 }
-
-// -----------------------------------
-THREAD_PROC findAndPlayChannelProc(ThreadInfo *thread)
-{
-	SEH_THREAD(findAndPlayChannelProcMain, findAndPlayChannel);
-}
-
 // -----------------------------------
 void ChanMgr::findAndPlayChannel(ChanInfo &info, bool keep)
 {
@@ -3412,7 +3390,7 @@ bool	ChanHit::writeVariable(Stream &out, const String &var)
 			strcat(buf,buf2);
 
 			char h_name[128];
-			if (ClientSocket::getHostname(h_name,sizeof(h_name),rhost[0].ip)) // BOFëŒçÙÇ¡Ç€Ç¢
+			if (ClientSocket::getHostname(h_name,sizeof(h_name),rhost[0].ip)) // BOFÂØæÁ≠ñ„Å£„ÅΩ„ÅÑ
 			{
 				strcat(buf,"[");
 				strcat(buf,h_name);
@@ -4676,8 +4654,10 @@ static void WriteASXInfo(Stream &out, String &title, String &contacturl, String:
 		String titleEncode;
 		titleEncode = title;
 		titleEncode.convertTo(tEncoding);
-		if(tEncoding == String::T_SJIS)
-			SJIStoSJISSAFE(titleEncode.cstr(), String::MAX_LEN);
+#ifdef _WIN32
+        if(tEncoding == String::T_SJIS)
+            SJIStoSJISSAFE(titleEncode.cstr(), String::MAX_LEN);
+#endif
 		out.writeLineF("<TITLE>%s</TITLE>", titleEncode.cstr());
 	}
 
@@ -4686,8 +4666,10 @@ static void WriteASXInfo(Stream &out, String &title, String &contacturl, String:
 		String contacturlEncode;
 		contacturlEncode = contacturl;
 		contacturlEncode.convertTo(tEncoding);
-		if(tEncoding == String::T_SJIS)
-			SJIStoSJISSAFE(contacturlEncode.cstr(), String::MAX_LEN);
+#ifdef _WIN32
+        if(tEncoding == String::T_SJIS)
+            SJIStoSJISSAFE(contacturlEncode.cstr(), String::MAX_LEN);
+#endif
 		out.writeLineF("<MOREINFO HREF = \"%s\" />", contacturlEncode.cstr());
 	}
 }
@@ -4697,7 +4679,11 @@ void PlayList::writeASX(Stream &out)
 {
 	out.writeLine("<ASX Version=\"3.0\">");
 
-	String::TYPE tEncoding = String::T_SJIS;
+#ifdef _WIN32
+    String::TYPE tEncoding = String::T_SJIS;
+#else
+    String::TYPE tEncoding = String::T_UNICODESAFE;
+#endif
 	if(servMgr->asxDetailedMode == 2)
 	{
 		out.writeLine("<PARAM NAME = \"Encoding\" VALUE = \"utf-8\" />"); //JP-MOD Memo: UTF-8 cannot be used in some recording software.

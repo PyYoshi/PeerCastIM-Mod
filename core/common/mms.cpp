@@ -16,9 +16,9 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "channel.h"
-#include "mms.h"
-#include "asf.h"
+#include "common/channel.h"
+#include "common/mms.h"
+#include "common/asf.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

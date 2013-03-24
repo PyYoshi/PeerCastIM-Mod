@@ -21,8 +21,8 @@
 #define _SOCKET_H
 
 
-#include "common.h"
-#include "stream.h"
+#include "common/common.h"
+#include "common/stream.h"
 
 //#define DISABLE_NAGLE 1
 
@@ -129,14 +129,14 @@ public:
 	{
 		readTimeout = 30000;
 		writeTimeout = 30000;
-#ifdef WIN32
+#ifdef NULL//WIN32
 		skipCount = 0;
 		lastSkipTime = 0;
 #endif
 	}
 
 	~ClientSocket(){
-#ifdef WIN32
+#ifdef NULL//WIN32
 		bufList.clear();
 #endif
 	}
@@ -170,7 +170,7 @@ public:
 
     Host    host;
 
-#ifdef WIN32
+#ifdef NULL//WIN32
 	SocketBufferList	bufList;
 	virtual void bufferingWrite(const void *, int) = 0;
 	unsigned int skipCount;

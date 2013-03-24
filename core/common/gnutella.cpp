@@ -21,12 +21,12 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "gnutella.h"
-#include "stream.h"
-#include "common.h"
-#include "servent.h"
-#include "servmgr.h"
-#include "stats.h"
+#include "common/gnutella.h"
+#include "common/stream.h"
+#include "common/common.h"
+#include "common/servent.h"
+#include "common/servmgr.h"
+#include "common/stats.h"
 #include <stdlib.h>
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"

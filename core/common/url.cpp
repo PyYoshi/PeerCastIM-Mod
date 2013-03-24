@@ -16,13 +16,13 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "url.h"
-#include "socket.h"
-#include "http.h"
-#include "servent.h"
-#include "servmgr.h"
-#include "peercast.h"
-#include "version2.h"
+#include "common/url.h"
+#include "common/socket.h"
+#include "common/http.h"
+#include "common/servent.h"
+#include "common/servmgr.h"
+#include "common/peercast.h"
+#include "common/version2.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

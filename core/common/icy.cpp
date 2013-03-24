@@ -1,5 +1,5 @@
-#include "icy.h"
-#include "socket.h"
+#include "common/icy.h"
+#include "common/socket.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

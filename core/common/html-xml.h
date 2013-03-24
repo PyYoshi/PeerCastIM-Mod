@@ -2,7 +2,7 @@
 #define _HTML_H
 
 // ---------------------------------------
-#include "xml.h"
+#include "common/xml.h"
 
 // ---------------------------------------
 class HTML : public XML

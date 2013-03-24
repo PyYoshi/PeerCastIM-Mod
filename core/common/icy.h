@@ -19,7 +19,7 @@
 #ifndef _ICY_H
 #define _ICY_H
 
-#include "channel.h"
+#include "common/channel.h"
 
 // ------------------------------------------------
 class ICYSource : public ChannelSource

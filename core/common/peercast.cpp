@@ -1,14 +1,14 @@
-#include "sys.h"
-#include "peercast.h"
-#include "channel.h"
-#include "servmgr.h"
+#include "common/sys.h"
+#include "common/peercast.h"
+#include "common/channel.h"
+#include "common/servmgr.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
 #define new DEBUG_NEW
 #endif
 
-#include "version2.h"
+#include "common/version2.h"
 
 // ---------------------------------
 // globals
@@ -20,7 +20,7 @@ ServMgr *servMgr;
 PeercastInstance *peercastInst=NULL;
 PeercastApplication *peercastApp=NULL;
 
-int version_ex = 1; // VERSION_EX—LŒø‰»
+int version_ex = 1; // VERSION_EXæœ‰åŠ¹åŒ–
 
 // ---------------------------------
 void APICALL PeercastInstance::init()

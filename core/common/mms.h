@@ -20,7 +20,7 @@
 #define _MMS_H
 
 
-#include "channel.h"
+#include "common/channel.h"
 
 // ----------------------------------------------
 class MMSStream : public ChannelStream

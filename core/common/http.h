@@ -20,7 +20,7 @@
 #ifndef _HTTP_H
 #define _HTTP_H
 
-#include "stream.h"
+#include "common/stream.h"
 
 // -------------------------------------
 class HTTPException : public StreamException

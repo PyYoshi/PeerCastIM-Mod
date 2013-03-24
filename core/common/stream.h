@@ -22,12 +22,13 @@
 
 // -------------------------------------
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "common.h"
-#include "sys.h"
-#include "id.h"
+#include "common/common.h"
+#include "common/sys.h"
+#include "common/id.h"
 
 // -------------------------------------
 class Stream
@@ -540,7 +541,7 @@ public:
 	Stream *out;
 };
 
-// writeされたものを捨ててバイト数だけカウントするストリーム
+// write縺輔ｌ縺溘ｂ縺ｮ繧呈昏縺ｦ縺ｦ繝舌う繝域焚縺縺代き繧ｦ繝ｳ繝医☆繧九せ繝医Μ繝ｼ繝
 class DummyStream : public Stream
 {
 private:

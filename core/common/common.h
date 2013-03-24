@@ -21,6 +21,18 @@
 
 #pragma warning (disable: 4996)
 
+#if !defined(__LITTLE_ENDIAN__) && !defined(__BIG_ENDIAN__)	// qt
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+#define __LITTLE_ENDIAN__
+#elif __BYTE_ORDER == __BIG_ENDIAN
+#define __BIG_ENDIAN__
+#endif
+#endif
+
+#if !defined(__LITTLE_ENDIAN__) && !defined(__BIG_ENDIAN__)	// qt
+UnknownEndian
+#endif
+
 #include <stdio.h>
 #include <string.h>
 

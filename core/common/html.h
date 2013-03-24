@@ -21,8 +21,8 @@
 #define _HTML_H
 
 // ---------------------------------------
-#include "xml.h"
-#include "sys.h"
+#include "common/xml.h"
+#include "common/sys.h"
 
 class FileStream;
 class WriteBufferStream;

@@ -22,25 +22,23 @@
 // todo: make lan->yp not check firewall
 
 #include <stdlib.h>
-#include "servent.h"
-#include "sys.h"
-#include "gnutella.h"
-#include "xml.h"
-#include "html.h"
-#include "http.h"
-#include "stats.h"
-#include "servmgr.h"
-#include "peercast.h"
-#include "atom.h"
-#include "pcp.h"
-#include "version2.h"
+#include "common/servent.h"
+#include "common/sys.h"
+#include "common/gnutella.h"
+#include "common/xml.h"
+#include "common/html.h"
+#include "common/http.h"
+#include "common/stats.h"
+#include "common/servmgr.h"
+#include "common/peercast.h"
+#include "common/atom.h"
+#include "common/pcp.h"
+#include "common/version2.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
 #define new DEBUG_NEW
 #endif
-
-#include "win32/seh.h"
 
 
 const int DIRECT_WRITE_TIMEOUT = 60;
@@ -1676,7 +1674,7 @@ void Servent::processRoot()
 }	
 
 // -----------------------------------
-int Servent::givProcMain(ThreadInfo *thread)
+int Servent::givProc(ThreadInfo *thread)
 {
 //	thread->lock();
 	Servent *sv = (Servent*)thread->data;
@@ -1693,12 +1691,6 @@ int Servent::givProcMain(ThreadInfo *thread)
 	sv->kill();
 	sys->endThread(thread);
 	return 0;
-}
-
-// -----------------------------------
-int Servent::givProc(ThreadInfo *thread)
-{
-	SEH_THREAD(givProcMain, Servent::givProc);
 }
 
 // -----------------------------------
@@ -2142,7 +2134,7 @@ void Servent::processIncomingPCP(bool suggestOthers)
 }
 
 // -----------------------------------
-int Servent::outgoingProcMain(ThreadInfo *thread)
+int Servent::outgoingProc(ThreadInfo *thread)
 {
 //	thread->lock();
 	LOG_DEBUG("COUT started");
@@ -2323,12 +2315,8 @@ int Servent::outgoingProcMain(ThreadInfo *thread)
 	return 0;
 }
 // -----------------------------------
-int Servent::outgoingProc(ThreadInfo *thread)
-{
-	SEH_THREAD(outgoingProcMain, Servent::outgoingProc);
-}
-// -----------------------------------
-int Servent::incomingProcMain(ThreadInfo *thread)
+
+int Servent::incomingProc(ThreadInfo *thread)
 {
 //	thread->lock();
 
@@ -2359,11 +2347,6 @@ int Servent::incomingProcMain(ThreadInfo *thread)
 	sv->kill();
 	sys->endThread(thread);
 	return 0;
-}
-// -----------------------------------
-int Servent::incomingProc(ThreadInfo *thread)
-{
-	SEH_THREAD(incomingProcMain, Servent::incomingProc);
 }
 // -----------------------------------
 void Servent::processServent()
@@ -2944,7 +2927,7 @@ void Servent::sendPCPChannel()
 								atom2.writeInt(PCP_CHAN_PKT_POS,rawPack.pos);
 								atom2.writeBytes(PCP_CHAN_PKT_DATA,rawPack.data,rawPack.len);
 
-#ifdef WIN32
+#ifdef NULL//WIN32
 						sock->bufferingWrite(pbuf, mems.getPosition());
 						lastSkipTime = sock->bufList.lastSkipTime;
 						lastSkipCount = sock->bufList.skipCount;
@@ -2964,7 +2947,7 @@ void Servent::sendPCPChannel()
 				throw StreamException("Channel not found");
 			}
 
-#ifdef WIN32
+#ifdef NULL//WIN32
 			sock->bufferingWrite(NULL, 0);
 			lastSkipTime = sock->bufList.lastSkipTime;
 			lastSkipCount = sock->bufList.skipCount;
@@ -3010,7 +2993,7 @@ void Servent::sendPCPChannel()
 }
 
 // -----------------------------------
-int Servent::serverProcMain(ThreadInfo *thread)
+int Servent::serverProc(ThreadInfo *thread)
 {
 //	thread->lock();
 
@@ -3040,7 +3023,7 @@ int Servent::serverProcMain(ThreadInfo *thread)
 			{
 				ClientSocket *cs = sv->sock->accept();
 
-				// ïsê≥Ç»É\Å[ÉXÉAÉhÉåÉX(IPv4É}ÉãÉ`ÉLÉÉÉXÉg)ÇèúäO
+				// ‰∏çÊ≠£„Å™„ÇΩ„Éº„Çπ„Ç¢„Éâ„É¨„Çπ(IPv4„Éû„É´„ÉÅ„Ç≠„É£„Çπ„Éà)„ÇíÈô§Â§ñ
 				if (cs && (((cs->host.ip >> 24) & 0xF0) == 0xE0))
 				{
 					char ip[64];
@@ -3115,12 +3098,6 @@ int Servent::serverProcMain(ThreadInfo *thread)
 	sv->kill();
 	sys->endThread(thread);
 	return 0;
-}
-
-// -----------------------------------
-int Servent::serverProc(ThreadInfo *thread)
-{
-	SEH_THREAD(serverProcMain, Servent::serverProc);
 }
  
 // -----------------------------------
@@ -3237,7 +3214,7 @@ bool	Servent::writeVariable(Stream &s, const String &var)
 			}
 			strcat(buf,h_ip);
 			char h_name[128];
-			if (ClientSocket::getHostname(h_name,sizeof(h_name),h.ip)) //JP-MOD(BOFëŒçÙ)
+			if (ClientSocket::getHostname(h_name,sizeof(h_name),h.ip)) //JP-MOD(BOFÂØæÁ≠ñ)
 			{
 				strcat(buf,"[");
 				strcat(buf,h_name);

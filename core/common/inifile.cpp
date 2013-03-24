@@ -19,8 +19,8 @@
 // ------------------------------------------------
 
 #include <stdlib.h>
-#include "inifile.h"
-#include "sys.h"
+#include "common/inifile.h"
+#include "common/sys.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

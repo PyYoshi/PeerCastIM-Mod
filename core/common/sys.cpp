@@ -20,17 +20,17 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "common.h"
-#include "sys.h"
-#include "socket.h"
-#include "gnutella.h"
-#include "servmgr.h" //JP-EX
-#ifdef WIN32
-#include "utf8.h" //JP-Patch
+#include "common/common.h"
+#include "common/sys.h"
+#include "common/socket.h"
+#include "common/gnutella.h"
+#include "common/servmgr.h" //JP-EX
+#if defined(WIN32) && !defined(QT)	// qt
+#include "common/utf8.h" //JP-Patch
 #endif
 #include <stdlib.h>
 #include <time.h>
-#include "jis.h"
+#include "common/jis.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
@@ -663,7 +663,7 @@ void String::ASCII2META(const char *in, bool safe)
 	}
 	*op=0;
 }
-#ifdef WIN32
+#if defined(WIN32) && !defined(QT)	// qt
 // -----------------------------------
 void String::ASCII2SJIS(const char *in) //JP-EX
 {
@@ -734,7 +734,7 @@ void String::convertTo(TYPE t)
 			case T_METASAFE:
 				ASCII2META(tmp.data,true);
 				break;
-#ifdef WIN32
+#if defined(WIN32) && !defined(QT)	// qt
 			case T_SJIS: //JP-EX
 				ASCII2SJIS(tmp.data);
 				break;

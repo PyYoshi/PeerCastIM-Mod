@@ -18,8 +18,8 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "xml.h"
-#include "stream.h"
+#include "common/xml.h"
+#include "common/stream.h"
 #include <stdlib.h>
 #include <stdarg.h>
 #ifdef _DEBUG

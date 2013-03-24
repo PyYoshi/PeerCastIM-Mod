@@ -22,9 +22,9 @@
 // ------------------------------------------------
 
 
-#include "id.h"
-#include "cstream.h"
-#include "channel.h"
+#include "common/id.h"
+#include "common/cstream.h"
+#include "common/channel.h"
 
 // ------------------------------------------------
 

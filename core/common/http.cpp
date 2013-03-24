@@ -20,9 +20,9 @@
 
 
 #include <stdlib.h>
-#include "http.h"
-#include "sys.h"
-#include "common.h"
+#include "common/http.h"
+#include "common/sys.h"
+#include "common/common.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

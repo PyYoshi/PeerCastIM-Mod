@@ -19,9 +19,9 @@
 #ifndef _ATOM_H
 #define _ATOM_H
 
-#include "stream.h"
+#include "common/stream.h"
 
-#include "id.h"
+#include "common/id.h"
 
 // ------------------------------------------------
 class AtomStream

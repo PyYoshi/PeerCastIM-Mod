@@ -13,7 +13,7 @@
 class ChanInfo;
 class Sys;
 
-#include "servmgr.h"
+#include "common/servmgr.h"
 
 
 // ------------------------------------------------------------

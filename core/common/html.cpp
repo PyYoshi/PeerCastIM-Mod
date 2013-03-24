@@ -21,14 +21,14 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include "html.h"
-#include "http.h"
-#include "stream.h"
-#include "gnutella.h"
-#include "servmgr.h"
-#include "channel.h"
-#include "stats.h"
-#include "version2.h"
+#include "common/html.h"
+#include "common/http.h"
+#include "common/stream.h"
+#include "common/gnutella.h"
+#include "common/servmgr.h"
+#include "common/channel.h"
+#include "common/stats.h"
+#include "common/version2.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

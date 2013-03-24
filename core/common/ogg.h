@@ -20,7 +20,7 @@
 #define _OGG_H
 
 
-#include "channel.h"
+#include "common/channel.h"
 // ----------------------------------------------
 class OggPage;
 

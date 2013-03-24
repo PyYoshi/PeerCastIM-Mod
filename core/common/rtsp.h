@@ -20,7 +20,7 @@
 #ifndef _RTSP_H
 #define _RTSP_H
 
-#include "http.h"
+#include "common/http.h"
 
 // ---------------------------------------------
 class RTSP : public HTTP

@@ -20,7 +20,7 @@
 #define _ASF_H
 
 
-#include "stream.h"
+#include "common/stream.h"
 
 // -----------------------------------
 class MSID

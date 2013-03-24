@@ -19,10 +19,10 @@
 // ------------------------------------------------
 
 
-#include "stats.h"
-#include "common.h"
-#include "sys.h"
-#include "stream.h"
+#include "common/stats.h"
+#include "common/common.h"
+#include "common/sys.h"
+#include "common/stream.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

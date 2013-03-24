@@ -22,16 +22,18 @@
 #define _SERVENT_H
 
 // ----------------------------------
-#include "socket.h"
-#include "sys.h"
-#include "gnutella.h"
-#include "channel.h"
-#include "http.h"
-#include "rtsp.h"
-#include "pcp.h"
-#include "addrCont.h"
+#include "common/socket.h"
+#include "common/sys.h"
+#include "common/gnutella.h"
+#include "common/channel.h"
+#include "common/http.h"
+#include "common/rtsp.h"
+#include "common/pcp.h"
+#include "common/addrCont.h"
 #ifdef _WIN32
 #include "win32/ts_vector.h"
+#else
+#include "unix/ts_vector.h"
 #endif
 
 class HTML;
@@ -148,13 +150,9 @@ public:
 
 	// static funcs that do the actual work in the servent thread
 	static	THREAD_PROC		serverProc(ThreadInfo *);
-	static THREAD_PROC serverProcMain(ThreadInfo *);
 	static	THREAD_PROC		outgoingProc(ThreadInfo *);
-	static THREAD_PROC outgoingProcMain(ThreadInfo *);
 	static	THREAD_PROC		incomingProc(ThreadInfo *);
-	static THREAD_PROC incomingProcMain(ThreadInfo *);
 	static	THREAD_PROC		givProc(ThreadInfo *);
-	static THREAD_PROC givProcMain(ThreadInfo *);
 	static	THREAD_PROC		pcpProc(ThreadInfo *);
 	static	THREAD_PROC		fetchProc(ThreadInfo *);
 

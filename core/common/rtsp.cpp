@@ -18,7 +18,7 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "rtsp.h"
+#include "common/rtsp.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

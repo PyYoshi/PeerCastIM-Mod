@@ -20,7 +20,7 @@
 #define _MP3_H
 
 
-#include "channel.h"
+#include "common/channel.h"
 
 // ----------------------------------------------
 class MP3Stream : public ChannelStream

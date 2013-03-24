@@ -19,7 +19,7 @@
 #ifndef _URL_H
 #define _URL_H
 
-#include "channel.h"
+#include "common/channel.h"
 
 // ------------------------------------------------
 class URLSource : public ChannelSource

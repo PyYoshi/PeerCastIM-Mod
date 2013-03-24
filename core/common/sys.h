@@ -158,8 +158,8 @@ public:
 		*this = tmp;
 	}
 
- 	bool operator == (const char *s) const {return isSame(s);}
- 	bool operator != (const char *s) const {return !isSame(s);}
+	bool operator == (const char *s) const {return isSame(s);}
+	bool operator != (const char *s) const {return !isSame(s);}
 
 	operator const char *() const {return data;}
 
@@ -332,10 +332,10 @@ public:
 
 #ifdef __APPLE__
 #include <sched.h>
-#define _BIG_ENDIAN 1
+//#define _BIG_ENDIAN 1	// qt
 #endif
 
-typedef long long int64_t;
+//typedef long long int64_t;
 
 typedef int (*THREAD_FUNC)(ThreadInfo *);
 #define THREAD_PROC int 
@@ -523,7 +523,7 @@ extern Sys *sys;
 // ------------------------------------
 
 
-#if _BIG_ENDIAN
+#if __BIG_ENDIAN__	// qt
 #define CHECK_ENDIAN2(v) v=SWAP2(v)
 #define CHECK_ENDIAN3(v) v=SWAP3(v)
 #define CHECK_ENDIAN4(v) v=SWAP4(v)

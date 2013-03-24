@@ -19,14 +19,14 @@
 // ------------------------------------------------
 
 #include <stdlib.h>
-#include "servent.h"
-#include "servmgr.h"
-#include "inifile.h"
-#include "stats.h"
-#include "peercast.h"
-#include "pcp.h"
-#include "atom.h"
-#include "version2.h"
+#include "common/servent.h"
+#include "common/servmgr.h"
+#include "common/inifile.h"
+#include "common/stats.h"
+#include "common/peercast.h"
+#include "common/pcp.h"
+#include "common/atom.h"
+#include "common/version2.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
@@ -166,6 +166,8 @@ ServMgr::ServMgr()
 	IP_blacklist = new WTSVector<addrCont>();
 #else
 	// TODO for linux
+	IP_graylist = new LTSVector<addrCont>();
+	IP_blacklist = new LTSVector<addrCont>();
 #endif
 	dosInterval = 30;
 	dosThreashold = 20;
@@ -184,7 +186,7 @@ ServMgr::ServMgr()
 		guiConnListDisplays = 10;
 
 		guiTitleModify = false;
-		guiTitleModifyNormal = "PeerCast ŽóM:%rx.kbits.1%kbps ‘—M:%tx.kbits.1%kbps";
+		guiTitleModifyNormal = "PeerCast å—ä¿¡:%rx.kbits.1%kbps é€ä¿¡:%tx.kbits.1%kbps";
 		guiTitleModifyMinimized = "R:%rx.kbytes%KB/s T:%tx.kbytes%KB/s";
 
 		guiAntennaNotifyIcon = false;
@@ -193,7 +195,7 @@ ServMgr::ServMgr()
 		disableAutoBumpIfDirect = 1;
 		asxDetailedMode = 1;
 	}
-
+/*
 	// start thread (graylist)
 	{
 		ThreadInfo t;
@@ -202,6 +204,7 @@ ServMgr::ServMgr()
 		t.active = true;
 		sys->startThread(&t);
 	}
+*/
 }
 // -----------------------------------
 BCID *ServMgr::findValidBCID(int index)
@@ -1013,7 +1016,7 @@ static void  writeServHost(IniFile &iniFile, ServHost &sh)
 	iniFile.writeLine("[End]");
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(QT)	// qt
 extern bool guiFlg;
 extern WINDOWPLACEMENT winPlace;
 extern HWND guiWnd;
@@ -1117,10 +1120,10 @@ void ServMgr::saveSettings(const char *fn)
 		iniFile.writeIntValue("kickKeepTime",servMgr->kickKeepTime);
 		iniFile.writeBoolValue("vpDebug", servMgr->vpDebug);
 		iniFile.writeBoolValue("saveIniChannel", servMgr->saveIniChannel);
-#ifdef WIN32
+#if defined(WIN32) && !defined(QT)	// qt
 		iniFile.writeBoolValue("saveGuiPos", servMgr->saveGuiPos);
 		if (guiFlg){
-			GetWindowPlacement(guiWnd, &winPlace);
+//			GetWindowPlacement(guiWnd, &winPlace);
 			iniFile.writeIntValue("guiTop", winPlace.rcNormalPosition.top);
 			iniFile.writeIntValue("guiBottom", winPlace.rcNormalPosition.bottom);
 			iniFile.writeIntValue("guiLeft", winPlace.rcNormalPosition.left);
@@ -1516,7 +1519,7 @@ void ServMgr::loadSettings(const char *fn)
 				servMgr->vpDebug = iniFile.getBoolValue();
 			else if (iniFile.isName("saveIniChannel"))
 				servMgr->saveIniChannel = iniFile.getBoolValue();
-#ifdef WIN32
+#if defined(WIN32) && !defined(QT)	// qt
 			else if (iniFile.isName("saveGuiPos"))
 				servMgr->saveGuiPos = iniFile.getBoolValue();
 			else if (iniFile.isName("guiTop"))
@@ -1740,7 +1743,7 @@ unsigned int ServMgr::numStreams(Servent::TYPE tp, bool all)
 					{
 						Channel *ch = chanMgr->findChannelByID(sv->chanID);
 
-						// index.txt‚ÍƒJƒEƒ“ƒg‚µ‚È‚¢
+						// index.txtã¯ã‚«ã‚¦ãƒ³ãƒˆã—ãªã„
 						if(!isIndexTxt(ch))
 							cnt++;
 					}
@@ -1802,7 +1805,7 @@ bool ServMgr::getChannel(char *str,ChanInfo &info, bool relay)
 			ch = chanMgr->findAndRelay(info);
 			if (ch)
 			{
-				// «Exception point
+				// â†“Exception point
 				info = ch->info; //get updated channel info 
 				return true;
 			}
@@ -1815,7 +1818,7 @@ bool ServMgr::getChannel(char *str,ChanInfo &info, bool relay)
 			ch = chanMgr->findAndRelay(info);
 			if (ch)
 			{
-				// «Exception point
+				// â†“Exception point
 				info = ch->info; //get updated channel info 
 				return true;
 			}
@@ -2866,7 +2869,7 @@ int ServMgr::kickUnrelayableHost(GnuID &chid, ChanHit &sendhit)
 
 	return 0;
 }
-
+/*
 int WINAPI ServMgr::graylistThreadFunc(ThreadInfo *t)
 {
 	while (t->active)
@@ -2904,3 +2907,4 @@ int WINAPI ServMgr::graylistThreadFunc(ThreadInfo *t)
 
 	return 0;
 }
+*/

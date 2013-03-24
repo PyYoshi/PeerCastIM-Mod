@@ -21,8 +21,8 @@
 #define _GNUTELLA_H
 
 // --------------------------------
-#include "stream.h"
-#include "sys.h"
+#include "common/stream.h"
+#include "common/sys.h"
 
 
 

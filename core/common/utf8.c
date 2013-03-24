@@ -24,8 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utf8.h"
-#include "identify_encoding.h"
+#include "common/utf8.h"
+#include "common/identify_encoding.h"
 #ifdef _WIN32
 
 /* Thanks to Peter Harris <peter.harris@hummingbird.com> for this win32

@@ -16,8 +16,8 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 
-#include "channel.h"
-#include "mp3.h"
+#include "common/channel.h"
+#include "common/mp3.h"
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)

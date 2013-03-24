@@ -1,8 +1,0 @@
-・7144/7145のListenポートを捌くスレッド
-　　int Servent::serverProc(ThreadInfo *thread); (servent.cpp)
-
-・リレー上限チェック
-　　bool Channel::isFull(); (channel.cpp)
-
-・下流への転送
-　　void Servent::sendPCPChannel()

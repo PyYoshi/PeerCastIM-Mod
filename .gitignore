@@ -3,3 +3,6 @@ peercast-build-desktop-PATH*
 *~
 *.o
 *.pro.user
+*.ini
+ui/linux/peercast
+ui/osx/peercast

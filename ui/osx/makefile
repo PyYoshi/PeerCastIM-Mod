@@ -16,7 +16,8 @@ HTML = html
 SRCHTML = ../html
 
 
-CORESOURCE = $(CORE)/unix/usys.cpp \
+CORESOURCE = $(CORE)/unix/compat.cpp \
+	 $(CORE)/unix/usys.cpp \
 	 $(CORE)/unix/usocket.cpp \
 	 $(CORE)/common/socket.cpp \
 	 $(CORE)/common/servent.cpp \

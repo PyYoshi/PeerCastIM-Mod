@@ -168,6 +168,19 @@
                         <TD>index.txt チャンネル毎の最大リレー本数</TD>
                         <TD><INPUT size=5 value={$servMgr.maxRelaysIndexTxt} name=maxRelaysIndexTxt></TD>
                       </TR>
+                      <TR align=left bgColor=#dddddd class="normal">
+                        <TD>(直下時)オートBump無効</TD>
+                        <TD><INPUT type=checkbox value=1 name=disableAutoBumpIfDirect {@if servMgr.disableAutoBumpIfDirect}CHECKED{@end}></TD>
+                      </TR>
+                      <TR align=left bgColor=#eeeeee class="normal"> 
+                        <TD>ASX書き出し詳細モード</TD>
+                        <TD><select name=asxDetailedMode>
+                           <option value=0 {@if servMgr.asxDetailedMode.0}SELECTED{@end}>なし</option>
+                           <option value=1 {@if servMgr.asxDetailedMode.1}SELECTED{@end}>Shift-JIS</option>
+                           <option value=2 {@if servMgr.asxDetailedMode.2}SELECTED{@end}>UTF-8</option>
+                           </select>
+                           </TD>
+                      </TR>
                     </table>
                   </div>
                   </TD>

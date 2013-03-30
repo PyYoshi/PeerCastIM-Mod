@@ -66,6 +66,10 @@
     <td>配信者から…</td>
     <td><input size="50" type="text" name="comment" value="{$page.channel.comment}" /></td>
   </tr>
+  <tr id="e">
+    <td>拡張機能</td>
+    <td><label><input type="checkbox" name="bcstClap" value="1" {@if page.channel.bcstClap}checked {@end}/>拍手</label></td>
+  </tr>
   <tr id="d">
     <td>ID</td>
     <td><a href="http://{$servMgr.serverLocalIP}:{$servMgr.serverPort1}/pls/{$page.channel.id}.pls">{$page.channel.id}</a></td>
@@ -151,6 +155,10 @@
   <tr id="e">
     <td>配信者から…</td>
     <td>{$page.channel.comment}</td>
+  </tr>
+  <tr id="e">
+    <td>拡張機能</td>
+    <td>{@if page.channel.bcstClap}拍手 {@end}</td>
   </tr>
   <tr id="d">
     <td>ID</td>

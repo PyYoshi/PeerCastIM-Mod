@@ -74,8 +74,7 @@
             <FORM action=/admin method=get>
               <TBODY>
                 <TR align=middle bgColor=#cccccc class="normal"> 
-                  <TD></TD>
-                  <TD><B>Type</B></TD>
+                  <TD><B>Type<B></B></B></TD>
                   <TD><B>Status</B></TD>
                   <TD><B>Time</B></TD>
                   <TD><B>IP:Port</B></TD>
@@ -88,7 +87,6 @@
 			bgColor=#eeeeee 
 		{@else} 
 		{@end}>
-                <TD><a href="/admin?cmd=stopserv&index={$loop.index}">Stop</a></TD>
                 <TD>{$loop.servent.type}</TD>
                 <TD>{$loop.servent.status}</TD>
                 <TD>{$loop.servent.uptime}</TD>

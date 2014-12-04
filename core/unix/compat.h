@@ -11,4 +11,13 @@ void InitializeCriticalSection(CRITICAL_SECTION *section);
 void EnterCriticalSection(CRITICAL_SECTION *section);
 void LeaveCriticalSection(CRITICAL_SECTION *section);
 void DeleteCriticalSection(CRITICAL_SECTION *section);
+
+#ifdef OS_MACOSX
+#define PTHREAD_MUTEX_RECURSIVE_VALUE PTHREAD_MUTEX_RECURSIVE
+#endif
+
+#ifdef OS_LINUX
+#define PTHREAD_MUTEX_RECURSIVE_VALUE PTHREAD_MUTEX_RECURSIVE_NP
+#endif
+
 #endif

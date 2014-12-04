@@ -8,7 +8,7 @@ void InitializeCriticalSection(CRITICAL_SECTION *section)
 {
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr); /* 2012/07/26 追記 */
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_VALUE);
     pthread_mutex_init(section, &attr);
     pthread_mutexattr_destroy(&attr);
 }

@@ -1,16 +1,24 @@
-CPPFLAGS = -DENABLE_BINRELOC -pthread  -D__cplusplus -D_UNIX -D_REENTRANT $(INCLUDES) 
-LDFLAGS = -pthread 
+CPPFLAGS = -DENABLE_BINRELOC -pthread  -D__cplusplus -D_UNIX -D_REENTRANT $(INCLUDES)
+LDFLAGS = -pthread
 LDSOFLAGS = -shared -Wl,-soname
 
 #CPPFLAGS = -static -pthread -D__cplusplus -D_UNIX -D_LINUX_STATIC -D_REENTRANT $(INCLUDES)
-#LDFLAGS = -static -pthread 
+#LDFLAGS = -static -pthread
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+CPPFLAGS += -D OS_LINUX
+endif
+ifeq ($(UNAME_S),Darwin)
+CPPFLAGS += -D OS_MACOSX
+endif
 
 LD = g++
 TAR = peercast-linux.tgz
 CC = gcc
 AR = ar
 
-INCLUDES = -I../../core -I../../core/common 
+INCLUDES = -I../../core -I../../core/common
 
 TARGET = peercast
 CORE = ../../core
@@ -45,7 +53,7 @@ CORESOURCE = $(CORE)/unix/compat.cpp \
 	 $(CORE)/common/url.cpp \
 	 $(CORE)/common/icy.cpp \
 	 $(CORE)/common/pcp.cpp \
-	 $(CORE)/common/jis.cpp 
+	 $(CORE)/common/jis.cpp
 
 
 
@@ -53,12 +61,12 @@ COREOBJ = $(CORESOURCE:.cpp=.o)
 
 COREOBJSTATIC = $(CORESOURCE:.cpp=.a)
 
-LINUXSOURCE = main.cpp 
+LINUXSOURCE = main.cpp
 LINUXOBJ = $(LINUXSOURCE:.cpp=.o)
 
 # Here follow the generic build rules.
 all:  $(TARGET)
-	
+
 tar: $(TARGET)
 	rm -rf $(TAR)
 	rm -rf $(HTML)
@@ -88,7 +96,7 @@ clean:
 DEPENDFILE = makedepend
 
 
-depend: 
+depend:
 	echo > $(DEPENDFILE)
 	$(CC) $(INCLUDES) $(CPPFLAGS) -MD $(CORESOURCE) $(LINUXSOURCE) >> $(DEPENDFILE)
 
@@ -100,7 +108,7 @@ peercast-so: $(COREOBJSTATIC) $(COREOBJ) $(LINUXOBJ)
 
 $(TARGET): $(LINUXOBJ) $(COREOBJ)
 	$(LD) $(LDFLAGS) -o $@ $(LINUXOBJ) $(COREOBJ) $(LIBS)
-	
+
 
 
 include $(DEPENDFILE)

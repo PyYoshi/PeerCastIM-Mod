@@ -1,14 +1,22 @@
-CPPFLAGS = -D__cplusplus -D_UNIX -D_APPLE -D_REENTRANT $(INCLUDES) 
-LDFLAGS = 
+CPPFLAGS = -D__cplusplus -D_UNIX -D_APPLE -D_REENTRANT $(INCLUDES)
+LDFLAGS =
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+CPPFLAGS += -D OS_LINUX
+endif
+ifeq ($(UNAME_S),Darwin)
+CPPFLAGS += -D OS_MACOSX
+endif
 
 LD = g++
 TAR = peercast-osx.tgz
 CC = gcc
 
-INCLUDES = -I../../core -I../../core/common 
+INCLUDES = -I../../core -I../../core/common
 
 # Library and include paths.
-LIBS = 
+LIBS =
 
 TARGET = peercast
 CORE = ../../core
@@ -52,7 +60,7 @@ MACOSXOBJ = $(MACOSXSOURCE:.cpp=.o)
 
 # Here follow the generic build rules.
 all:  $(TARGET)
-	
+
 tar: $(TARGET)
 	rm -rf $(TAR)
 	rm -rf $(HTML)
@@ -81,12 +89,13 @@ clean:
 DEPENDFILE = makedepend
 
 
-depend: 
+depend:
 	echo > $(DEPENDFILE)
 	$(CC) $(INCLUDES) $(CPPFLAGS) -MD $(CORESOURCE) $(MACOSXSOURCE) >> $(DEPENDFILE)
 
-$(TARGET): $(MACOSXOBJ) $(COREOBJ) 
-	$(LD) $(LDFLAGS) -o $@ $(MACOSXOBJ) $(COREOBJ) $(LIBS) 
+$(TARGET): $(MACOSXOBJ) $(COREOBJ)
+	$(LD) $(LDFLAGS) -o $@ $(MACOSXOBJ) $(COREOBJ) $(LIBS)
 
 
 include $(DEPENDFILE)
+# DO NOT DELETE

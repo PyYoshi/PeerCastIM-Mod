@@ -3,16 +3,10 @@ project(peercast)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__cplusplus -D_UNIX -D_APPLE -D_REENTRANT -DOS_MACOSX")
-endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DENABLE_BINRELOC -pthread  -D__cplusplus -D_UNIX -D_REENTRANT -DOS_LINUX")
-endif (CMAKE_SYSTEM_NAME MATCHES "Linux")
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 
 include_directories(core/ core/common/)
-
 set(SOURCE_FILES
     core/common/addrCont.h
     core/common/asf.h
@@ -67,8 +61,6 @@ set(SOURCE_FILES
     core/common/ts_vector.h
     core/common/url.cpp
     core/common/url.h
-    core/common/utf8.c
-    core/common/utf8.h
     core/common/version2.h
     core/common/xml.cpp
     core/common/xml.h
@@ -78,8 +70,25 @@ set(SOURCE_FILES
     core/unix/usocket.cpp
     core/unix/usocket.h
     core/unix/usys.cpp
-    core/unix/usys.h
-    ui/osx/main.cpp
-    ui/linux/main.cpp)
+    core/unix/usys.h)
+
+if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set(SOURCE_FILES ${SOURCE_FILES} ui/osx/main.cpp)
+endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(SOURCE_FILES ${SOURCE_FILES} ui/linux/main.cpp)
+endif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 add_executable(peercast ${SOURCE_FILES})
+
+if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__cplusplus -D_UNIX -D_APPLE -D_REENTRANT -DOS_MACOSX")
+    find_library(corefoundation_lib CoreFoundation)
+    set(frameworks ${corefoundation_lib})
+    target_link_libraries(peercast ${frameworks})
+endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DENABLE_BINRELOC -pthread  -D__cplusplus -D_UNIX -D_REENTRANT -DOS_LINUX")
+endif (CMAKE_SYSTEM_NAME MATCHES "Linux")

@@ -1,4 +1,4 @@
-PeerCastIM4Linux
+PeerCastIM-Mod
 ================
 
 PeerCastIMをベースにPeerCast Qtを移植しました.

@@ -18,7 +18,7 @@ protected:
 public:
 	size_t count;
 
-	ITSVector() : count(0), capacity(32)
+    ITSVector() : capacity(32), count(0)
 	{
 		ary = new T*[capacity];
 	}

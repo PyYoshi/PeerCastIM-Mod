@@ -107,6 +107,7 @@ void GnuPacket::initPong(Host &h, bool ownPong, GnuPacket &ping)
 
 }
 // ---------------------------
+/*
 void GnuPacket::initPush(ChanHit &ch, Host &sh)
 {
 #if 0
@@ -128,6 +129,7 @@ void GnuPacket::initPush(ChanHit &ch, Host &sh)
 	data.writeShort(sh.port);		// port
 #endif
 }
+*/
 
 
 // ---------------------------
@@ -442,7 +444,7 @@ GnuStream::R_TYPE GnuStream::processPacket(GnuPacket &in, Servent *serv, GnuID &
 					sh.ip = 127<<24|1;
 
 				char words[256];
-				short spd = data.readShort();
+                //short spd = data.readShort();
 				data.readString(words,sizeof(words));
 				words[sizeof(words)-1] = 0;
 
@@ -500,7 +502,7 @@ GnuStream::R_TYPE GnuStream::processPacket(GnuPacket &in, Servent *serv, GnuID &
 				//LOG("pack = %02x%02x%02x%02x",id[0],id[1],id[2],id[3]);
 
 
-				int index = data.readLong();
+                //int index = data.readLong();
 				int ip = data.readLong();
 				int port = data.readShort();
 
@@ -601,7 +603,7 @@ bool GnuStream::readHit(Stream &data, ChanHit &ch,int hops,GnuID &id)
 	int port = data.readShort();		// port
 	int ip = data.readLong();		// ip
 	ip = SWAP4(ip);
-	int spd = data.readLong();		// speed/broadcast
+    //int spd = data.readLong();		// speed/broadcast
 
 	Host h(ip,port);
 	char hostName[64];
@@ -684,7 +686,7 @@ bool GnuStream::readHit(Stream &data, ChanHit &ch,int hops,GnuID &id)
 	}
 
 
-	int vendor = data.readLong();	// vendor ID
+    //int vendor = data.readLong();	// vendor ID
 
 	int pubLen = data.readChar();	// public sec length - should be 2
 

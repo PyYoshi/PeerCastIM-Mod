@@ -172,7 +172,7 @@ int URLSource::getSourceRate()
 			int res = http.readResponse();
 
 
-			String name = ch->info.name;
+            //String name = ch->info.name;
 
 			while (http.nextHeader())
 			{				

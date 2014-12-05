@@ -18,9 +18,9 @@
 // GNU General Public License for more details.
 // ------------------------------------------------
 #ifdef __APPLE__
-#ifdef __USE_CARBON__
-#include <Carbon/Carbon.h>
-#endif
+//#ifdef __USE_CARBON__
+//#include <Carbon/Carbon.h>
+//#endif
 #include <CoreFoundation/CoreFoundation.h>
 #include <ApplicationServices/ApplicationServices.h>
 #endif
@@ -74,9 +74,9 @@ ClientSocket *USys::createSocket()
 // ---------------------------------
 void USys::endThread(ThreadInfo *info)
 {
-	numThreads--;
+    numThreads--;
 
-	LOG_DEBUG("End thread: %d",numThreads);
+    LOG_DEBUG("End thread: %d",numThreads);
 
 	//pthread_exit(NULL);
 }
@@ -159,7 +159,7 @@ void USys::openURL( const char* url )
 		CFURLRef pathRef = CFURLCreateWithString( NULL, urlString, NULL );
 		if( pathRef )
 		{
-			OSStatus err = LSOpenCFURLRef( pathRef, NULL );
+            //OSStatus err = LSOpenCFURLRef( pathRef, NULL );
 			CFRelease(pathRef);
 		}
 		CFRelease( urlString );
@@ -192,7 +192,7 @@ void USys::executeFile( const char *file )
 		{
 			FSRef fsRef;
 			CFURLGetFSRef( pathRef, &fsRef );
-			OSStatus err = LSOpenFSRef( &fsRef, NULL );
+            //OSStatus err = LSOpenFSRef( &fsRef, NULL );
 			CFRelease(pathRef);
 		}
 		CFRelease( fileString );

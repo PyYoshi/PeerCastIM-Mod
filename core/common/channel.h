@@ -523,7 +523,8 @@ public:
 
 	unsigned int lastIdleTime;
 	int		status;
-	static	char *statusMsgs[],*srcTypes[];
+    static const char* const statusMsgs[];
+    static const char* const srcTypes[];
 
 	ClientSocket	*sock;
 	ClientSocket	*pushSock;
@@ -715,6 +716,7 @@ public:
 				case T_SCPLS: readSCPLS(s); break;
 				case T_PLS: readPLS(s); break;
 				case T_ASX: readASX(s); break;
+                default: break;
 			}
 		}catch(StreamException &) {}	// keep pls regardless of errors (eof isn`t handled properly in sockets)
 	}
@@ -727,6 +729,7 @@ public:
 			case T_PLS: writePLS(s); break;
 			case T_ASX: writeASX(s); break;
 			case T_RAM: writeRAM(s); break;
+        default: break;
 		}
 	}
 

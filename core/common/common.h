@@ -19,7 +19,7 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#pragma warning (disable: 4996)
+//#pragma warning (disable: 4996)
 
 #if !defined(__LITTLE_ENDIAN__) && !defined(__BIG_ENDIAN__)	// qt
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -44,7 +44,7 @@ UnknownEndian
 class GeneralException
 {
 public:
-    GeneralException(const char *m, int e = 0) 
+    GeneralException(const char *m, int e = 0)
 	{
 		strcpy(msg,m);
 		err=e;
@@ -132,7 +132,7 @@ public:
 	unsigned int storeTime;
 };
 // --------------------------------
-class GnuIDList 
+class GnuIDList
 {
 public:
 	GnuIDList(int);
@@ -234,7 +234,7 @@ public:
 	bool	isSameType(Host &h)
 	{
 			return ( (globalIP() && h.globalIP()) ||
-			         (!globalIP() && !h.globalIP()) ); 
+			         (!globalIP() && !h.globalIP()) );
 	}
 
 	void	IPtoStr(char *str)
@@ -289,8 +289,8 @@ inline int strToID(char *str)
 
 // -----------------------------------
 char *getCGIarg(const char *str, const char *arg);
-bool cmpCGIarg(char *str, char *arg, char *value);
-bool hasCGIarg(char *str, char *arg);
+bool cmpCGIarg(char *str, const char *arg, const char *value);
+bool hasCGIarg(char *str, const char *arg);
 
 // ----------------------------------
 extern void LOG(const char *fmt,...);
@@ -302,4 +302,3 @@ extern void LOG_CHANNEL(const char *fmt,...);
 
 
 #endif
-

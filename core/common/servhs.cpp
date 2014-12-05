@@ -358,7 +358,7 @@ void Servent::handshakeHTTP(HTTP &http, bool isHTTP)
 		char *mount = NULL;
 
 		char *ps;
-		if (ps=strstr(in,"ICE/1.0"))
+        if ((ps=strstr(in,"ICE/1.0")))
 		{
 			mount = in+7;
 			*ps = 0;
@@ -386,7 +386,7 @@ void Servent::handshakeHTTP(HTTP &http, bool isHTTP)
 	{
 		char *str = in + 4;
 
-		if (str = stristr(str, "/stream/"))
+        if ((str = stristr(str, "/stream/")))
 		{
 			int cnt = 0;
 
@@ -847,7 +847,7 @@ void Servent::handshakeCMD(char *cmd)
 	char curr[MAX_CGI_LEN];
 
 	char	jumpStr[128];
-	char	*jumpArg=NULL;
+    const char	*jumpArg=NULL;
 	bool	retHTML=true;
 	strcpy(result,"OK");
 
@@ -859,8 +859,8 @@ void Servent::handshakeCMD(char *cmd)
 		return;
 
 	try
-	{
-		if (cmpCGIarg(cmd,"cmd=","redirect"))
+    {
+        if (cmpCGIarg(cmd,"cmd=","redirect"))
 		{
 			char *j = getCGIarg(cmd,"url=");
 			if (j)
@@ -913,7 +913,7 @@ void Servent::handshakeCMD(char *cmd)
 				char *cp = cmd;
 				GnuID id;
 				BCID *bcid;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"id")==0)
 						id.fromStr(arg);
@@ -936,7 +936,7 @@ void Servent::handshakeCMD(char *cmd)
 
 				char *cp = cmd;
 				bool result=false;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"id")==0)
 						bcid->id.fromStr(arg);
@@ -986,7 +986,7 @@ void Servent::handshakeCMD(char *cmd)
 				int asxDetailedMode = 0; //JP-MOD
 
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					LOG_DEBUG("ARG: %s = %s", curr, arg);
 
@@ -1234,7 +1234,7 @@ void Servent::handshakeCMD(char *cmd)
 				String curl;
 
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"url")==0)
 					{
@@ -1283,7 +1283,7 @@ void Servent::handshakeCMD(char *cmd)
 			{
 
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"index")==0)
 					{
@@ -1326,7 +1326,7 @@ void Servent::handshakeCMD(char *cmd)
 					index++;
 				}
 
-				char *findArg = getCGIarg(cmd,"keywords=");
+                //char *findArg = getCGIarg(cmd,"keywords=");
 
 				if (hasCGIarg(cmd,"relay"))
 				{
@@ -1337,7 +1337,7 @@ void Servent::handshakeCMD(char *cmd)
 			}else if (cmpCGIarg(cmd,"cmd=","clear"))
 			{
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"hostcache")==0)
 						servMgr->clearHostCache(ServHost::T_SERVENT);
@@ -1390,7 +1390,7 @@ void Servent::handshakeCMD(char *cmd)
 			{
 				GnuID id;
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"id")==0)
 						id.fromStr(arg);
@@ -1410,7 +1410,7 @@ void Servent::handshakeCMD(char *cmd)
 			{
 				GnuID id;
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"id")==0)
 						id.fromStr(arg);
@@ -1427,7 +1427,7 @@ void Servent::handshakeCMD(char *cmd)
 			{
 				GnuID id;
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"id")==0)
 						id.fromStr(arg);
@@ -1453,7 +1453,7 @@ void Servent::handshakeCMD(char *cmd)
 			{
 				ChanInfo info;
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"id")==0)
 						info.id.fromStr(arg);
@@ -1485,7 +1485,7 @@ void Servent::handshakeCMD(char *cmd)
 				
 				GnuID id;
 				id.clear();
-				while (cmd=nextCGIarg(cmd,curr,arg))
+                while ((cmd=nextCGIarg(cmd,curr,arg)))
 				{
 					if (strcmp(curr,"ip")==0)
 					{
@@ -1527,7 +1527,7 @@ void Servent::handshakeCMD(char *cmd)
 			}else if (cmpCGIarg(cmd,"cmd=","setmeta"))
 			{
 				char *cp = cmd;
-				while (cp=nextCGIarg(cp,curr,arg))
+                while ((cp=nextCGIarg(cp,curr,arg)))
 				{
 					if (strcmp(curr,"name")==0)
 					{
@@ -1581,7 +1581,7 @@ void Servent::handshakeCMD(char *cmd)
 						if (c && (c->isActive()) && (c->status == Channel::S_BROADCASTING)){
 							ChanInfo newInfo = c->info;
 							newInfo.ppFlags = ServMgr::bcstNone; //JP-MOD
-							while (cmd=nextCGIarg(cmd,curr,arg))
+                            while ((cmd=nextCGIarg(cmd,curr,arg)))
 							{
 								String chmeta;
 								chmeta.set(arg,String::T_ESC);

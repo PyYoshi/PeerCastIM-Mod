@@ -210,7 +210,7 @@ void UClientSocket::open(Host &rh)
 
 	sockNum = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	if (sockNum == INVALID_SOCKET)
+    if (sockNum == (unsigned int)INVALID_SOCKET)
 		throw SockException("Can`t open socket");
 
 	setBlocking(false);
@@ -666,7 +666,7 @@ bool	UClientSocket::readReady()
 
 	timeval timeout;
 	fd_set read_fds;
-	fd_set write_fds;
+    //fd_set write_fds;
 
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 0;

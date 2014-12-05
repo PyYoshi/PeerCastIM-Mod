@@ -60,12 +60,14 @@ const char *LogBuffer::logTypes[]=
 
 // -----------------------------------
 // base64 encode/decode taken from ices2 source.. 
+/*
 static char base64table[64] = {
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
     'Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f',
     'g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v',
     'w','x','y','z','0','1','2','3','4','5','6','7','8','9','+','/'
 };
+*/
 #if 0
 // -----------------------------------
 static char *util_base64_encode(char *data)
@@ -121,10 +123,10 @@ static int base64chartoval(char input)
 }
 
 // -----------------------------------
-static char *util_base64_decode(char *input)
-{
-	return NULL;
-}
+//static char *util_base64_decode(char *input)
+//{
+//	return NULL;
+//}
 
 
 
@@ -413,7 +415,7 @@ void String::UNKNOWN2UNICODE(const char *in,bool safe)
 	unsigned char c;
 	unsigned char d;
 
-	while (c = *in++)
+    while ((c = *in++))
 	{
 		d = *in;
 
@@ -452,7 +454,7 @@ void String::UNKNOWN2UNICODE(const char *in,bool safe)
 			in++;
 			char code[16];
 			char *cp = code;
-			while (c=*in++) 
+            while ((c=*in++))
 			{
 				if (c!=';')
 					*cp++ = c;
@@ -503,7 +505,7 @@ void String::ASCII2HTML(const char *in)
 	char *oe = data+MAX_LEN-10;
 	unsigned char c;
 	const char *p = in;
-	while (c = *p++)
+    while ((c = *p++))
 	{
 		
 		if (((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')))
@@ -526,7 +528,7 @@ void String::ASCII2ESC(const char *in, bool safe)
 	char *oe = data+MAX_LEN-10;
 	const char *p = in;
 	unsigned char c;
-	while (c = *p++)
+    while ((c = *p++))
 	{
 		if (((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')))
 			*op++ = c;
@@ -551,7 +553,7 @@ void String::HTML2ASCII(const char *in)
 	char *o = data;
 	char *oe = data+MAX_LEN-10;
 	const char *p = in;
-	while (c = *p++)
+    while ((c = *p++))
 	{
 		if ((c == '&') && (p[0] == '#'))
 		{
@@ -559,7 +561,7 @@ void String::HTML2ASCII(const char *in)
 			char code[8];
 			char *cp = code;
 			char ec = *p++;		// hex/dec
-			while (c=*p++) 
+            while ((c=*p++))
 			{
 				if (c!=';')
 					*cp++ = c;
@@ -582,7 +584,7 @@ void String::HTML2UNICODE(const char *in)
 	MemoryStream utf8(data,MAX_LEN-1);
 
 	unsigned char c;
-	while (c = *in++)
+    while ((c = *in++))
 	{
 		if ((c == '&') && (*in == '#'))
 		{
@@ -590,7 +592,7 @@ void String::HTML2UNICODE(const char *in)
 			char code[16];
 			char *cp = code;
 			char ec = *in++;		// hex/dec
-			while (c=*in++) 
+            while ((c=*in++))
 			{
 				if (c!=';')
 					*cp++ = c;
@@ -616,7 +618,7 @@ void String::ESC2ASCII(const char *in)
 	char *o = data;
 	char *oe = data+MAX_LEN-10;
 	const char *p = in;
-	while (c = *p++)
+    while ((c = *p++))
 	{
 		if (c == '+')
 			c = ' ';
@@ -644,7 +646,7 @@ void String::ASCII2META(const char *in, bool safe)
 	char *oe = data+MAX_LEN-10;
 	const char *p = in;
 	unsigned char c;
-	while (c = *p++)
+    while ((c = *p++))
 	{
 		switch (c)
 		{
@@ -704,6 +706,8 @@ void String::convertTo(TYPE t)
 			case T_BASE64:
 				tmp.BASE642ASCII(data);
 				break;
+            default:
+                break;
 		}
 
 		// convert to new format
@@ -734,6 +738,8 @@ void String::convertTo(TYPE t)
 			case T_METASAFE:
 				ASCII2META(tmp.data,true);
 				break;
+            default:
+                break;
 #if defined(WIN32) && !defined(QT)	// qt
 			case T_SJIS: //JP-EX
 				ASCII2SJIS(tmp.data);
@@ -798,7 +804,7 @@ char *getCGIarg(const char *str, const char *arg)
 }
 
 // -----------------------------------
-bool cmpCGIarg(char *str, char *arg, char *value)
+bool cmpCGIarg(char *str, const char *arg, const char *value)
 {
 	if ((!str) || (!strlen(value)))
 		return false;
@@ -813,7 +819,7 @@ bool cmpCGIarg(char *str, char *arg, char *value)
 		return false;
 }
 // -----------------------------------
-bool hasCGIarg(char *str, char *arg)
+bool hasCGIarg(char *str, const char *arg)
 {
 	if (!str)
 		return false;
@@ -1037,5 +1043,5 @@ void LogBuffer::dumpHTML(Stream &out)
 void	ThreadInfo::shutdown()
 {
 	active = false;
-	//sys->waitThread(this);
+    //sys->waitThread(this);
 }

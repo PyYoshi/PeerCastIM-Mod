@@ -22,14 +22,11 @@
 #include "common/channel.h"
 
 // ------------------------------------------------
-class ICYSource : public ChannelSource
-{
+class ICYSource : public ChannelSource {
 public:
-	virtual void stream(Channel *);
+    virtual void stream(Channel *);
 
 };
-
-
 
 
 #endif

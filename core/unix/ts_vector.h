@@ -13,32 +13,27 @@
 #include "unix/compat.h"
 #include "common/ts_vector.h"
 
-template <class T>
-class LTSVector : public ITSVector<T>
-{
+template<class T>
+class LTSVector : public ITSVector<T> {
 private:
-	CRITICAL_SECTION csec;
+    CRITICAL_SECTION csec;
 
 public:
-	LTSVector()
-	{
-		InitializeCriticalSection(&csec);
-	}
+    LTSVector() {
+        InitializeCriticalSection(&csec);
+    }
 
-	~LTSVector()
-	{
-		DeleteCriticalSection(&csec);
-	}
+    ~LTSVector() {
+        DeleteCriticalSection(&csec);
+    }
 
-	inline virtual void lock()
-	{
-		EnterCriticalSection(&csec);
-	}
+    inline virtual void lock() {
+        EnterCriticalSection(&csec);
+    }
 
-	inline virtual void unlock()
-	{
-		LeaveCriticalSection(&csec);
-	}
+    inline virtual void unlock() {
+        LeaveCriticalSection(&csec);
+    }
 };
 
 #endif

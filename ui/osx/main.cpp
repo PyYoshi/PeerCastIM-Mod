@@ -34,88 +34,93 @@
 
 // ----------------------------------
 String iniFileName;
-bool quit=false;
+bool quit = false;
 
 
 // ---------------------------------
-class MyPeercastInst : public PeercastInstance
-{
+class MyPeercastInst : public PeercastInstance {
 public:
-	virtual Sys * APICALL createSys()
-	{
-		return new USys();
-	}
+    virtual Sys *APICALL
+
+    createSys() {
+        return new USys();
+    }
 };
+
 // ---------------------------------
-class MyPeercastApp : public PeercastApplication
-{
+class MyPeercastApp : public PeercastApplication {
 public:
-	virtual const char * APICALL getIniFilename()
-	{
-		return iniFileName;
-	}
+    virtual const char *APICALL
 
-	virtual const char *APICALL getClientTypeOS() 
-	{
-		return PCX_OS_MACOSX;
-	}
+    getIniFilename() {
+        return iniFileName;
+    }
 
-	virtual void APICALL printLog(LogBuffer::TYPE t, const char *str)
-	{
-		if (t != LogBuffer::T_NONE)
-			printf("[%s] ",LogBuffer::getTypeStr(t));
-		printf("%s\n",str);
-	}
+    virtual const char *APICALL
+
+    getClientTypeOS() {
+        return PCX_OS_MACOSX;
+    }
+
+    virtual void APICALL
+    printLog(LogBuffer::TYPE
+    t,
+    const char *str
+    )
+    {
+        if (t != LogBuffer::T_NONE)
+            printf("[%s] ", LogBuffer::getTypeStr(t));
+        printf("%s\n", str);
+    }
 
 };
 
 // ----------------------------------
-void setSettingsUI(){}
-// ----------------------------------
-void showConnections(){}
-// ----------------------------------
-void PRINTLOG(LogBuffer::TYPE type, const char *fmt,va_list ap)
-{
+void setSettingsUI() {
 }
 
 // ----------------------------------
-void sigProc(int sig)
-{
-	switch (sig)
-	{
-		case 2:
-			if (!quit)
-				LOG_DEBUG("Received QUIT signal");
-			quit=true;
-			break;
-	}
+void showConnections() {
 }
 
 // ----------------------------------
-int main(int argc, char* argv[])
-{
+void PRINTLOG(LogBuffer::TYPE type, const char *fmt, va_list ap) {
+}
 
-	iniFileName.set("peercast.ini");
+// ----------------------------------
+void sigProc(int sig) {
+    switch (sig) {
+        case 2:
+            if (!quit)
+                LOG_DEBUG("Received QUIT signal");
+            quit = true;
+            break;
+    }
+}
 
-	if (argc > 2)
-		if (strcmp(argv[1],"-inifile")==0)
-			iniFileName.setFromString(argv[2]);
+// ----------------------------------
+int main(int argc, char *argv[]) {
 
-	peercastInst = new MyPeercastInst();
-	peercastApp = new MyPeercastApp();
+    iniFileName.set("peercast.ini");
 
-	peercastInst->init();
+    if (argc > 2) if (strcmp(argv[1], "-inifile") == 0)
+        iniFileName.setFromString(argv[2]);
 
+    peercastInst = new MyPeercastInst();
+    peercastApp = new MyPeercastApp();
 
-	signal(SIGINT, sigProc); 
-
-	while (!quit)
-		sys->sleep(1000);
-
-	peercastInst->saveSettings();
-
-	peercastInst->quit();
+    peercastInst->init();
 
 
-	return 0;
+    signal(SIGINT, sigProc);
+
+    while (!quit)
+        sys->sleep(1000);
+
+    peercastInst->saveSettings();
+
+    peercastInst->quit();
+
+
+    return 0;
 }

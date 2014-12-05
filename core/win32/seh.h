@@ -12,12 +12,12 @@ extern FileStream fs;
 #ifndef _DEBUG
 #define SEH_THREAD(func, name) \
 { \
-	__try \
-	{ \
-		return func(thread); \
-	} __except(SEHdump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) \
-	{ \
-	} \
+    __try \
+    { \
+        return func(thread); \
+    } __except(SEHdump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) \
+    { \
+    } \
 }
 
 #else

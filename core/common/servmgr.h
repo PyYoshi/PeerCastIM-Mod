@@ -29,408 +29,443 @@ const int MIN_TRACKER_RETRY = 10;
 const int MIN_RELAY_RETRY = 5;
 
 // ----------------------------------
-class BCID
-{
+class BCID {
 public:
-	BCID()
-	:next(0),valid(true)
-	{}
+    BCID()
+            : next(0), valid(true) {
+    }
 
-	bool	writeVariable(Stream &, const String &);
+    bool writeVariable(Stream &, const String &);
 
-	GnuID	id;
-	String	name,email,url;
-	bool	valid;
-	BCID	*next;
+    GnuID id;
+    String name, email, url;
+    bool valid;
+    BCID *next;
 };
 
 
 // ----------------------------------
-class ServHost
-{
+class ServHost {
 public:
-	enum TYPE
-	{
-		T_NONE,
-		T_STREAM,
-		T_CHANNEL,
-		T_SERVENT,
-		T_TRACKER
-	};
+    enum TYPE {
+        T_NONE,
+        T_STREAM,
+        T_CHANNEL,
+        T_SERVENT,
+        T_TRACKER
+    };
 
-	ServHost() {init();}
-	void init()
-	{
-		host.init();
-		time = 0;
-		type = T_NONE;
-	}
-	void init(Host &h, TYPE tp, unsigned int tim)
-	{
-		init();
-		host = h;
-		type = tp;
-		if (tim)
-			time = tim;
-		else
-			time = sys->getTime();
-	}
+    ServHost() {
+        init();
+    }
 
-	static const char *getTypeStr(TYPE);
-	static TYPE getTypeFromStr(const char *);
+    void init() {
+        host.init();
+        time = 0;
+        type = T_NONE;
+    }
 
-	TYPE type;
-	Host host;
-	unsigned int time;
+    void init(Host &h, TYPE tp, unsigned int tim) {
+        init();
+        host = h;
+        type = tp;
+        if (tim)
+            time = tim;
+        else
+            time = sys->getTime();
+    }
+
+    static const char *getTypeStr(TYPE);
+
+    static TYPE getTypeFromStr(const char *);
+
+    TYPE type;
+    Host host;
+    unsigned int time;
 };
+
 // ----------------------------------
-class ServFilter 
-{
+class ServFilter {
 public:
-	enum 
-	{
-		F_PRIVATE  = 0x01,
-		F_BAN	   = 0x02,
-		F_NETWORK  = 0x04,
-		F_DIRECT   = 0x08
-	};
+    enum {
+        F_PRIVATE = 0x01,
+        F_BAN = 0x02,
+        F_NETWORK = 0x04,
+        F_DIRECT = 0x08
+    };
 
-	ServFilter() {init();}
-	void	init()
-	{
-		flags = 0;
-		host.init();
-	}
+    ServFilter() {
+        init();
+    }
 
-	bool	writeVariable(Stream &, const String &);
+    void init() {
+        flags = 0;
+        host.init();
+    }
 
-	Host host;
-	unsigned int flags;
+    bool writeVariable(Stream &, const String &);
+
+    Host host;
+    unsigned int flags;
 };
 
 // ----------------------------------
 // ServMgr keeps track of Servents
-class ServMgr
-{
+class ServMgr {
 
 public:
 
-	enum NOTIFY_TYPE
-	{
-		NT_UPGRADE			= 0x0001,
-		NT_PEERCAST			= 0x0002,
-		NT_BROADCASTERS		= 0x0004,
-		NT_TRACKINFO		= 0x0008,
-		NT_APPLAUSE			= 0x0010 //JP-MOD
-	};
+    enum NOTIFY_TYPE {
+        NT_UPGRADE = 0x0001,
+        NT_PEERCAST = 0x0002,
+        NT_BROADCASTERS = 0x0004,
+        NT_TRACKINFO = 0x0008,
+        NT_APPLAUSE = 0x0010 //JP-MOD
+    };
 
-	enum FW_STATE
-	{
-		FW_OFF,
-		FW_ON,
-		FW_UNKNOWN
-	};
-	enum {
+    enum FW_STATE {
+        FW_OFF,
+        FW_ON,
+        FW_UNKNOWN
+    };
+    enum {
 
-		MAX_HOSTCACHE = 100,		// max. amount of hosts in cache
-		MIN_HOSTS	= 3,			// min. amount of hosts that should be kept in cache
+        MAX_HOSTCACHE = 100,        // max. amount of hosts in cache
+        MIN_HOSTS = 3,            // min. amount of hosts that should be kept in cache
 
-		MAX_OUTGOING = 3,			// max. number of outgoing servents to use
-		MAX_INCOMING = 6,		    // max. number of public incoming servents to use
-		MAX_TRYOUT   = 10,			// max. number of outgoing servents to try connect
-		MIN_CONNECTED = 3,			// min. amount of connected hosts that should be kept
+        MAX_OUTGOING = 3,            // max. number of outgoing servents to use
+        MAX_INCOMING = 6,            // max. number of public incoming servents to use
+        MAX_TRYOUT = 10,            // max. number of outgoing servents to try connect
+        MIN_CONNECTED = 3,            // min. amount of connected hosts that should be kept
 
-		MIN_RELAYS = 1,
+        MIN_RELAYS = 1,
 
-		MAX_FILTERS = 50,
+        MAX_FILTERS = 50,
 
-		MAX_VERSIONS = 16,
+        MAX_VERSIONS = 16,
 
-		MAX_PREVIEWTIME	= 300,		// max. seconds preview per channel available (direct connections)
-		MAX_PREVIEWWAIT = 300,		// max. seconds wait between previews 
+        MAX_PREVIEWTIME = 300,        // max. seconds preview per channel available (direct connections)
+        MAX_PREVIEWWAIT = 300,        // max. seconds wait between previews
 
-	};
+    };
 
-	enum AUTH_TYPE
-	{
-		AUTH_COOKIE,
-		AUTH_HTTPBASIC
-	};
-
-	
-
-	ServMgr();
-
-	bool	start();
-
-	Servent	*findServent(unsigned int,unsigned short,GnuID &);
-	Servent	*findServent(Servent::TYPE);
-	Servent	*findServent(Servent::TYPE,Host &,GnuID &);
-	Servent *findOldestServent(Servent::TYPE,bool);
-	Servent *findServentByIndex(int);
-	Servent *findServentByServentID(int);
-
-	bool	writeVariable(Stream &, const String &);
-	Servent	*allocServent();
-	unsigned int		numUsed(int);
-	unsigned int		numStreams(GnuID &, Servent::TYPE,bool);
-	unsigned int		numStreams(Servent::TYPE,bool);
-	unsigned int		numConnected(int,bool,unsigned int);
-	unsigned int		numConnected(int t,int tim = 0)
-	{
-		return numConnected(t,false,tim)+numConnected(t,true,tim);
-	}
-	unsigned int		numConnected();
-	unsigned int		numServents();
-
-	unsigned int		totalConnected()
-	{
-		//return numConnected(Servent::T_OUTGOING) + numConnected(Servent::T_INCOMING);
-		return numConnected();
-	}
-	unsigned int		numOutgoing();
-	bool	isFiltered(int,Host &h);
-	bool	addOutgoing(Host,GnuID &,bool);
-	Servent	*findConnection(Servent::TYPE,GnuID &);
+    enum AUTH_TYPE {
+        AUTH_COOKIE,
+        AUTH_HTTPBASIC
+    };
 
 
-	static	THREAD_PROC		serverProc(ThreadInfo *);
-	static	THREAD_PROC		clientProc(ThreadInfo *);
-	static	THREAD_PROC		trackerProc(ThreadInfo *);
-	static	THREAD_PROC		idleProc(ThreadInfo *);
+    ServMgr();
 
-	int		broadcast(GnuPacket &,Servent * = NULL);
-	int		route(GnuPacket &, GnuID &, Servent * = NULL);
+    bool start();
 
-	XML::Node *createServentXML();
+    Servent *findServent(unsigned int, unsigned short, GnuID &);
 
-	void		connectBroadcaster();
-	void		procConnectArgs(char *,ChanInfo &);
+    Servent *findServent(Servent::TYPE);
 
-	void		quit();
-	void		closeConnections(Servent::TYPE);
+    Servent *findServent(Servent::TYPE, Host &, GnuID &);
 
-	void		checkFirewall();
+    Servent *findOldestServent(Servent::TYPE, bool);
 
-	// host cache
-	void			addHost(Host &,ServHost::TYPE,unsigned int);
-	int				getNewestServents(Host *,int, Host &);
-	ServHost		getOutgoingServent(GnuID &);
-	void			deadHost(Host &,ServHost::TYPE);
-	unsigned int	numHosts(ServHost::TYPE);
-	void			clearHostCache(ServHost::TYPE);
-	bool			seenHost(Host &,ServHost::TYPE,unsigned int);
+    Servent *findServentByIndex(int);
 
-	void	setMaxRelays(int);
-	void	setFirewall(FW_STATE);
-	bool	checkForceIP();
-	FW_STATE	getFirewall() {return firewalled;}
-	void	saveSettings(const char *);
-	void	loadSettings(const char *);
-	void	setPassiveSearch(unsigned int);
-	int		findChannel(ChanInfo &);
-	bool	getChannel(char *,ChanInfo &,bool);
-	void	setFilterDefaults();
+    Servent *findServentByServentID(int);
 
-	bool	acceptGIV(ClientSocket *);
-	void	addVersion(unsigned int);
+    bool writeVariable(Stream &, const String &);
 
-	void broadcastRootSettings(bool);
-	int broadcastPushRequest(ChanHit &, Host &, GnuID &, Servent::TYPE);
-	void writeRootAtoms(AtomStream &,bool);
+    Servent *allocServent();
 
-	int	broadcastPacket(ChanPacket &,GnuID &,GnuID &,GnuID &,Servent::TYPE type);
+    unsigned int numUsed(int);
 
-	void	addValidBCID(BCID *);
-	void	removeValidBCID(GnuID &);
-	BCID	*findValidBCID(GnuID &);
-	BCID	*findValidBCID(int);
+    unsigned int numStreams(GnuID &, Servent::TYPE, bool);
 
-	unsigned int getUptime()
-	{
-		return sys->getTime()-startTime;
-	}
+    unsigned int numStreams(Servent::TYPE, bool);
 
-	bool	seenPacket(GnuPacket &);
+    unsigned int numConnected(int, bool, unsigned int);
+
+    unsigned int numConnected(int t, int tim = 0) {
+        return numConnected(t, false, tim) + numConnected(t, true, tim);
+    }
+
+    unsigned int numConnected();
+
+    unsigned int numServents();
+
+    unsigned int totalConnected() {
+        //return numConnected(Servent::T_OUTGOING) + numConnected(Servent::T_INCOMING);
+        return numConnected();
+    }
+
+    unsigned int numOutgoing();
+
+    bool isFiltered(int, Host &h);
+
+    bool addOutgoing(Host, GnuID &, bool);
+
+    Servent *findConnection(Servent::TYPE, GnuID &);
 
 
-	bool	needHosts()
-	{
-		return false;
-		//return numHosts(ServHost::T_SERVENT) < maxTryout;
-	}
+    static THREAD_PROC serverProc(ThreadInfo *);
 
-	unsigned int		numActiveOnPort(int);
-	unsigned int		numActive(Servent::TYPE);
+    static THREAD_PROC clientProc(ThreadInfo *);
 
-	bool	needConnections() 
-	{
-		return numConnected(Servent::T_PGNU,60) < minGnuIncoming;
-	}
-	bool	tryFull() 
-	{
-		return false;
-		//return maxTryout ? numUsed(Servent::T_OUTGOING) > maxTryout: false;
-	}
+    static THREAD_PROC trackerProc(ThreadInfo *);
 
-	bool	pubInOver() 
-	{
-		return numConnected(Servent::T_PGNU) > maxGnuIncoming;
+    static THREAD_PROC idleProc(ThreadInfo *);
+
+    int broadcast(GnuPacket &, Servent * = NULL);
+
+    int route(GnuPacket &, GnuID &, Servent * = NULL);
+
+    XML::Node *createServentXML();
+
+    void connectBroadcaster();
+
+    void procConnectArgs(char *, ChanInfo &);
+
+    void quit();
+
+    void closeConnections(Servent::TYPE);
+
+    void checkFirewall();
+
+    // host cache
+    void addHost(Host &, ServHost::TYPE, unsigned int);
+
+    int getNewestServents(Host *, int, Host &);
+
+    ServHost getOutgoingServent(GnuID &);
+
+    void deadHost(Host &, ServHost::TYPE);
+
+    unsigned int numHosts(ServHost::TYPE);
+
+    void clearHostCache(ServHost::TYPE);
+
+    bool seenHost(Host &, ServHost::TYPE, unsigned int);
+
+    void setMaxRelays(int);
+
+    void setFirewall(FW_STATE);
+
+    bool checkForceIP();
+
+    FW_STATE getFirewall() {
+        return firewalled;
+    }
+
+    void saveSettings(const char *);
+
+    void loadSettings(const char *);
+
+    void setPassiveSearch(unsigned int);
+
+    int findChannel(ChanInfo &);
+
+    bool getChannel(char *, ChanInfo &, bool);
+
+    void setFilterDefaults();
+
+    bool acceptGIV(ClientSocket *);
+
+    void addVersion(unsigned int);
+
+    void broadcastRootSettings(bool);
+
+    int broadcastPushRequest(ChanHit &, Host &, GnuID &, Servent::TYPE);
+
+    void writeRootAtoms(AtomStream &, bool);
+
+    int broadcastPacket(ChanPacket &, GnuID &, GnuID &, GnuID &, Servent::TYPE type);
+
+    void addValidBCID(BCID *);
+
+    void removeValidBCID(GnuID &);
+
+    BCID *findValidBCID(GnuID &);
+
+    BCID *findValidBCID(int);
+
+    unsigned int getUptime() {
+        return sys->getTime() - startTime;
+    }
+
+    bool seenPacket(GnuPacket &);
+
+
+    bool needHosts() {
+        return false;
+        //return numHosts(ServHost::T_SERVENT) < maxTryout;
+    }
+
+    unsigned int numActiveOnPort(int);
+
+    unsigned int numActive(Servent::TYPE);
+
+    bool needConnections() {
+        return numConnected(Servent::T_PGNU, 60) < minGnuIncoming;
+    }
+
+    bool tryFull() {
+        return false;
+        //return maxTryout ? numUsed(Servent::T_OUTGOING) > maxTryout: false;
+    }
+
+    bool pubInOver() {
+        return numConnected(Servent::T_PGNU) > maxGnuIncoming;
 //		return maxIncoming ? numConnected(Servent::T_INCOMING,false) > maxIncoming : false;
-	}
-	bool	pubInFull() 
-	{
-		return numConnected(Servent::T_PGNU) >= maxGnuIncoming;
+    }
+
+    bool pubInFull() {
+        return numConnected(Servent::T_PGNU) >= maxGnuIncoming;
 //		return maxIncoming ? numConnected(Servent::T_INCOMING,false) >= maxIncoming : false;
-	}
+    }
 
-	bool	outUsedFull() 
-	{
-		return false;
+    bool outUsedFull() {
+        return false;
 //		return maxOutgoing ? numUsed(Servent::T_OUTGOING) >= maxOutgoing: false;
-	}
-	bool	outOver() 
-	{
-		return false;
+    }
+
+    bool outOver() {
+        return false;
 //		return maxOutgoing ? numConnected(Servent::T_OUTGOING) > maxOutgoing : false;
-	}
+    }
 
-	bool	controlInFull()
-	{
-		return numConnected(Servent::T_CIN)>=maxControl;
-	}
+    bool controlInFull() {
+        return numConnected(Servent::T_CIN) >= maxControl;
+    }
 
-	bool	outFull() 
-	{
-		return false;
+    bool outFull() {
+        return false;
 //		return maxOutgoing ? numConnected(Servent::T_OUTGOING) >= maxOutgoing : false;
-	}
+    }
 
-	bool	relaysFull() 
-	{
-		return numStreams(Servent::T_RELAY,false) >= maxRelays;
-	}
-	bool	directFull() 
-	{
-		return numStreams(Servent::T_DIRECT,false) >= maxDirect;
-	}
+    bool relaysFull() {
+        return numStreams(Servent::T_RELAY, false) >= maxRelays;
+    }
 
-	bool	bitrateFull(unsigned int br) 
-	{
-		return maxBitrateOut ? (BYTES_TO_KBPS(totalOutput(false))+br) > maxBitrateOut  : false;
-	}
+    bool directFull() {
+        return numStreams(Servent::T_DIRECT, false) >= maxDirect;
+    }
 
-	// thread func (graylist)
-	//static int WINAPI graylistThreadFunc(ThreadInfo *t);
+    bool bitrateFull(unsigned int br) {
+        return maxBitrateOut ? (BYTES_TO_KBPS(totalOutput(false)) + br) > maxBitrateOut : false;
+    }
 
-	unsigned int		totalOutput(bool);
-	unsigned int		totalInput(bool);
+    // thread func (graylist)
+    //static int WINAPI graylistThreadFunc(ThreadInfo *t);
 
-	static ThreadInfo serverThread,idleThread;
+    unsigned int totalOutput(bool);
 
+    unsigned int totalInput(bool);
 
-	Servent *servents;
-	WLock	lock;
-
-	ServHost	hostCache[MAX_HOSTCACHE];
-
-	char	password[64];
-
-	bool	allowGnutella;
-
-	unsigned int		maxBitrateOut,maxControl,maxRelays,maxDirect;
-	unsigned int		minGnuIncoming,maxGnuIncoming;
-	unsigned int		maxServIn;
-
-	bool	isDisabled;
-	bool	isRoot;
-	int		totalStreams;
-
-	Host	serverHost;
-	String  rootHost;
-	String  rootHost2;
-
-	char	downloadURL[128];
-	String	rootMsg;
-	String	forceIP;
-	char	connectHost[128];
-	GnuID	networkID;
-	unsigned int		firewallTimeout;
-	int		showLog;
-	int		shutdownTimer;
-	bool	pauseLog;
-	bool	forceNormal;
-	bool	useFlowControl;
-	unsigned int lastIncoming;
-
-	bool	restartServer;
-	bool	allowDirect;
-	bool	autoConnect,autoServe,forceLookup;
-	int		queryTTL;
-
-	unsigned int		allowServer1,allowServer2;
-	unsigned int		startTime;
-	unsigned int		tryoutDelay;
-	unsigned int		refreshHTML;
-	unsigned int		relayBroadcast;
-
-	unsigned int notifyMask;
-
-	BCID		*validBCID;
-	GnuID		sessionID;
-
-	ServFilter	filters[MAX_FILTERS];
-	int	numFilters;
+    static ThreadInfo serverThread, idleThread;
 
 
-	CookieList	cookieList;
-	AUTH_TYPE	authType;
+    Servent *servents;
+    WLock lock;
 
-	char	htmlPath[128];
-	unsigned int	clientVersions[MAX_VERSIONS],clientCounts[MAX_VERSIONS];
-	int	numVersions;
+    ServHost hostCache[MAX_HOSTCACHE];
 
-	int serventNum;
-	String chanLog;
+    char password[64];
 
-	char modulePath[256]; //JP-EX
-	int enableGetName; //JP-EX
-	int allowConnectPCST; //JP-EX
-	int autoRelayKeep; //JP-EX
-	unsigned int autoMaxRelaySetting; //JP-EX
-	unsigned int autoBumpSkipCount;//JP-EX
-	unsigned int kickPushStartRelays; //JP-EX
-	unsigned int kickPushInterval; //JP-EX
-	unsigned int kickPushTime;
-	bool	isCheckPushStream(); //JP-EX
-	void	banFirewalledHost(); //JP-EX
-	int kickUnrelayableHost(GnuID &, ChanHit &);
+    bool allowGnutella;
 
-	bool	getModulePath; //JP-EX
-	bool	clearPLS; //JP-EX
-	bool	writeLogFile; //JP-EX
+    unsigned int maxBitrateOut, maxControl, maxRelays, maxDirect;
+    unsigned int minGnuIncoming, maxGnuIncoming;
+    unsigned int maxServIn;
 
-	bool	autoPort0Kick;
-	bool	allowOnlyVP;
-	unsigned int kickKeepTime;
-	bool	vpDebug;
-	bool	saveIniChannel;
-	bool	saveGuiPos;
-	bool	keepDownstreams;
+    bool isDisabled;
+    bool isRoot;
+    int totalStreams;
 
-	bool topmostGui; // 最前面
-	bool startWithGui; // 起動時にGUI
-	bool preventSS; // スクリーンセーバーを抑止
-	bool noVersionCheck; // bcstAtomによるバージョンチェックを行わない
+    Host serverHost;
+    String rootHost;
+    String rootHost2;
 
-	int versionDNS; // DNSから取得した最新バージョンの番号
+    char downloadURL[128];
+    String rootMsg;
+    String forceIP;
+    char connectHost[128];
+    GnuID networkID;
+    unsigned int firewallTimeout;
+    int showLog;
+    int shutdownTimer;
+    bool pauseLog;
+    bool forceNormal;
+    bool useFlowControl;
+    unsigned int lastIncoming;
 
-	ITSVector<addrCont> *IP_graylist; // gray/black-lists for DoS atk
-	ITSVector<addrCont> *IP_blacklist;
-	unsigned dosThreashold;
-	unsigned dosInterval;
+    bool restartServer;
+    bool allowDirect;
+    bool autoConnect, autoServe, forceLookup;
+    int queryTTL;
 
-	int maxRelaysIndexTxt;	// for PCRaw (relay)
+    unsigned int allowServer1, allowServer2;
+    unsigned int startTime;
+    unsigned int tryoutDelay;
+    unsigned int refreshHTML;
+    unsigned int relayBroadcast;
+
+    unsigned int notifyMask;
+
+    BCID *validBCID;
+    GnuID sessionID;
+
+    ServFilter filters[MAX_FILTERS];
+    int numFilters;
+
+
+    CookieList cookieList;
+    AUTH_TYPE authType;
+
+    char htmlPath[128];
+    unsigned int clientVersions[MAX_VERSIONS], clientCounts[MAX_VERSIONS];
+    int numVersions;
+
+    int serventNum;
+    String chanLog;
+
+    char modulePath[256]; //JP-EX
+    int enableGetName; //JP-EX
+    int allowConnectPCST; //JP-EX
+    int autoRelayKeep; //JP-EX
+    unsigned int autoMaxRelaySetting; //JP-EX
+    unsigned int autoBumpSkipCount;
+    //JP-EX
+    unsigned int kickPushStartRelays; //JP-EX
+    unsigned int kickPushInterval; //JP-EX
+    unsigned int kickPushTime;
+
+    bool isCheckPushStream(); //JP-EX
+    void banFirewalledHost(); //JP-EX
+    int kickUnrelayableHost(GnuID &, ChanHit &);
+
+    bool getModulePath; //JP-EX
+    bool clearPLS; //JP-EX
+    bool writeLogFile; //JP-EX
+
+    bool autoPort0Kick;
+    bool allowOnlyVP;
+    unsigned int kickKeepTime;
+    bool vpDebug;
+    bool saveIniChannel;
+    bool saveGuiPos;
+    bool keepDownstreams;
+
+    bool topmostGui; // 最前面
+    bool startWithGui; // 起動時にGUI
+    bool preventSS; // スクリーンセーバーを抑止
+    bool noVersionCheck; // bcstAtomによるバージョンチェックを行わない
+
+    int versionDNS; // DNSから取得した最新バージョンの番号
+
+    ITSVector <addrCont> *IP_graylist; // gray/black-lists for DoS atk
+    ITSVector <addrCont> *IP_blacklist;
+    unsigned dosThreashold;
+    unsigned dosInterval;
+
+    int maxRelaysIndexTxt;    // for PCRaw (relay)
 
 #ifdef WIN32 //JP-MOD
 	bool	guiSimpleChannelList;
@@ -449,21 +484,21 @@ public:
 	String	ppClapSoundPath;
 #endif
 
-	int		disableAutoBumpIfDirect;
-	int		asxDetailedMode;
+    int disableAutoBumpIfDirect;
+    int asxDetailedMode;
 
-	enum PPBCSTFLAG //JP-MOD
-	{
-		bcstNone		= 0x00000000,
-		bcstClap		= 0x00000001
-	};
+    enum PPBCSTFLAG //JP-MOD
+    {
+        bcstNone = 0x00000000,
+        bcstClap = 0x00000001
+    };
 
-	// PCP broadcast flood
-	GnuID lastPCPFromID;
-	time_t lastPCPBcstTime;
+    // PCP broadcast flood
+    GnuID lastPCPFromID;
+    time_t lastPCPBcstTime;
 
 private:
-	FW_STATE	firewalled;
+    FW_STATE firewalled;
 };
 
 // ----------------------------------

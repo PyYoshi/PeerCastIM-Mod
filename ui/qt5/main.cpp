@@ -6,8 +6,7 @@
 #include "channel.h"
 #include "version2.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MainFormBase w;
     w.show();

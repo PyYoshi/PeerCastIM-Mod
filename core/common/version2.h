@@ -21,7 +21,7 @@
 
 // ------------------------------------------------
 #ifdef PRIVATE_BROADCASTER
-static const char PCP_BROADCAST_FLAGS	= 0x01;	
+static const char PCP_BROADCAST_FLAGS	= 0x01;
 static bool	PCP_FORCE_YP				= true;
 #else
 static const char PCP_BROADCAST_FLAGS = 0x00;
@@ -41,13 +41,21 @@ static const char *PCX_VERSTRING = "v0.1218(VP0027)";
 
 extern int version_ex; // VERSION_EX有効化フラグ
 
-#if 1 /* for VP extend version */
+/* for VP extend version */
 static const char *PCP_CLIENT_VERSION_EX_PREFIX = "IM"; // 2bytes only
 static const int PCP_CLIENT_VERSION_EX_NUMBER = 45;
+#ifdef OS_LINUX
 static const char *PCX_AGENTEX = "PeerCast/0.1218(IM0045-Linux)";
 static const char *PCX_VERSTRING_EX = "v0.1218(IM0045-Linux)";
-static const char *PCP_CLIENT_VERSION_URL = "version.pecaim.net";
+#elif defined OS_MACOSX
+static const char *PCX_AGENTEX = "PeerCast/0.1218(IM0045-OSX)";
+static const char *PCX_VERSTRING_EX = "v0.1218(IM0045-OSX)";
+#else
+static const char *PCX_AGENTEX = "PeerCast/0.1218(IM0045)";
+static const char *PCX_VERSTRING_EX = "v0.1218(IM0045)";
 #endif
+
+static const char *PCP_CLIENT_VERSION_URL = "version.pecaim.net";
 
 // ------------------------------------------------
 

@@ -2,7 +2,7 @@
 // File : usys.cpp
 // Date: 4-apr-2002
 // Author: giles
-// Desc: 
+// Desc:
 //		LSys derives from Sys to provide basic Linux functions such as starting threads.
 //
 // (c) 2002 peercast.org
@@ -40,9 +40,9 @@ USys::USys()
 {
 	stats.clear();
 
-	rndGen.setSeed(rnd()+getpid());	
-	signal(SIGPIPE, SIG_IGN); 
-	signal(SIGABRT, SIG_IGN); 
+	rndGen.setSeed(rnd()+getpid());
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGABRT, SIG_IGN);
 
 	rndSeed = rnd();
 
@@ -69,7 +69,7 @@ ClientSocket *USys::createSocket()
 {
     return new UClientSocket();
 }
-               
+
 
 // ---------------------------------
 void USys::endThread(ThreadInfo *info)
@@ -136,7 +136,7 @@ void USys::getURL(const char *url)
 // ---------------------------------
 void USys::callLocalURL(const char *str,int port)
 {
-} 
+}
 // ---------------------------------
 void USys::executeFile( const char *file )
 {
@@ -153,13 +153,13 @@ void USys::exit()
 void USys::openURL( const char* url )
 {
 	CFStringRef urlString = CFStringCreateWithFormat( NULL, NULL, CFSTR("%s"), url );
-	
+
 	if( urlString )
 	{
 		CFURLRef pathRef = CFURLCreateWithString( NULL, urlString, NULL );
 		if( pathRef )
 		{
-			OSStatus err = LSOpenCFURLRef( pathRef, NULL );
+			//OSStatus err = LSOpenCFURLRef( pathRef, NULL );
 			CFRelease(pathRef);
 		}
 		CFRelease( urlString );
@@ -171,9 +171,9 @@ void USys::callLocalURL(const char *str,int port)
 	char cmd[512];
 	sprintf(cmd,"http://localhost:%d/%s",port,str);
 	openURL( cmd );
-} 
-// --------------------------------- 
-void USys::getURL(const char *url) 
+}
+// ---------------------------------
+void USys::getURL(const char *url)
 {
 	if (strnicmp(url,"http://",7) || strnicmp(url,"mailto:",7))
 	{
@@ -184,7 +184,7 @@ void USys::getURL(const char *url)
 void USys::executeFile( const char *file )
 {
 	CFStringRef fileString = CFStringCreateWithFormat( NULL, NULL, CFSTR("%s"), file );
-	
+
 	if( fileString )
 	{
 		CFURLRef pathRef = CFURLCreateWithString( NULL, fileString, NULL );
@@ -192,7 +192,7 @@ void USys::executeFile( const char *file )
 		{
 			FSRef fsRef;
 			CFURLGetFSRef( pathRef, &fsRef );
-			OSStatus err = LSOpenFSRef( &fsRef, NULL );
+			//OSStatus err = LSOpenFSRef( &fsRef, NULL );
 			CFRelease(pathRef);
 		}
 		CFRelease( fileString );

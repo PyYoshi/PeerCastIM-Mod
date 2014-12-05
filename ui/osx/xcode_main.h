@@ -6,7 +6,7 @@
  *  Copyright (c) 2002-2004 peercast.org. All rights reserved.
  *
  */
-// ------------------------------------------------
+ // ------------------------------------------------
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -22,71 +22,79 @@
 
 #include <Carbon/Carbon.h>
 
-class CAppPathInfo {
+class CAppPathInfo
+{
 public:
-    enum EPathErr {
-        kPE_NoMainBundle, kPE_NoBundleURL, kPE_NoFSRef, kPE_CantGetPath
-    };
+	enum EPathErr
+	{
+		 kPE_NoMainBundle
+		,kPE_NoBundleURL
+		,kPE_NoFSRef
+		,kPE_CantGetPath
+	};
+	
+	explicit CAppPathInfo()
+	{
+		initDefaultPath();
+	
+		CFBundleRef appBundle = CFBundleGetMainBundle();
+		
+		if( appBundle == NULL )
+			throw kPE_NoMainBundle;
+			
+		CFURLRef appUrlBundle = CFBundleCopyBundleURL( appBundle );
+	
+		if( appUrlBundle == NULL )
+		{
+			CFRelease( appBundle );			
+			throw kPE_NoBundleURL;
+		}
+		
+		FSRef appBundleRef;
+		Boolean success = CFURLGetFSRef( appUrlBundle, &appBundleRef );
 
-    explicit CAppPathInfo() {
-        initDefaultPath();
-
-        CFBundleRef appBundle = CFBundleGetMainBundle();
-
-        if (appBundle == NULL)
-            throw kPE_NoMainBundle;
-
-        CFURLRef appUrlBundle = CFBundleCopyBundleURL(appBundle);
-
-        if (appUrlBundle == NULL) {
-            CFRelease(appBundle);
-            throw kPE_NoBundleURL;
-        }
-
-        FSRef appBundleRef;
-        Boolean success = CFURLGetFSRef(appUrlBundle, &appBundleRef);
-
-        if (success != true) {
-            throw kPE_NoFSRef;
-        }
-
-        OSStatus err = FSRefMakePath(&appBundleRef, mPathString, PATH_MAX);
-        bool gotPath = false;
-
-        if (err == noErr) {
-            const int length = strlen(mPathString);
-
-            if (length > 0) {
-                // remove any file name info in path string
-                char *cap = mPathString + length - 1;
-
-                while (cap && *cap != '/') {
-                    *cap = 0;
-                    --cap;
-                }
-
-                gotPath = true;
-            }
-        }
-
-        CFRelease(appUrlBundle);
-        //CFRelease( appBundle );
-
-        if (!gotPath) {
-            throw kPE_CantGetPath;
-        }
-    }
-
-    const char *getPath() const {
-        return &mPathString[0];
-    }
+		if( success != true )
+		{
+			throw kPE_NoFSRef;
+		}		
+		
+		OSStatus err	 = FSRefMakePath( &appBundleRef, mPathString, PATH_MAX);
+		bool     gotPath = false;
+		
+		if( err == noErr )
+		{
+			const int length = strlen( mPathString );
+		
+			if( length > 0 )
+			{
+				// remove any file name info in path string
+				char* cap = mPathString+length-1;
+			
+				while( cap && *cap != '/' )
+				{
+					*cap = 0;
+					--cap;
+				}
+				
+				gotPath = true;
+			}
+		}
+		
+		CFRelease( appUrlBundle );
+		//CFRelease( appBundle );	
+		
+		if( !gotPath )
+		{
+			throw kPE_CantGetPath;
+		}
+	}
+	
+	const char* getPath() const { return &mPathString[0]; }
 
 private:
-    void initDefaultPath() {
-        strcpy(mPathString, "./");
-    }
-
-    char mPathString[PATH_MAX];
+	void initDefaultPath() { strcpy(mPathString, "./"); }
+	
+	char mPathString[PATH_MAX];
 };
 
 #endif // _MAIN_H

@@ -23,40 +23,31 @@
 #include "common/stream.h"
 
 // -----------------------------------------
-class IniFile {
+class IniFile 
+{
 public:
-    bool openReadOnly(const char *);
+	bool	openReadOnly(const char *);
+	bool	openWriteReplace(const char *);
+	void	close();
 
-    bool openWriteReplace(const char *);
+	bool	readNext();
 
-    void close();
+	bool	isName(const char *);
+	char *	getName();
+	int		getIntValue();
+    const char *	getStrValue();
+	bool	getBoolValue();
 
-    bool readNext();
-
-    bool isName(const char *);
-
-    char *getName();
-
-    int getIntValue();
-
-    const char *getStrValue();
-
-    bool getBoolValue();
-
-    void writeSection(const char *);
-
-    void writeIntValue(const char *, int);
-
-    void writeStrValue(const char *, const char *);
-
-    void writeBoolValue(const char *, int);
-
-    void writeLine(const char *);
+	void	writeSection(const char *);
+	void	writeIntValue(const char *, int);
+	void	writeStrValue(const char *, const char *);
+	void	writeBoolValue(const char *, int);
+	void	writeLine(const char *);
 
 
-    FileStream fStream;
-    char currLine[256];
-    char *nameStr, *valueStr;
+	FileStream	fStream;
+	char	currLine[256];
+	char	*nameStr,*valueStr;
 };
 
 #endif

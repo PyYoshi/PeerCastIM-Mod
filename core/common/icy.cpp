@@ -1,6 +1,5 @@
 #include "common/icy.h"
 #include "common/socket.h"
-
 #ifdef _DEBUG
 #include "chkMemoryLeak.h"
 #define DEBUG_NEW new(__FILE__, __LINE__)
@@ -8,33 +7,37 @@
 #endif
 
 // ------------------------------------------------
-void ICYSource::stream(Channel * ch) {
-    ChannelStream *source = NULL;
-    try {
+void ICYSource::stream(Channel *ch)
+{
+	ChannelStream *source=NULL;
+	try 
+	{
 
-        if (!ch->sock)
-            throw StreamException("ICY channel has no socket");
+		if (!ch->sock)
+			throw StreamException("ICY channel has no socket");
 
-        ch->resetPlayTime();
+		ch->resetPlayTime();
 
-        ch->setStatus(Channel::S_BROADCASTING);
-        source = ch->createSource();
-        ch->readStream(*ch->sock, source);
+		ch->setStatus(Channel::S_BROADCASTING);
+		source = ch->createSource();
+		ch->readStream(*ch->sock,source);
 
-    } catch (StreamException &e) {
-        LOG_ERROR("Channel aborted: %s", e.msg);
-    }
+	}catch(StreamException &e)
+	{
+		LOG_ERROR("Channel aborted: %s",e.msg);
+	}
 
 
-    ch->setStatus(Channel::S_CLOSING);
+	ch->setStatus(Channel::S_CLOSING);
 
-    if (ch->sock) {
-        ch->sock->close();
-        delete ch->sock;
-        ch->sock = NULL;
-    }
+	if (ch->sock)
+	{
+		ch->sock->close();
+		delete ch->sock;
+		ch->sock = NULL;
+	}
 
-    if (source)
-        delete source;
+	if (source)
+		delete source;
 
 }

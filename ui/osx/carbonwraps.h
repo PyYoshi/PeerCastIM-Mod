@@ -6,7 +6,7 @@
  *  Copyright (c) 2002-2004 peercast.org. All rights reserved.
  *
  */
-// ------------------------------------------------
+ // ------------------------------------------------
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -22,67 +22,74 @@
 
 #include <Carbon/Carbon.h>
 
-class CEventHandlerUPP {
+class CEventHandlerUPP
+{
 public:
-    explicit CEventHandlerUPP(EventHandlerProcPtr userRoutine)
-            : mHandler(NewEventHandlerUPP(userRoutine)) {
-    }
-
-    EventHandlerUPP &eventHandler() {
-        return mHandler;
-    }
-
-    ~CEventHandlerUPP() {
-        if (mHandler != NULL) {
-            DisposeEventHandlerUPP(mHandler);
-        }
-    }
-
+	explicit CEventHandlerUPP( EventHandlerProcPtr userRoutine )
+	: mHandler( NewEventHandlerUPP( userRoutine ) )
+	{
+	}
+	
+	EventHandlerUPP& eventHandler() { return mHandler; }
+	
+	~CEventHandlerUPP()
+	{
+		if( mHandler != NULL )
+		{
+			DisposeEventHandlerUPP( mHandler );
+		}
+	}
 private:
-    // disable copy and assignment
-    CEventHandlerUPP(const CEventHandlerUPP &);
-
-    CEventHandlerUPP &operator=(const CEventHandlerUPP &);
-
-    EventHandlerUPP mHandler;
+	// disable copy and assignment
+	CEventHandlerUPP           ( const CEventHandlerUPP& );
+	CEventHandlerUPP& operator=( const CEventHandlerUPP& );
+	
+	EventHandlerUPP mHandler;
 };
 
-class CEvent {
+class CEvent
+{
 public:
-    explicit CEvent(const UInt32 eventClass, const UInt32 eventKind)
-            : mEventRef(NULL) {
-        CreateEvent(NULL, eventClass, eventKind, GetCurrentEventTime(), kEventAttributeNone, &mEventRef);
-    }
-
-    ~CEvent() {
-        if (mEventRef != NULL) {
-            ReleaseEvent(mEventRef);
-        }
-    }
-
-    OSStatus setParameter(EventParamName inName, EventParamType inType, UInt32 inSize, const void *inDataPtr) {
-        if (mEventRef != NULL) {
-            return SetEventParameter(mEventRef, inName, inType, inSize, inDataPtr);
-        }
-
-        return eventInternalErr;
-    }
-
-    OSStatus postToQueue(EventQueueRef inQueue, EventPriority inPriority) {
-        if (mEventRef != NULL) {
-            return PostEventToQueue(inQueue, mEventRef, inPriority);
-        }
-
-        return eventInternalErr;
-    }
-
+	explicit CEvent( const UInt32 eventClass, const UInt32 eventKind )
+	:mEventRef( NULL )
+	{
+		CreateEvent( NULL, eventClass, eventKind, GetCurrentEventTime(), kEventAttributeNone, &mEventRef );
+	}
+	
+	~CEvent()
+	{
+		if( mEventRef != NULL )
+		{
+			ReleaseEvent( mEventRef );
+		}
+	}
+	
+	OSStatus setParameter( EventParamName inName, EventParamType inType, UInt32 inSize, const void * inDataPtr )
+	{
+		if( mEventRef != NULL )
+		{
+			return SetEventParameter( mEventRef, inName, inType, inSize, inDataPtr );
+		}
+		
+		return eventInternalErr;
+	}
+	
+	OSStatus postToQueue( EventQueueRef inQueue, EventPriority inPriority )
+	{
+		if( mEventRef != NULL )
+		{
+			return PostEventToQueue( inQueue, mEventRef, inPriority );
+		}
+		
+		return eventInternalErr;
+	}
+	
 private:
-    // disable copy and assignment
-    CEvent(const CEvent &);
+	// disable copy and assignment
+	CEvent           ( const CEvent& );
+	CEvent& operator=( const CEvent& );
 
-    CEvent &operator=(const CEvent &);
-
-    EventRef mEventRef;
+	EventRef mEventRef;
 };
 
 #endif // _CARBONWRAPS_H

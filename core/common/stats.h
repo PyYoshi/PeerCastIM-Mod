@@ -21,74 +21,64 @@
 #define _STATS_H
 
 // ------------------------------------------------------
-class Stats {
+class Stats
+{
 public:
 
-    void clear();
+	void	clear();
+	void	update();
 
-    void update();
+	enum STAT
+	{
+		NONE,
 
-    enum STAT {
-        NONE,
+		PACKETSSTART,
+		NUMQUERYIN,NUMQUERYOUT,
+		NUMPINGIN,NUMPINGOUT,
+		NUMPONGIN,NUMPONGOUT,
+		NUMPUSHIN,NUMPUSHOUT,
+		NUMHITIN,NUMHITOUT,
+		NUMOTHERIN,NUMOTHEROUT,
+		NUMDROPPED,
+		NUMDUP,
+		NUMACCEPTED,
+		NUMOLD,
+		NUMBAD,
+		NUMHOPS1,NUMHOPS2,NUMHOPS3,NUMHOPS4,NUMHOPS5,NUMHOPS6,NUMHOPS7,NUMHOPS8,NUMHOPS9,NUMHOPS10,
+		NUMPACKETSIN,
+		NUMPACKETSOUT,
+		NUMROUTED,
+		NUMBROADCASTED,
+		NUMDISCARDED,
+		NUMDEAD,
+		PACKETDATAIN,
+		PACKETDATAOUT,
+		PACKETSEND,		
+		
 
-        PACKETSSTART,
-        NUMQUERYIN, NUMQUERYOUT,
-        NUMPINGIN, NUMPINGOUT,
-        NUMPONGIN, NUMPONGOUT,
-        NUMPUSHIN, NUMPUSHOUT,
-        NUMHITIN, NUMHITOUT,
-        NUMOTHERIN, NUMOTHEROUT,
-        NUMDROPPED,
-        NUMDUP,
-        NUMACCEPTED,
-        NUMOLD,
-        NUMBAD,
-        NUMHOPS1, NUMHOPS2, NUMHOPS3, NUMHOPS4, NUMHOPS5, NUMHOPS6, NUMHOPS7, NUMHOPS8, NUMHOPS9, NUMHOPS10,
-        NUMPACKETSIN,
-        NUMPACKETSOUT,
-        NUMROUTED,
-        NUMBROADCASTED,
-        NUMDISCARDED,
-        NUMDEAD,
-        PACKETDATAIN,
-        PACKETDATAOUT,
-        PACKETSEND,
+		BYTESIN,
+		BYTESOUT,
+		LOCALBYTESIN,
+		LOCALBYTESOUT,
 
+		MAX
+	};
 
-        BYTESIN,
-        BYTESOUT,
-        LOCALBYTESIN,
-        LOCALBYTESOUT,
+	bool	writeVariable(class Stream &,const class String &);
 
-        MAX
-    };
+	void	clearRange(STAT s, STAT e)
+	{
+		for(int i=s; i<=e; i++)
+			current[i] = 0;
+	}
+	void	clear(STAT s) {current[s]=0;}
+	void	add(STAT s,int n=1) {current[s]+=n;}
+	unsigned int getPerSecond(STAT s) {return perSec[s];}
+	unsigned long long int getCurrent(STAT s) {return current[s];}
 
-    bool writeVariable(class Stream &, const class String &);
-
-    void clearRange(STAT s, STAT e) {
-        for (int i = s; i <= e; i++)
-            current[i] = 0;
-    }
-
-    void clear(STAT s) {
-        current[s] = 0;
-    }
-
-    void add(STAT s, int n = 1) {
-        current[s] += n;
-    }
-
-    unsigned int getPerSecond(STAT s) {
-        return perSec[s];
-    }
-
-    unsigned long long int getCurrent(STAT s) {
-        return current[s];
-    }
-
-    unsigned long long int current[Stats::MAX], last[Stats::MAX];
-    unsigned int perSec[Stats::MAX];
-    unsigned int lastUpdate;
+	unsigned long long int	current[Stats::MAX],last[Stats::MAX];
+	unsigned int perSec[Stats::MAX];
+	unsigned int	lastUpdate;
 };
 
 extern Stats stats;

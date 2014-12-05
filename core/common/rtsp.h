@@ -23,10 +23,10 @@
 #include "common/http.h"
 
 // ---------------------------------------------
-class RTSP : public HTTP {
+class RTSP : public HTTP
+{
 public:
-    RTSP(Stream &s) : HTTP(s) {
-    }
+	RTSP(Stream &s):HTTP(s){}
 };
 
 #endif

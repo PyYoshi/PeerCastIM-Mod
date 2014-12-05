@@ -20,31 +20,44 @@
 
 #include "textcontrol.h"
 
-const char *const TextControl::skNullString = "";
+const char* const TextControl::skNullString = "";
 
-void TextControl::setText(WindowRef window, const char *text) {
-    CFStringRef controlText = CFStringCreateWithFormat(NULL, NULL, CFSTR("%s"), text);
-    setText(window, controlText);
-    CFRelease(controlText);
+void TextControl::setText( WindowRef window, const char* text )
+{
+	CFStringRef controlText = CFStringCreateWithFormat( NULL, NULL, CFSTR("%s"), text );
+	setText( window, controlText );
+	CFRelease( controlText );
 }
 
-void TextControl::setText(WindowRef window, CFStringRef text) {
-    ControlRef controlRef = NULL;
-
-    OSStatus err = GetControlByID(window, &mID, &controlRef);
-
-    err = SetControlData(controlRef, 0, kControlEditTextCFStringTag, sizeof(CFStringRef), &text);
-
-    DrawOneControl(controlRef);
+void TextControl::setText( WindowRef window, CFStringRef text )
+{
+	ControlRef controlRef = NULL;
+	
+	OSStatus err = GetControlByID( window, &mID, &controlRef );
+	
+	err = SetControlData(   controlRef
+						   ,0
+						   ,kControlEditTextCFStringTag
+						   ,sizeof(CFStringRef)
+						   ,&text );
+								   
+	DrawOneControl( controlRef );
 }
 
-CFStringRef TextControl::getStringRef(WindowRef window) {
-    if (mStringRef == NULL) {
-        ControlRef controlRef = NULL;
-
-        OSStatus err = GetControlByID(window, &mID, &controlRef);
-        err = GetControlData(controlRef, 0, kControlEditTextCFStringTag, sizeof(CFStringRef), &mStringRef, NULL);
-    }
-
-    return mStringRef;
+CFStringRef TextControl::getStringRef( WindowRef window )
+{
+	if( mStringRef == NULL )
+	{
+		ControlRef controlRef=NULL;
+		
+		OSStatus err = GetControlByID( window, &mID, &controlRef );
+		err = GetControlData( controlRef
+							 ,0
+							 ,kControlEditTextCFStringTag
+							 ,sizeof(CFStringRef)
+							 ,&mStringRef
+							 ,NULL );
+	}
+	
+	return mStringRef;	
 }

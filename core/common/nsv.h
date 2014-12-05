@@ -23,13 +23,12 @@
 #include "common/channel.h"
 
 // ----------------------------------------------
-class NSVStream : public ChannelStream {
+class NSVStream : public ChannelStream
+{
 public:
-    virtual void readHeader(Stream &, Channel *);
-
-    virtual int readPacket(Stream &, Channel *);
-
-    virtual void readEnd(Stream &, Channel *);
+	virtual void readHeader(Stream &,Channel *);
+	virtual int readPacket(Stream &,Channel *);
+	virtual void readEnd(Stream &,Channel *);
 };
 
 

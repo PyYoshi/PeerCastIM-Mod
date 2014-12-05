@@ -23,7 +23,6 @@
 //#endif
 #include <CoreFoundation/CoreFoundation.h>
 #include <ApplicationServices/ApplicationServices.h>
-
 #endif
 
 #include "common/peercast.h"	// qt
@@ -37,88 +36,97 @@
 #include "common/stats.h"
 
 // ---------------------------------
-USys::USys() {
-    stats.clear();
+USys::USys()
+{
+	stats.clear();
 
-    rndGen.setSeed(rnd() + getpid());
-    signal(SIGPIPE, SIG_IGN);
-    signal(SIGABRT, SIG_IGN);
+	rndGen.setSeed(rnd()+getpid());	
+	signal(SIGPIPE, SIG_IGN); 
+	signal(SIGABRT, SIG_IGN); 
 
-    rndSeed = rnd();
+	rndSeed = rnd();
 
+}
+// ---------------------------------
+double USys::getDTime()
+{
+  struct timeval tv;
+
+  gettimeofday(&tv,0);
+  return (double)tv.tv_sec + ((double)tv.tv_usec)/1000000;
 }
 
 // ---------------------------------
-double USys::getDTime() {
-    struct timeval tv;
-
-    gettimeofday(&tv, 0);
-    return (double) tv.tv_sec + ((double) tv.tv_usec) / 1000000;
+unsigned int USys::getTime()
+{
+	time_t ltime;
+	time( &ltime );
+	return ltime;
 }
 
 // ---------------------------------
-unsigned int USys::getTime() {
-    time_t ltime;
-    time(&ltime);
-    return ltime;
-}
-
-// ---------------------------------
-ClientSocket *USys::createSocket() {
+ClientSocket *USys::createSocket()
+{
     return new UClientSocket();
 }
-
+               
 
 // ---------------------------------
-void USys::endThread(ThreadInfo * info) {
+void USys::endThread(ThreadInfo *info)
+{
     numThreads--;
 
-    LOG_DEBUG("End thread: %d", numThreads);
+    LOG_DEBUG("End thread: %d",numThreads);
 
-    //pthread_exit(NULL);
+	//pthread_exit(NULL);
 }
 
 // ---------------------------------
-void USys::waitThread(ThreadInfo *info, int timeout) {
-    //pthread_join(info->handle,NULL);
+void USys::waitThread(ThreadInfo *info, int timeout)
+{
+	//pthread_join(info->handle,NULL);
 }
+
 
 
 // ---------------------------------
 typedef void *(*THREAD_PTR)(void *);
+bool	USys::startThread(ThreadInfo *info)
+{
+	info->active = true;
 
-bool    USys::startThread(ThreadInfo * info) {
-    info->active = true;
 
+	LOG_DEBUG("New thread: %d",numThreads);
 
-    LOG_DEBUG("New thread: %d", numThreads);
+	pthread_attr_t attr;
 
-    pthread_attr_t attr;
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	int r = pthread_create(&info->handle,&attr,(THREAD_PTR)info->func,info);
 
-    int r = pthread_create(&info->handle, &attr, (THREAD_PTR) info->func, info);
+	pthread_attr_destroy(&attr);
 
-    pthread_attr_destroy(&attr);
-
-    if (r) {
-        LOG_ERROR("Error creating thread %d: %d", numThreads, r);
-        return false;
-    } else {
-        numThreads++;
-        return true;
-    }
+	if (r)
+	{
+		LOG_ERROR("Error creating thread %d: %d",numThreads,r);
+		return false;
+	}else
+	{
+		numThreads++;
+		return true;
+	}
+}
+// ---------------------------------
+void	USys::sleep(int ms)
+{
+	::usleep(ms*1000);
 }
 
 // ---------------------------------
-void    USys::sleep(int ms) {
-    ::usleep(ms * 1000);
-}
-
-// ---------------------------------
-void USys::appMsg(long msg, long arg) {
-    //SendMessage(mainWindow,WM_USER,(WPARAM)msg,(LPARAM)arg);
+void USys::appMsg(long msg, long arg)
+{
+	//SendMessage(mainWindow,WM_USER,(WPARAM)msg,(LPARAM)arg);
 }
 // ---------------------------------
 #ifndef __APPLE__
@@ -141,58 +149,62 @@ void USys::exit()
 	::exit(0);
 }
 #else
-
 // ---------------------------------
-void USys::openURL(const char *url) {
-    CFStringRef urlString = CFStringCreateWithFormat(NULL, NULL, CFSTR("%s"), url);
-
-    if (urlString) {
-        CFURLRef pathRef = CFURLCreateWithString(NULL, urlString, NULL);
-        if (pathRef) {
+void USys::openURL( const char* url )
+{
+	CFStringRef urlString = CFStringCreateWithFormat( NULL, NULL, CFSTR("%s"), url );
+	
+	if( urlString )
+	{
+		CFURLRef pathRef = CFURLCreateWithString( NULL, urlString, NULL );
+		if( pathRef )
+		{
             //OSStatus err = LSOpenCFURLRef( pathRef, NULL );
-            CFRelease(pathRef);
-        }
-        CFRelease(urlString);
-    }
+			CFRelease(pathRef);
+		}
+		CFRelease( urlString );
+	}
 }
-
 // ---------------------------------
-void USys::callLocalURL(const char *str, int port) {
-    char cmd[512];
-    sprintf(cmd, "http://localhost:%d/%s", port, str);
-    openURL(cmd);
-}
-
+void USys::callLocalURL(const char *str,int port)
+{
+	char cmd[512];
+	sprintf(cmd,"http://localhost:%d/%s",port,str);
+	openURL( cmd );
+} 
 // --------------------------------- 
-void USys::getURL(const char *url) {
-    if (strnicmp(url, "http://", 7) || strnicmp(url, "mailto:", 7)) {
-        openURL(url);
-    }
+void USys::getURL(const char *url) 
+{
+	if (strnicmp(url,"http://",7) || strnicmp(url,"mailto:",7))
+	{
+		openURL( url );
+	}
 }
-
 // ---------------------------------
-void USys::executeFile(const char *file) {
-    CFStringRef fileString = CFStringCreateWithFormat(NULL, NULL, CFSTR("%s"), file);
-
-    if (fileString) {
-        CFURLRef pathRef = CFURLCreateWithString(NULL, fileString, NULL);
-        if (pathRef) {
-            FSRef fsRef;
-            CFURLGetFSRef(pathRef, &fsRef);
+void USys::executeFile( const char *file )
+{
+	CFStringRef fileString = CFStringCreateWithFormat( NULL, NULL, CFSTR("%s"), file );
+	
+	if( fileString )
+	{
+		CFURLRef pathRef = CFURLCreateWithString( NULL, fileString, NULL );
+		if( pathRef )
+		{
+			FSRef fsRef;
+			CFURLGetFSRef( pathRef, &fsRef );
             //OSStatus err = LSOpenFSRef( &fsRef, NULL );
-            CFRelease(pathRef);
-        }
-        CFRelease(fileString);
-    }
+			CFRelease(pathRef);
+		}
+		CFRelease( fileString );
+	}
 }
-
 // ---------------------------------
-void USys::exit() {
+void USys::exit()
+{
 #ifdef __USE_CARBON__
 	QuitApplicationEventLoop();
 #else
-    ::exit(0);
+	::exit(0);
 #endif
 }
-
 #endif

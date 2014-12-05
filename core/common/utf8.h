@@ -1,3 +1,4 @@
+
 /*
  * Convert a string between UTF-8 and the locale's charset.
  * Invalid bytes are replaced by '#', and characters that are
@@ -19,7 +20,7 @@
 #ifndef __UTF8_H
 #define __UTF8_H
 
-#ifdef    __cplusplus
+#ifdef	__cplusplus
 extern "C" {
 #endif
 
@@ -28,7 +29,7 @@ void convert_set_charset(const char *charset);
 int utf8_encode(const char *from, char **to);
 int utf8_decode(const char *from, char **to);
 
-#ifdef    __cplusplus
+#ifdef	__cplusplus
 }
 #endif
 

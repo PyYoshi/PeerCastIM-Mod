@@ -29,154 +29,146 @@
 class SocketBuffer {
 
 public:
-    SocketBuffer(const void *p, int l) {
-        buf = ::new char[l];
-        len = l;
-        pos = 0;
-        next = NULL;
-        ctime = sys->getTime();
-        memcpy((void *) buf, p, l);
-    }
+	SocketBuffer(const void *p, int l){
+		buf = ::new char[l];
+		len = l;
+		pos = 0;
+		next = NULL;
+		ctime = sys->getTime();
+		memcpy((void*)buf, p, l);
+	}
 
-    ~SocketBuffer() {
-        if (buf) {
-            ::delete[] buf;
-        }
-    }
-
-    char *buf;
-    int len;
-    int pos;
-    unsigned int ctime;
-    SocketBuffer *next;
+	~SocketBuffer(){
+		if (buf){
+			::delete [] buf;
+		}
+	}
+	char *buf;
+	int len;
+	int pos;
+	unsigned int ctime;
+	SocketBuffer *next;
 };
 
 class SocketBufferList {
 
 public:
-    SocketBufferList() {
-        top = NULL;
-        last = NULL;
-        skipCount = 0;
-        lastSkipTime = 0;
-    }
+	SocketBufferList(){
+		top = NULL;
+		last = NULL;
+		skipCount = 0;
+		lastSkipTime = 0;
+	}
 
-    bool isNull() {
-        return (top == NULL);
-    }
+	bool isNull(){ return (top == NULL); }
+	void add(const void *p, int l){
+		SocketBuffer *tmp = new SocketBuffer(p,l);
 
-    void add(const void *p, int l) {
-        SocketBuffer *tmp = new SocketBuffer(p, l);
-
-        if (!last) {
-            top = tmp;
-            last = tmp;
-        } else {
-            last->next = tmp;
-            last = tmp;
-        }
+		if (!last){
+			top = tmp;
+			last = tmp;
+		} else {
+			last->next = tmp;
+			last = tmp;
+		}
 
 //		LOG_DEBUG("tmp = %d, top = %d, last = %d", tmp, top, last);
-    }
+	}
 
-    SocketBuffer *getTop() {
-        unsigned int ctime = sys->getTime();
+	SocketBuffer *getTop(){
+		unsigned int ctime = sys->getTime();
 
-        while (top) {
-            if (top && (top->ctime + 10 >= ctime)) {
-                break;
-            } else {
+		while(top){
+			if (top && (top->ctime + 10 >= ctime)){
+				break;
+			} else {
 //				LOG_DEBUG("over 10sec(data skip)");
-                skipCount++;
-                lastSkipTime = sys->getTime();
-                deleteTop();
-            }
-        }
-        return top;
-    }
+				skipCount++;
+				lastSkipTime = sys->getTime();
+				deleteTop();
+			}
+		}
+		return top;
+	}
 
-    void deleteTop() {
+	void deleteTop(){
 //		LOG_DEBUG("oldtop = %d", top);
-        SocketBuffer *tmp = top;
-        top = tmp->next;
-        delete tmp;
-        if (!top) {
-            last = NULL;
-        }
+		SocketBuffer *tmp = top;
+		top = tmp->next;
+		delete tmp;
+		if (!top){
+			last = NULL;
+		}
 
 //		LOG_DEBUG("newtop = %d",top);
-    }
+	}
 
-    void clear() {
-        while (top) {
-            SocketBuffer *tmp = top;
-            top = tmp->next;
-            delete tmp;
-        }
-        top = NULL;
-        last = NULL;
-    }
+	void clear(){
+		while(top){
+			SocketBuffer *tmp = top;
+			top = tmp->next;
+			delete tmp;
+		}
+		top = NULL;
+		last = NULL;
+	}
 
-    SocketBuffer *top;
-    SocketBuffer *last;
-    unsigned int skipCount;
-    unsigned int lastSkipTime;
+	SocketBuffer *top;
+	SocketBuffer *last;
+	unsigned int skipCount;
+	unsigned int lastSkipTime;
 
 };
 
 // --------------------------------------------------
-class ClientSocket : public Stream {
+class ClientSocket : public Stream
+{
 public:
 
-    ClientSocket() {
-        readTimeout = 30000;
-        writeTimeout = 30000;
+	ClientSocket()
+	{
+		readTimeout = 30000;
+		writeTimeout = 30000;
 #ifdef NULL//WIN32
 		skipCount = 0;
 		lastSkipTime = 0;
 #endif
-    }
+	}
 
-    ~ClientSocket() {
+	~ClientSocket(){
 #ifdef NULL//WIN32
 		bufList.clear();
 #endif
-    }
+	}
 
     // required interface
-    virtual void open(Host &) = 0;
+	virtual void	open(Host &) = 0;
+	virtual void	bind(Host &) = 0;
+	virtual void	connect() = 0;
+	virtual bool	active() = 0;
+	virtual ClientSocket	*accept() = 0;
+	virtual Host	getLocalHost() = 0;
 
-    virtual void bind(Host &) = 0;
+	virtual void	setReadTimeout(unsigned int t)
+	{
+		readTimeout = t;
+	}
+	virtual void	setWriteTimeout(unsigned int t)
+	{
+		writeTimeout = t;
+	}
+	virtual void	setBlocking(bool) {}
 
-    virtual void connect() = 0;
 
-    virtual bool active() = 0;
+    static unsigned int    getIP(char *);
+	static bool			getHostname(char *,size_t,unsigned int); //JP-MOD
 
-    virtual ClientSocket *accept() = 0;
-
-    virtual Host getLocalHost() = 0;
-
-    virtual void setReadTimeout(unsigned int t) {
-        readTimeout = t;
+    virtual bool eof()
+    {
+        return active()==false;
     }
 
-    virtual void setWriteTimeout(unsigned int t) {
-        writeTimeout = t;
-    }
-
-    virtual void setBlocking(bool) {
-    }
-
-
-    static unsigned int getIP(char *);
-
-    static bool getHostname(char *, size_t, unsigned int); //JP-MOD
-
-    virtual bool eof() {
-        return active() == false;
-    }
-
-    Host host;
+    Host    host;
 
 #ifdef NULL//WIN32
 	SocketBufferList	bufList;
@@ -185,7 +177,7 @@ public:
 	unsigned int lastSkipTime;
 #endif
 
-    unsigned int readTimeout, writeTimeout;
+	unsigned int readTimeout,writeTimeout;
 
 };
 

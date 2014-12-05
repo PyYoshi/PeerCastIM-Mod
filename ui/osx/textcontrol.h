@@ -22,40 +22,45 @@
 
 #include <Carbon/Carbon.h>
 
-class TextControl {
-    static const int skMaxBufSize = 256;
+class TextControl
+{
+	static const int skMaxBufSize = 256; 
 public:
-    explicit TextControl(const int a, const int id)
-            : mID(), mStringRef(NULL) {
-        mID.signature = a;
-        mID.id = id;
-    }
+	explicit TextControl( const int a, const int id )
+	: mID( )
+	 ,mStringRef( NULL )
+	{
+		mID.signature = a;
+		mID.id		  = id;
+	}
+	
+	void setText( WindowRef window, const char* text );
+	void setText( WindowRef window, CFStringRef text );
+	
+	const char* getString( WindowRef window, CFStringEncoding encoding )
+	{
+		if( CFStringRef stringRef = getStringRef(window) )
+		{
+			if( CFStringGetCString( stringRef, mStrBuffer, skMaxBufSize, encoding ) )
+			{
+				return mStrBuffer;
+			}
+		}
+		
+		return skNullString; 
+	}
 
-    void setText(WindowRef window, const char *text);
-
-    void setText(WindowRef window, CFStringRef text);
-
-    const char *getString(WindowRef window, CFStringEncoding encoding) {
-        if (CFStringRef stringRef = getStringRef(window)) {
-            if (CFStringGetCString(stringRef, mStrBuffer, skMaxBufSize, encoding)) {
-                return mStrBuffer;
-            }
-        }
-
-        return skNullString;
-    }
-
-protected:
-    CFStringRef getStringRef(WindowRef window);
-
+protected:	
+	CFStringRef getStringRef( WindowRef window );
+	
 private:
-    ControlID mID;
-    CFStringRef mStringRef;
-
-    char mStrBuffer[skMaxBufSize];
-
-    static const char *const skNullString;
-
+	ControlID   mID;
+	CFStringRef mStringRef;
+	
+	char mStrBuffer[skMaxBufSize];
+	
+	static const char* const skNullString;
+	
 };
 
 #endif // _TEXTCONTROL_H

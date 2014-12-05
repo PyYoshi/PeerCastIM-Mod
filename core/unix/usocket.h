@@ -34,77 +34,57 @@
 #include "common/socket.h"
 
 // --------------------------------------------------
-class UClientSocket : public ClientSocket {
+class UClientSocket : public ClientSocket
+{
 public:
-    static void init();
+	static void	init();
 
-    UClientSocket() {
-        sockNum = 0;
-        rbPos = 0;
-        rbDataSize = 0;
+    UClientSocket()
+    {
+		sockNum = 0;
+		rbPos = 0;
+		rbDataSize = 0;
     }
 
-    ~UClientSocket() {
-        bufList.clear();
-    }
+	~UClientSocket(){
+		bufList.clear();
+	}
 
-    virtual void open(Host &);
+	virtual void	open(Host &);
+	virtual int	read(void *, int);
+	virtual int	readUpto(void *, int);
+	virtual void	write(const void *, int);
+	virtual void	bind(Host &);
+	virtual void	connect();
+	virtual void	close();
+	virtual ClientSocket * accept();
+	virtual bool	active() {return sockNum != 0;}
+	virtual bool	readReady();
+	virtual int numPending();
 
-    virtual int read(void *, int);
+	virtual Host	getLocalHost();
+	void	setBlocking(bool);
+	void	setReuse(bool);
+	void	setNagle(bool);
+	void	setLinger(int);
+	void	setBufSize(int size);
 
-    virtual int readUpto(void *, int);
+	static	hostent		*resolveHost(char *);
 
-    virtual void write(const void *, int);
+	void	checkTimeout(bool,bool);
+	void	checkTimeout2(bool,bool);
 
-    virtual void bind(Host &);
+	virtual void	bufferingWrite(const void*, int);
+	void	checkBuffering(bool, bool);
 
-    virtual void connect();
+	unsigned int sockNum;
+	struct sockaddr_in remoteAddr;
 
-    virtual void close();
+	enum {RBSIZE = 8192};
+	char apReadBuf[RBSIZE];
+	int rbPos;
+	int rbDataSize;
 
-    virtual ClientSocket *accept();
-
-    virtual bool active() {
-        return sockNum != 0;
-    }
-
-    virtual bool readReady();
-
-    virtual int numPending();
-
-    virtual Host getLocalHost();
-
-    void setBlocking(bool);
-
-    void setReuse(bool);
-
-    void setNagle(bool);
-
-    void setLinger(int);
-
-    void setBufSize(int size);
-
-    static hostent *resolveHost(char *);
-
-    void checkTimeout(bool, bool);
-
-    void checkTimeout2(bool, bool);
-
-    virtual void bufferingWrite(const void *, int);
-
-    void checkBuffering(bool, bool);
-
-    unsigned int sockNum;
-    struct sockaddr_in remoteAddr;
-
-    enum {
-        RBSIZE = 8192
-    };
-    char apReadBuf[RBSIZE];
-    int rbPos;
-    int rbDataSize;
-
-    WLock sockLock;
+	WLock sockLock;
 };
-
 #endif

@@ -44,7 +44,7 @@
 const int DIRECT_WRITE_TIMEOUT = 60;
 
 // -----------------------------------
-const char* const Servent::statusMsgs[]=
+char *Servent::statusMsgs[]=
 {
         "NONE",
 		"CONNECTING",
@@ -62,7 +62,7 @@ const char* const Servent::statusMsgs[]=
 };
 
 // -----------------------------------
-const char* const Servent::typeMsgs[]=
+char *Servent::typeMsgs[]=
 {
 		"NONE",
         "INCOMING",
@@ -100,13 +100,12 @@ bool	Servent::isFiltered(int f)
 int servent_count = 1;
 // -----------------------------------
 Servent::Servent(int index)
-:seenIDs(MAX_HASH)
+:outPacketsPri(MAX_OUTPACKETS)
+,outPacketsNorm(MAX_OUTPACKETS)
+,seenIDs(MAX_HASH)
 ,serventIndex(index)
 ,sock(NULL)
-,outPacketsNorm(MAX_OUTPACKETS)
-,outPacketsPri(MAX_OUTPACKETS)
 ,next(NULL)
-
 {
 	reset();
 	servent_id = servent_count++;
@@ -1319,8 +1318,6 @@ bool Servent::handshakeStream(ChanInfo &chanInfo)
 					case ChanInfo::T_WMV:
 						sock->writeLineF("%s %s",HTTP_HS_CONTENT,MIME_WMV);
 						break;
-                    default:
-                        break;
 				}
 			} else if (outputProtocol == ChanInfo::SP_MMS)
 			{
@@ -1434,8 +1431,8 @@ void Servent::processGnutella()
 	const unsigned int	abortTimeoutSecs = 60;		// abort connection after 60 secs of no activitiy
 	const unsigned int	packetTimeoutSecs = 30;		// ping connection after 30 secs of no activity
 
-    //unsigned int currBytes=0;
-    //unsigned int lastWait=0;
+	unsigned int currBytes=0;
+	unsigned int lastWait=0;
 
 	unsigned int lastTotalIn=0,lastTotalOut=0;
 
@@ -1503,8 +1500,6 @@ void Servent::processGnutella()
 					case GnuStream::R_DROP:
 						stats.add(Stats::NUMDROPPED);
 						break;
-                    default:
-                        break;
 				}
 
 
@@ -1543,7 +1538,7 @@ void Servent::processGnutella()
 				doneBigPing = true;
 			}
 		}else{
-            if ((unsigned int)lpt > packetTimeoutSecs)
+			if (lpt > packetTimeoutSecs)
 			{
 				
 				if ((sys->getTime()-lastPing) > packetTimeoutSecs)
@@ -1554,7 +1549,7 @@ void Servent::processGnutella()
 
 			}
 		}
-        if ((unsigned int)lpt > abortTimeoutSecs)
+		if (lpt > abortTimeoutSecs)
 			throw TimeoutException();
 
 
@@ -2728,7 +2723,7 @@ void Servent::sendRawMetaChannel(int interval)
 									title.convertTo(String::T_META);
 									url.convertTo(String::T_META);
 
-                                    sprintf(tmp,"StreamTitle='%s';StreamUrl='%s';",title.cstr(),url.cstr());
+									sprintf(tmp,"StreamTitle='%s';StreamUrl='%s';\0",title.cstr(),url.cstr());
 									int len = ((strlen(tmp) + 15+1) / 16);
 									sock->writeChar(len);
 									sock->write(tmp,len*16);

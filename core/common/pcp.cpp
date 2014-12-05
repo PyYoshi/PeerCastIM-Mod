@@ -57,12 +57,12 @@ void PCPStream::readVersion(Stream &in)
 // ------------------------------------------
 void PCPStream::readHeader(Stream &in,Channel *)
 {
-    AtomStream atom(in);
+//	AtomStream atom(in);
 
-    if (in.readInt() != PCP_CONNECT)
-        throw StreamException("Not PCP");
+//	if (in.readInt() != PCP_CONNECT)
+//		throw StreamException("Not PCP");
 
-    readVersion(in);
+//	readVersion(in);
 }
 // ------------------------------------------
 bool PCPStream::sendPacket(ChanPacket &pack,GnuID &destID)
@@ -234,7 +234,7 @@ void PCPStream::readPushAtoms(AtomStream &atom, int numc,BroadcastState &bcs)
 		{
 			Channel *ch = chanMgr->findChannelByID(chanID);
 			if (ch)
-                if (ch->isBroadcasting() || (!ch->isFull() && !servMgr->relaysFull() && ch->info.id.isSame(chanID)))
+				if (ch->isBroadcasting() || !ch->isFull() && !servMgr->relaysFull() && ch->info.id.isSame(chanID))
 					s = servMgr->allocServent();
 		}else{
 			s = servMgr->allocServent();
@@ -437,7 +437,7 @@ void PCPStream::readHostAtoms(AtomStream &atom, int numc, BroadcastState &bcs, C
 	hit.init();
 	GnuID chanID = bcs.chanID;	//use default
 
-    //bool busy=false;
+	bool busy=false;
 
 	unsigned int ipNum=0;
 
@@ -760,7 +760,11 @@ int PCPStream::readBroadcastAtoms(AtomStream &atom,int numc,BroadcastState &bcs)
 					}
 				}
 			}
-            if (sv && (((hit.numHops == 1 && (hit.rhost[0].ip == sv->getHost().ip) && (hit.uphost.ip == servMgr->serverHost.ip) && (hit.uphost.port == servMgr->serverHost.port)) || (hit.rhost[1].localIP() && hit.rhost[1].ip == sv->getHost().ip)) || (hit.numHops != 1 && chanMgr->findParentHit(hit))))
+			if (sv &&
+				((hit.numHops == 1 && (hit.rhost[0].ip == sv->getHost().ip
+				&& hit.uphost.ip == servMgr->serverHost.ip && hit.uphost.port == servMgr->serverHost.port)
+				|| (hit.rhost[1].localIP() && hit.rhost[1].ip == sv->getHost().ip))
+				|| (hit.numHops != 1 && chanMgr->findParentHit(hit))))
 			{
 				int oldPos = pmem.pos;
 				hit.writeAtoms(patom, hit.chanID);

@@ -937,7 +937,7 @@ void ServMgr::setFirewall(FW_STATE state)
 {
 	if (firewalled != state)
 	{
-        const char *str;
+		char *str;
 		switch (state)
 		{
 			case FW_ON:
@@ -1397,14 +1397,14 @@ void ServMgr::loadSettings(const char *fn)
 				networkID.fromStr(iniFile.getStrValue());
 			else if (iniFile.isName("authType"))
 			{
-                const char *t = iniFile.getStrValue();
+				char *t = iniFile.getStrValue();
 				if (stricmp(t,"cookie")==0)
 					servMgr->authType = ServMgr::AUTH_COOKIE;
 				else if (stricmp(t,"http-basic")==0)
 					servMgr->authType = ServMgr::AUTH_HTTPBASIC;
 			}else if (iniFile.isName("cookiesExpire"))
 			{
-                const char *t = iniFile.getStrValue();
+				char *t = iniFile.getStrValue();
 				if (stricmp(t,"never")==0)
 					servMgr->cookieList.neverExpire = true;
 				else if (stricmp(t,"session")==0)
@@ -1667,7 +1667,7 @@ void ServMgr::loadSettings(const char *fn)
 			{
 				Host h;
 				ServHost::TYPE type=ServHost::T_NONE;
-                //bool firewalled=false;
+				bool firewalled=false;
 				unsigned int time=0;
 				while (iniFile.readNext())
 				{
@@ -1911,7 +1911,7 @@ void ServMgr::procConnectArgs(char *str,ChanInfo &info)
 	if (args)
 	{
 
-        while ((args=nextCGIarg(args,curr,arg)))
+		while (args=nextCGIarg(args,curr,arg))
 		{
 			LOG_DEBUG("cmd: %s, arg: %s",curr,arg);
 
@@ -2197,15 +2197,15 @@ int ServMgr::idleProc(ThreadInfo *thread)
 
 //	thread->lock();
 
-    //unsigned int lastPasvFind=0;
-    //unsigned int lastBroadcast=0;
+	unsigned int lastPasvFind=0;
+	unsigned int lastBroadcast=0;
 
 
 	// nothing much to do for the first couple of seconds, so just hang around.
 	sys->sleep(2000);	
 
-    //unsigned int lastBWcheck=0;
-    //unsigned int bytesIn=0,bytesOut=0;
+	unsigned int lastBWcheck=0;
+	unsigned int bytesIn=0,bytesOut=0;
 
 	unsigned int lastBroadcastConnect = 0;
 	unsigned int lastRootBroadcast = 0;
@@ -2300,7 +2300,7 @@ int ServMgr::serverProc(ThreadInfo *thread)
 	Servent *serv = servMgr->allocServent();
 	Servent *serv2 = servMgr->allocServent();
 
-    //unsigned int lastLookupTime=0;
+	unsigned int lastLookupTime=0;
 
 
 	while (thread->active)
@@ -2827,7 +2827,7 @@ int ServMgr::kickUnrelayableHost(GnuID &chid, ChanHit &sendhit)
 			Host h = s->getHost();
 
 			ChanHit hit = s->serventHit;
-            if ((!hit.relay && hit.numRelays == 0) || hit.firewalled)
+			if (!hit.relay && hit.numRelays == 0 || hit.firewalled)
 			{
 				char hostName[256];
 				h.toStr(hostName);

@@ -721,8 +721,7 @@ unsigned short JISConverter::sjisToUnicode(unsigned short sjis)
 	}
 	c -= 33; 
 	c1 -= 33;
-    //if(c < 0 || c1 < 0 || c > 93 || c1 > 93)
-    if(c > 93 || c1 > 93)
+	if(c < 0 || c1 < 0 || c > 93 || c1 > 93)
 		u = 0x3013; 
 	else
 	{
@@ -744,8 +743,7 @@ unsigned short JISConverter::eucToUnicode(unsigned short euc)
 	c -= 33; 
 	c1 &= 0x7f; 
 	c1 -= 33;
-    //if(c < 0 || c1 < 0 || c > 93 || c1 > 93)
-    if(c > 93 || c1 > 93)
+    if(c < 0 || c1 < 0 || c > 93 || c1 > 93)
 		u = 0x3013; 
     else 
 	{

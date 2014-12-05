@@ -212,9 +212,9 @@ double OggTheoraSubStream::getTime(OggPage &ogg)
 // -----------------------------------
 void OggTheoraSubStream::readInfo(Stream &in, ChanInfo &info)
 {
-    //int verMaj = in.readBits(8);
-    //int verMin = in.readBits(8);
-    //int verSub = in.readBits(8);
+	int verMaj = in.readBits(8);
+	int verMin = in.readBits(8);
+	int verSub = in.readBits(8);
 
 	int encWidth = in.readBits(16) << 4;
 	int encHeight = in.readBits(16) << 4;
@@ -332,7 +332,7 @@ void OggVorbisSubStream::readComment(Stream &in, ChanInfo &info)
 	for(int i=0; i<cLen; i++)
 	{
 		int l = in.readLong();
-        if ((unsigned int)l > sizeof(argBuf))
+		if (l > sizeof(argBuf))
 			throw StreamException("Comment string too long");
 		in.read(argBuf,l);
 		argBuf[l] = 0;

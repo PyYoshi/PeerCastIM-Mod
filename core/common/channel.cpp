@@ -51,7 +51,7 @@
 #endif
 
 // -----------------------------------
-const char* const Channel::srcTypes[]=
+char *Channel::srcTypes[]=
 {
 	"NONE",
 	"PEERCAST",
@@ -60,7 +60,7 @@ const char* const Channel::srcTypes[]=
 	"URL"
 };
 // -----------------------------------
-const char* const Channel::statusMsgs[]=
+char *Channel::statusMsgs[]=
 {
 	"NONE",
 	"WAIT",
@@ -820,7 +820,7 @@ yp0:
 
 		if (ch->sourceHost.host.ip)
 		{
-            //bool isTrusted = ch->sourceHost.tracker | ch->sourceHost.yp;
+			bool isTrusted = ch->sourceHost.tracker | ch->sourceHost.yp;
 
 
 			//if (ch->sourceHost.tracker)
@@ -829,7 +829,7 @@ yp0:
 			char ipstr[64];
 			ch->sourceHost.host.toStr(ipstr);
 
-            const char *type = "";
+			char *type = "";
 			if (ch->sourceHost.tracker)
 				type = "(tracker)";
 			else if (ch->sourceHost.yp)
@@ -922,7 +922,7 @@ yp0:
 			}
 
 			// broadcast quit to any connected downstream servents
-            if (!servMgr->keepDownstreams || (!got503 && (ch->sourceHost.tracker || !error))) {
+			if (!servMgr->keepDownstreams || !got503 && (ch->sourceHost.tracker || !error)) {
 				ChanPacket pack;
 				MemoryStream mem(pack.data,sizeof(pack.data));
 				AtomStream atom(mem);
@@ -1031,7 +1031,6 @@ static char *nextMetaPart(char *str,char delim)
 	return NULL;
 }
 // -----------------------------------
-/*
 static void copyStr(char *to,char *from,int max)
 {
 	char c;
@@ -1041,7 +1040,6 @@ static void copyStr(char *to,char *from,int max)
 
 	*to = 0;
 }
-*/
 
 // -----------------------------------
 void Channel::processMp3Metadata(char *str)
@@ -1554,7 +1552,7 @@ int Channel::readStream(Stream &in,ChannelStream *source)
 
 	bool wasBroadcasting=false;
 
-    //unsigned int receiveStartTime = 0;
+	unsigned int receiveStartTime = 0;
 
 	unsigned int ptime = 0;
 	unsigned int upsize = 0;
@@ -1747,8 +1745,6 @@ int PeercastStream::readPacket(Stream &in,Channel *ch)
 				break;
 #endif
 
-        default:
-            break;
 		}
 
 	}
@@ -1828,7 +1824,6 @@ void ChanPacket::writePeercast(Stream &out)
 		case T_HEAD: tp = 'HEAD'; break;
 		case T_META: tp = 'META'; break;
 		case T_DATA: tp = 'DATA'; break;
-        default: break;
 	}
 
 	if (type != T_UNKNOWN)
@@ -2235,7 +2230,7 @@ Channel *ChanMgr::findChannelByID(GnuID &id)
 // -----------------------------------
 Channel *ChanMgr::findChannelByChannelID(int id)
 {
-    //int cnt=0;
+	int cnt=0;
 	Channel *ch = channel;
 	while (ch)
 	{
@@ -2812,7 +2807,7 @@ int ChanMgr::pickHits(ChanHitSearch &chs)
 		if (chl->isUsed())
 			if (chl->pickHits(chs))
 			{
-                //chl->info.id;
+				chl->info.id;
 				return 1;
 			}
 		chl = chl->next;
@@ -3643,7 +3638,7 @@ int	ChanHitList::clearDeadHits(unsigned int timeout, bool clearTrackers)
 	{
 		if (ch->host.ip)
 		{
-            if (ch->dead || ((ctime-ch->time > timeout) && (clearTrackers || (!clearTrackers & !ch->tracker))))
+			if (ch->dead || ((ctime-ch->time) > timeout) && (clearTrackers || (!clearTrackers & !ch->tracker)))
 			{
 //				ch = deleteHit(ch);
 
@@ -4639,8 +4634,7 @@ void PlayList::writeRAM(Stream &out)
 
 // -----------------------------------
 #define isHTMLSPECIAL(a) ((a == '&') || (a == '\"') || (a == '\'') || (a == '<') || (a == '>'))
-/*
- * static void SJIStoSJISSAFE(char *string, size_t size)
+static void SJIStoSJISSAFE(char *string, size_t size)
 {
 	size_t pos;
 	for(pos = 0;
@@ -4651,7 +4645,6 @@ void PlayList::writeRAM(Stream &out)
 			string[pos] = ' ';
 	}
 }
-*/
 
 // -----------------------------------
 static void WriteASXInfo(Stream &out, String &title, String &contacturl, String::TYPE tEncoding = String::T_UNICODESAFE) //JP-MOD

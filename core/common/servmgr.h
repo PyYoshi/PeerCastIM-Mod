@@ -33,7 +33,7 @@ class BCID
 {
 public:
 	BCID()
-    :valid(true),next(0)
+	:next(0),valid(true)
 	{}
 
 	bool	writeVariable(Stream &, const String &);

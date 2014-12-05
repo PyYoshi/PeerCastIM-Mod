@@ -34,18 +34,17 @@
 class Stream
 {
 public:
-    Stream()
-    :writeCRLF(true)
-    ,bitsBuffer(0)
-    ,bitsPos(0)
-    ,totalBytesIn(0)
-    ,totalBytesOut(0)
-    ,lastBytesIn(0)
-    ,lastBytesOut(0)
-    ,bytesInPerSec(0)
-    ,bytesOutPerSec(0)
-
-    ,lastUpdate(0)
+	Stream()
+	:writeCRLF(true)
+	,totalBytesIn(0)
+	,totalBytesOut(0)
+	,lastBytesIn(0)
+	,lastBytesOut(0)
+	,bytesInPerSec(0)
+	,bytesOutPerSec(0)
+	,lastUpdate(0)
+	,bitsBuffer(0)
+	,bitsPos(0)
 	{
 	}
 	virtual ~Stream() {}
@@ -100,14 +99,14 @@ public:
     {
     	short v;
         read(&v,2);
-        //CHECK_ENDIAN2(v);
+		CHECK_ENDIAN2(v);
         return v;
     }
     long	readLong()
     {
     	long v;
         read(&v,4);
-        //CHECK_ENDIAN4(v);
+		CHECK_ENDIAN4(v);
         return v;
     }
 	int readInt()
@@ -120,14 +119,12 @@ public:
 		read(id.getData(),4);
 		return id;
 	}
-    /*
 	int	readInt24()
 	{
 		int v=0;
         read(&v,3);
 		CHECK_ENDIAN3(v);
 	}
-    */
 
 
 
@@ -167,12 +164,12 @@ public:
 	}
 	void	writeShort(short v)
 	{
-        //CHECK_ENDIAN2(v);
+		CHECK_ENDIAN2(v);
 		write(&v,2);
 	}
 	void	writeLong(long v)
 	{
-        //CHECK_ENDIAN4(v);
+		CHECK_ENDIAN4(v);
 		write(&v,4);
 	}
 	void writeInt(int v) {writeLong(v);}
@@ -183,7 +180,7 @@ public:
 		writeLong(SWAP4(v));
 	}
 
-    void	writeTag(const char id[4])
+	void	writeTag(char id[4])
 	{
 		write(id,4);
 	}
@@ -250,25 +247,25 @@ class MemoryStream : public Stream
 public:
 	MemoryStream()
 	:buf(NULL)
-    ,own(false)
 	,len(0)
 	,pos(0)
+	,own(false)
 	{
 	}
 
 	MemoryStream(void *p, int l)
 	:buf((char *)p)
-    ,own(false)
 	,len(l)
 	,pos(0)
+	,own(false)
 	{
 	}
 
 	MemoryStream(int l)
 	:buf(new char[l])
-    ,own(true)
 	,len(l)
 	,pos(0)
+	,own(true)
 	{
 	}
 

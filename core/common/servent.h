@@ -131,9 +131,9 @@ public:
 
 	//	funcs for handling status/type
 	void	setStatus(STATUS);
-    const char* const	getTypeStr(Servent::TYPE t) {return typeMsgs[t];}
-    const char* const	getTypeStr() {return getTypeStr(type);}
-    const char* const	getStatusStr() {return statusMsgs[status];}
+	static char *	getTypeStr(Servent::TYPE t) {return typeMsgs[t];}
+	char *	getTypeStr() {return getTypeStr(type);}
+	char *	getStatusStr() {return statusMsgs[status];}
 	int		getOutput();
 	void	addBytes(unsigned int);
 	bool	isOlderThan(Servent *s)
@@ -247,8 +247,7 @@ public:
 	TYPE type;
 	STATUS status;
 
-    static const char* const statusMsgs[];
-    static const char* const typeMsgs[];
+	static char *statusMsgs[],*typeMsgs[];
 	GnuStream gnuStream;
 	GnuPacket pack;
 	unsigned int	lastConnect,lastPing,lastPacket;

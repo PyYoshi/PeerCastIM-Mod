@@ -12,7 +12,7 @@ PeerCastIMをベースにPeerCast Qtを移植しました.
 ```bash
 cd ui/linux
 make
-cp -r ../html ./
+ln -s ../html ./html
 ```
 
 ### OSX
@@ -20,7 +20,7 @@ cp -r ../html ./
 ```bash
 cd ui/osx
 make
-cp -r ../html ./
+ln -s ../html ./html
 ```
 
 ## 実行

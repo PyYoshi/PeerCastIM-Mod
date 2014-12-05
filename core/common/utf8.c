@@ -26,6 +26,7 @@
 
 #include "common/utf8.h"
 #include "common/identify_encoding.h"
+
 #ifdef _WIN32
 
 /* Thanks to Peter Harris <peter.harris@hummingbird.com> for this win32
@@ -245,33 +246,33 @@ int utf8_decode(const char *from, char **to)
 #endif
 
 int iconvert(const char *fromcode, const char *tocode,
-			 const char *from, size_t fromlen,
-			 char **to, size_t *tolen);
+        const char *from, size_t fromlen,
+        char **to, size_t *tolen);
 
-static char *current_charset = 0; /* means "US-ASCII" */
+static char *current_charset = 0;
 
-void convert_set_charset(const char *charset)
-{
+/* means "US-ASCII" */
 
-	if (!charset)
-		charset = getenv("CHARSET");
+void convert_set_charset(const char *charset) {
+
+    if (!charset)
+        charset = getenv("CHARSET");
 
 #ifdef HAVE_LANGINFO_CODESET
 	if (!charset)
 		charset = nl_langinfo(CODESET);
 #endif
 
-	free(current_charset);
-	current_charset = 0;
-	if (charset && *charset)
-		current_charset = strdup(charset);
+    free(current_charset);
+    current_charset = 0;
+    if (charset && *charset)
+        current_charset = strdup(charset);
 }
 
 static int convert_buffer(const char *fromcode, const char *tocode,
-						  const char *from, size_t fromlen,
-						  char **to, size_t *tolen)
-{
-	int ret = -1;
+        const char *from, size_t fromlen,
+        char **to, size_t *tolen) {
+    int ret = -1;
 
 #ifdef HAVE_ICONV
 	ret = iconvert(fromcode, tocode, from, fromlen, to, tolen);
@@ -280,64 +281,60 @@ static int convert_buffer(const char *fromcode, const char *tocode,
 #endif
 
 #ifndef HAVE_ICONV /* should be ifdef USE_CHARSET_CONVERT */
-	ret = charset_convert(fromcode, tocode, from, fromlen, to, tolen);
-	if (ret != -1)
-		return ret;
+    ret = charset_convert(fromcode, tocode, from, fromlen, to, tolen);
+    if (ret != -1)
+        return ret;
 #endif
 
-	return ret;
+    return ret;
 }
 
 static int convert_string(const char *fromcode, const char *tocode,
-						  const char *from, char **to, char replace)
-{
-	int ret;
-	size_t fromlen;
-	char *s;
+        const char *from, char **to, char replace) {
+    int ret;
+    size_t fromlen;
+    char *s;
 
-	fromlen = strlen(from);
-	ret = convert_buffer(fromcode, tocode, from, fromlen, to, 0);
-	if (ret == -2)
-		return -1;
-	if (ret != -1)
-		return ret;
+    fromlen = strlen(from);
+    ret = convert_buffer(fromcode, tocode, from, fromlen, to, 0);
+    if (ret == -2)
+        return -1;
+    if (ret != -1)
+        return ret;
 
-	s = malloc(fromlen + 1);
-	if (!s)
-		return -1;
-	strcpy(s, from);
-	*to = s;
-	for (; *s; s++)
-		if (*s & ~0x7f)
-			*s = replace;
-	return 3;
+    s = malloc(fromlen + 1);
+    if (!s)
+        return -1;
+    strcpy(s, from);
+    *to = s;
+    for (; *s; s++)
+        if (*s & ~0x7f)
+            *s = replace;
+    return 3;
 }
 
-int utf8_encode(const char *from, char **to)
-{
-	char *charset;
+int utf8_encode(const char *from, char **to) {
+    char *charset;
 
-	if (!current_charset)
-		convert_set_charset(0);
-	charset = current_charset ? current_charset : "US-ASCII";
-	return convert_string(charset, "UTF-8", from, to, '#');
+    if (!current_charset)
+        convert_set_charset(0);
+    charset = current_charset ? current_charset : "US-ASCII";
+    return convert_string(charset, "UTF-8", from, to, '#');
 }
 
-int utf8_decode(const char *from, char **to)
-{
-	char *charset;
+int utf8_decode(const char *from, char **to) {
+    char *charset;
 
-	if (*from == 0)
-	{
-		*to = malloc(1);
-		**to = 0;
-		return 1;
-	}
+    if (*from == 0) {
+        *to = malloc(1);
+        **to = 0;
+        return 1;
+    }
 
-	if (!current_charset)
-		convert_set_charset(0);
-	charset = current_charset ? current_charset : "US-ASCII";
-	return convert_string("UTF-8", charset, from, to, '?');
+    if (!current_charset)
+        convert_set_charset(0);
+    charset = current_charset ? current_charset : "US-ASCII";
+    return convert_string("UTF-8", charset, from, to, '?');
 }
 
 #endif

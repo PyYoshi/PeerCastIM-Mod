@@ -13,32 +13,27 @@
 #include <windows.h>
 #include "common/ts_vector.h"
 
-template <class T>
-class WTSVector : public ITSVector<T>
-{
+template<class T>
+class WTSVector : public ITSVector<T> {
 private:
-	CRITICAL_SECTION csec;
+    CRITICAL_SECTION csec;
 
 public:
-	WTSVector()
-	{
-		InitializeCriticalSection(&csec);
-	}
+    WTSVector() {
+        InitializeCriticalSection(&csec);
+    }
 
-	~WTSVector()
-	{
-		DeleteCriticalSection(&csec);
-	}
+    ~WTSVector() {
+        DeleteCriticalSection(&csec);
+    }
 
-	inline virtual void lock()
-	{
-		EnterCriticalSection(&csec);
-	}
+    inline virtual void lock() {
+        EnterCriticalSection(&csec);
+    }
 
-	inline virtual void unlock()
-	{
-		LeaveCriticalSection(&csec);
-	}
+    inline virtual void unlock() {
+        LeaveCriticalSection(&csec);
+    }
 };
 
 #endif

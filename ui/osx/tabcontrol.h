@@ -25,35 +25,43 @@
 #include "numericcontrol.h"
 #include "sys.h"
 
-class TabControl
-{
+class TabControl {
 public:
-	explicit TabControl( const int signature, const int id, WindowRef windowRef );
-	const ControlID& getID    () const { return mControlID; }
-	WindowRef        getWindow() const { return mWindowRef; }
-	
-	OSStatus installHandler();	
-	void updateSettings    ();
-	void saveSettings();
-	
-	static OSStatus handler( EventHandlerCallRef inCallRef, EventRef inEvent, void* inUserData );
+    explicit TabControl(const int signature, const int id, WindowRef windowRef);
+
+    const ControlID &getID() const {
+        return mControlID;
+    }
+
+    WindowRef getWindow() const {
+        return mWindowRef;
+    }
+
+    OSStatus installHandler();
+
+    void updateSettings();
+
+    void saveSettings();
+
+    static OSStatus handler(EventHandlerCallRef inCallRef, EventRef inEvent, void *inUserData);
 
 private:
 
-	void setInitialTab(WindowRef window);
+    void setInitialTab(WindowRef window);
 
-	static ControlRef getControlRef( WindowRef window, const ControlID& controlID );
-	static void       switchItem   ( WindowRef window, ControlRef tabControl, const short currentTabIndex );
+    static ControlRef getControlRef(WindowRef window, const ControlID &controlID);
 
-	ControlID		 mControlID;
-	WindowRef		 mWindowRef;
-	CEventHandlerUPP mEventHandler;
-	TextControl		 mYPAddress;
-	TextControl		 mDJMessage;
-	TextControl		 mPassword;
-	NumericControl   mMaxRelays;
-	WLock			 mLock;
-	short			 mLastTabIndex;
+    static void switchItem(WindowRef window, ControlRef tabControl, const short currentTabIndex);
+
+    ControlID mControlID;
+    WindowRef mWindowRef;
+    CEventHandlerUPP mEventHandler;
+    TextControl mYPAddress;
+    TextControl mDJMessage;
+    TextControl mPassword;
+    NumericControl mMaxRelays;
+    WLock mLock;
+    short mLastTabIndex;
 };
 
 #endif // _TABCONTROL_H

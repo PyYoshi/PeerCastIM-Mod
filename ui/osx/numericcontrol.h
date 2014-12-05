@@ -12,22 +12,22 @@
 
 #include "textcontrol.h"
 
-class NumericControl: public TextControl
-{
+class NumericControl : public TextControl {
 public:
-	explicit NumericControl( const int a, const int id )
-	:TextControl( a, id )
-	{
-	}
-	
-	void setIntValue  ( WindowRef window, const int   value );
-	void setFloatValue( WindowRef window, const float value );
-	
-	int   getIntValue  ( WindowRef window );
-	float getFloatValue( WindowRef window );
-	
+    explicit NumericControl(const int a, const int id)
+            : TextControl(a, id) {
+    }
+
+    void setIntValue(WindowRef window, const int value);
+
+    void setFloatValue(WindowRef window, const float value);
+
+    int getIntValue(WindowRef window);
+
+    float getFloatValue(WindowRef window);
+
 private:
-	float mValue;
+    float mValue;
 };
 
 #endif // _NUMERICCONTROL_H

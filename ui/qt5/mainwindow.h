@@ -4,15 +4,15 @@
 #include <QMainWindow>
 
 namespace Ui {
-class MainFormBase;
+    class MainFormBase;
 }
 
-class MainFormBase : public QMainWindow
-{
+class MainFormBase : public QMainWindow {
     Q_OBJECT
 
 public:
     explicit MainFormBase(QWidget *parent = 0);
+
     ~MainFormBase();
 
 private:

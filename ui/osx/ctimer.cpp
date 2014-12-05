@@ -9,17 +9,11 @@
 
 #include "ctimer.h"
 
-Timer::Timer( EventLoopRef		 mainLoop,
-			  EventTimerInterval inFireDelay,
-			  EventTimerInterval inInterval,
-			  void*				 inTimerData,
-			  EventLoopTimerProcPtr userRoutine )
-: mTimerUPP( NewEventLoopTimerUPP(userRoutine) )
-{
-	InstallEventLoopTimer( mainLoop
-						  ,inFireDelay
-						  ,inInterval
-						  ,mTimerUPP
-						  ,inTimerData
-						  ,&mTimer);
+Timer::Timer(EventLoopRef mainLoop,
+        EventTimerInterval inFireDelay,
+        EventTimerInterval inInterval,
+        void *inTimerData,
+        EventLoopTimerProcPtr userRoutine)
+        : mTimerUPP(NewEventLoopTimerUPP(userRoutine)) {
+    InstallEventLoopTimer(mainLoop, inFireDelay, inInterval, mTimerUPP, inTimerData, &mTimer);
 }

@@ -9,35 +9,30 @@
 
 #include "numericcontrol.h"
 
-void NumericControl::setIntValue( WindowRef window, const int value )
-{
-	CFStringRef controlText = CFStringCreateWithFormat( NULL, NULL, CFSTR("%d"), value );
-	setText( window, controlText );
-	CFRelease( controlText );
+void NumericControl::setIntValue(WindowRef window, const int value) {
+    CFStringRef controlText = CFStringCreateWithFormat(NULL, NULL, CFSTR("%d"), value);
+    setText(window, controlText);
+    CFRelease(controlText);
 }
 
-void NumericControl::setFloatValue( WindowRef window, const float value )
-{
-	CFStringRef controlText = CFStringCreateWithFormat( NULL, NULL, CFSTR("%f"), value );
-	setText( window, controlText );
-	CFRelease( controlText );
+void NumericControl::setFloatValue(WindowRef window, const float value) {
+    CFStringRef controlText = CFStringCreateWithFormat(NULL, NULL, CFSTR("%f"), value);
+    setText(window, controlText);
+    CFRelease(controlText);
 }
 
-int NumericControl::getIntValue( WindowRef window )
-{
-	return static_cast<int>( getFloatValue( window ) );
+int NumericControl::getIntValue(WindowRef window) {
+    return static_cast<int>( getFloatValue(window) );
 }
 
-float NumericControl::getFloatValue( WindowRef window )
-{
-	CFStringRef stringRef = getStringRef( window );
-	
-	if( stringRef )
-	{
-		mValue = CFStringGetDoubleValue( stringRef );
-		return mValue;
-	}
-	
-	return 0.0f;
+float NumericControl::getFloatValue(WindowRef window) {
+    CFStringRef stringRef = getStringRef(window);
+
+    if (stringRef) {
+        mValue = CFStringGetDoubleValue(stringRef);
+        return mValue;
+    }
+
+    return 0.0f;
 }
 

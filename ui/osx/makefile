@@ -1,5 +1,5 @@
 CPPFLAGS = -D__cplusplus -D_UNIX -D_APPLE -D_REENTRANT $(INCLUDES)
-LDFLAGS =
+LDFLAGS = -framework CoreFoundation
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -97,5 +97,5 @@ $(TARGET): $(MACOSXOBJ) $(COREOBJ)
 	$(LD) $(LDFLAGS) -o $@ $(MACOSXOBJ) $(COREOBJ) $(LIBS)
 
 
-include $(DEPENDFILE)
+#include $(DEPENDFILE)
 # DO NOT DELETE

@@ -114,8 +114,7 @@
                                             <TR align=left bgColor=#eeeeee class="normal">
                                                 <TD>パスワード</TD>
                                                 <TD bgcolor="#eeeeee"><INPUT name=passnew type=password size="10"
-                                                                             maxlength="32" {@if
-                                                                             servMgr.password}value={$servMgr.password}{@end}>
+                                                                             maxlength="32" {@if servMgr.password}value={$servMgr.password}{@end}>
                                                 </TD>
                                             </TR>
                                             <TR align=left bgColor=#dddddd class="normal">
@@ -131,8 +130,6 @@
                                                 <TD>言語</TD>
                                                 <TD><select name="htmlPath" size="1" id="htmlPath">
                                                     <option value="en">英語</option>
-                                                    <option value="fr">フランス語</option>
-                                                    <option value="de">ドイツ語</option>
                                                     <option value="ja" selected>日本語</option>
                                                 </select></TD>
                                             </TR>
@@ -190,8 +187,7 @@
                                                                   </TR>-->
                                             <TR align=left bgColor=#eeeeee class="normal">
                                                 <TD>ホスト逆引き</TD>
-                                                <TD><INPUT type=checkbox value=1 name=enableGetName {@if
-                                                           servMgr.enableGetName}CHECKED{@end}></TD>
+                                                <TD><INPUT type=checkbox value=1 name=enableGetName {@if servMgr.enableGetName}CHECKED{@end}></TD>
                                             </TR>
                                             <TR align=left bgColor=#dddddd class="normal">
                                                 <TD>(配信時)直下リレー不可ホスト自動切断</TD>
@@ -226,8 +222,7 @@
                                             </TR>
                                             <TR align=left bgColor=#dddddd class="normal">
                                                 <TD>(直下時)オートBump無効</TD>
-                                                <TD><INPUT type=checkbox value=1 name=disableAutoBumpIfDirect {@if
-                                                           servMgr.disableAutoBumpIfDirect}CHECKED{@end}></TD>
+                                                <TD><INPUT type=checkbox value=1 name=disableAutoBumpIfDirect {@if servMgr.disableAutoBumpIfDirect}CHECKED{@end}></TD>
                                             </TR>
                                             <TR align=left bgColor=#eeeeee class="normal">
                                                 <TD>ASX書き出し詳細モード</TD>
@@ -263,9 +258,7 @@
                                         </TR>
                                         <TR align=left bgColor=#eeeeee class="normal">
                                             <TD width="50%">DJ Message</TD>
-                                            <TD bgcolor="#eeeeee"><INPUT {@if
-                                                                         chanMgr.djMessage}value="{$chanMgr.djMessage}"
-                                                                         {@end} name=djmsg>
+                                            <TD bgcolor="#eeeeee"><INPUT {@if chanMgr.djMessage}value="{$chanMgr.djMessage}" {@end} name=djmsg>
                                             </TD>
                                         </TR>
                                         <TR align=left bgColor=#dddddd class="normal">
@@ -275,10 +268,8 @@
                                         </TR>
                                         <TR align=left bgColor=#eeeeee class="normal">
                                             <TD>モード</TD>
-                                            <TD bgcolor="#eeeeee"><INPUT type=radio {@if !servMgr.isRoot}CHECKED{@end}
-                                                                         value=0 name=root>
-                                                <I>Normal</I> <BR> <INPUT type=radio {@if servMgr.isRoot}CHECKED{@end}
-                                                                          value=1 name=root>
+                                            <TD bgcolor="#eeeeee"><INPUT type=radio {@if !servMgr.isRoot}CHECKED{@end} value=0 name=root>
+                                                <I>Normal</I> <BR> <INPUT type=radio {@if servMgr.isRoot}CHECKED{@end} value=1 name=root>
                                                 <I>Root</I></TD>
                                         </TR>
                                         <TR align=left bgColor=#dddddd class="normal">
@@ -296,16 +287,12 @@
                                         </TR>
                                         <TR align=left bgColor=#dddddd class="normal">
                                             <TD bgcolor="#eeeeee">イエローページ1</TD>
-                                            <TD bgcolor="#eeeeee"><input {@if
-                                                                         servMgr.ypAddress}value={$servMgr.ypAddress}{@end}
-                                                                         name=yp>
+                                            <TD bgcolor="#eeeeee"><input {@if servMgr.ypAddress}value={$servMgr.ypAddress}{@end} name=yp>
                                             </TD>
                                         </TR>
                                         <TR align=left bgColor=#dddddd class="normal">
                                             <TD bgcolor="#eeeeee">イエローページ2</TD>
-                                            <TD bgcolor="#eeeeee"><input {@if
-                                                                         servMgr.ypAddress2}value={$servMgr.ypAddress2}{@end}
-                                                                         name=yp2>
+                                            <TD bgcolor="#eeeeee"><input {@if servMgr.ypAddress2}value={$servMgr.ypAddress2}{@end} name=yp2>
                                             </TD>
                                         </TR>
                                         <TR align=left bgColor=#dddddd class="normal">
@@ -432,8 +419,7 @@
                                             <TD><INPUT type=radio {@if servMgr.auth.useSessionCookies}CHECKED{@end}
                                                        value=session name=expire>
                                                 <I>セッションごと<BR>
-                                                </I> <INPUT type=radio {@if
-                                                            !servMgr.auth.useSessionCookies}CHECKED{@end} value=never
+                                                </I> <INPUT type=radio {@if !servMgr.auth.useSessionCookies}CHECKED{@end} value=never
                                                             name=expire>
                                                 <I>期限ナシ</I></TD>
                                         </TR>
@@ -483,8 +469,7 @@
                                         </TR>
                                         <TR align=left bgColor=#eeeeee>
                                             <TD>Host Update (sec)</TD>
-                                            <TD><INPUT size=5 {@if
-                                                       chanMgr.hostUpdateInterval}value={$chanMgr.hostUpdateInterval}{@end}
+                                            <TD><INPUT size=5 {@if chanMgr.hostUpdateInterval}value={$chanMgr.hostUpdateInterval}{@end}
                                                        name=huint></TD>
                                         </TR>
                                         <TR align=left bgColor=#dddddd>

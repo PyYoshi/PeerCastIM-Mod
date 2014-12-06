@@ -120,8 +120,7 @@
                                             <TR align=left bgColor=#eeeeee class="normal">
                                                 <TD>Password</TD>
                                                 <TD bgcolor="#eeeeee"><INPUT name=passnew type=password size="10"
-                                                                             maxlength="32" {@if
-                                                                             servMgr.password}value={$servMgr.password}{@end}>
+                                                                             maxlength="32" {@if servMgr.password}value={$servMgr.password}{@end}>
                                                 </TD>
                                             </TR>
                                             <TR align=left bgColor=#dddddd class="normal">
@@ -137,8 +136,6 @@
                                                 <TD>Language</TD>
                                                 <TD><select name="htmlPath" size="1" id="htmlPath">
                                                     <option value="en" selected>English</option>
-                                                    <option value="fr">French</option>
-                                                    <option value="de">Deutsch</option>
                                                     <option value="ja">Japanese</option>
                                                 </select></TD>
                                             </TR>
@@ -192,13 +189,11 @@
                                             </TR>
                                             <TR align=left bgColor=#eeeeee class="normal">
                                                 <TD>allowConnectPCST</TD>
-                                                <TD><INPUT type=checkbox value=1 name=allowConnectPCST {@if
-                                                           servMgr.allowConnectPCST}CHECKED{@end}></TD>
+                                                <TD><INPUT type=checkbox value=1 name=allowConnectPCST {@if servMgr.allowConnectPCST}CHECKED{@end}></TD>
                                             </TR>
                                             <TR align=left bgColor=#dddddd class="normal">
                                                 <TD>enableGetName</TD>
-                                                <TD><INPUT type=checkbox value=1 name=enableGetName {@if
-                                                           servMgr.enableGetName}CHECKED{@end}></TD>
+                                                <TD><INPUT type=checkbox value=1 name=enableGetName {@if servMgr.enableGetName}CHECKED{@end}></TD>
                                             </TR>
                                         </table>
                                     </div>
@@ -233,8 +228,7 @@
                                             <TD bgcolor="#eeeeee">Mode</TD>
                                             <TD><INPUT type=radio {@if !servMgr.isRoot}CHECKED{@end} value=0
                                                        name=root></INPUT>
-                                                <I>Normal</I> <BR> <INPUT name=root type=radio value=1 {@if
-                                                                          servMgr.isRoot}CHECKED{@end}></INPUT>
+                                                <I>Normal</I> <BR> <INPUT name=root type=radio value=1 {@if servMgr.isRoot}CHECKED{@end}></INPUT>
                                                 <I>Root</I></TD>
                                         </TR>
                                         <TR align=left bgColor=#dddddd class="normal">
@@ -253,8 +247,7 @@
                                         </TR>
                                         <TR align=left bgColor=#dddddd class="normal">
                                             <TD bgcolor="#eeeeee">YP Address</TD>
-                                            <TD bgcolor="#eeeeee"><input {@if
-                                                                         servMgr.ypAddress}value={$servMgr.ypAddress}{@end}
+                                            <TD bgcolor="#eeeeee"><input {@if servMgr.ypAddress}value={$servMgr.ypAddress}{@end}
                                                                          name=yp>
                                             </TD>
                                         </TR>
@@ -382,9 +375,7 @@
                                             <TD><INPUT type=radio {@if servMgr.auth.useSessionCookies}CHECKED{@end}
                                                        value=session name=expire></INPUT>
                                                 <I>End of session<BR>
-                                                </I> <INPUT type=radio {@if
-                                                            !servMgr.auth.useSessionCookies}CHECKED{@end} value=never
-                                                            name=expire></INPUT>
+                                                </I> <INPUT type=radio {@if !servMgr.auth.useSessionCookies}CHECKED{@end} value=never name=expire></INPUT>
                                                 <I>Never</I></TD>
                                         </TR>
                                         </TBODY>
@@ -433,13 +424,12 @@
                                         </TR>
                                         <TR align=left bgColor=#eeeeee>
                                             <TD>Host Update (sec)</TD>
-                                            <TD><INPUT size=5 {@if
-                                                       chanMgr.hostUpdateInterval}value={$chanMgr.hostUpdateInterval}{@end}
+                                            <TD><INPUT size=5 {@if chanMgr.hostUpdateInterval} value={$chanMgr.hostUpdateInterval}{@end}
                                                        name=huint></TD>
                                         </TR>
                                         <TR align=left bgColor=#dddddd>
                                             <TD>Message</TD>
-                                            <TD><INPUT size=50 {@if servMgr.rootMsg}value={$servMgr.rootMsg}{@end}
+                                            <TD><INPUT size=50 {@if servMgr.rootMsg} value={$servMgr.rootMsg}{@end}
                                                        name=pcmsg></TD>
                                         </TR>
                                         <TR align=left bgColor=#eeeeee>

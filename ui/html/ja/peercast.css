@@ -202,14 +202,14 @@ address {
 }
 
 .relaytree {
-    font-family: "Osaka�|����", "�l�r �S�V�b�N", monospace;
+    font-family: "Osaka－等幅", "Osaka-mono", "ＭＳ ゴシック", monospace;
     font-size: 14px;
     line-height: 14px;
     padding-left: 30px;
 }
 
 .relaytree font {
-    font-family: 'Osaka�|����', '�l�r �S�V�b�N', monospace;
+    font-family: "Osaka－等幅", "Osaka-mono", "ＭＳ ゴシック", monospace;
 }
 
 .relaytree a:hover {

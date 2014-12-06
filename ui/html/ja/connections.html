@@ -113,11 +113,7 @@
                                 <TD><B>Kbits/s</B></TD>
                             </TR>
                             {@loop servMgr.numServents}
-                            <tr class="normal"
-                                {@if loop.indexEven}
-                                bgColor=#eeeeee
-                                {@else}
-                                {@end}>
+                            <tr class="normal" {@if loop.indexEven} bgColor=#eeeeee {@else} {@end}>
                                 <TD>{$loop.servent.type}</TD>
                                 <TD>{$loop.servent.status}</TD>
                                 <TD>{$loop.servent.uptime}</TD>

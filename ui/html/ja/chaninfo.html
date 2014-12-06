@@ -241,13 +241,7 @@
                             <TD><B>Update</B></TD>
                         </TR>
                         {@loop page.channel.numHits}
-                        <TR align=middle
-                            {@if loop.indexEven}
-                            bgColor=#eeeeee
-                            {@else}
-                            bgColor=#dddddd
-                            {@end}
-                                >
+                        <TR align=middle {@if loop.indexEven} bgColor=#eeeeee {@else} bgColor=#dddddd {@end} >
                             <TD></TD>
                             <TD>{$loop.hit.rhost0}/{$loop.hit.rhost1}</TD>
                             <TD>{$loop.hit.numHops}</TD>

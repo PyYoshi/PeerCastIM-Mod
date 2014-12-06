@@ -305,10 +305,7 @@
                 {@end}
                 {@loop page.channel.numHits}
                 <tr
-                {@if loop.indexEven} id="e" onmouseover="javascript:this.setAttribute('id', 'eo');"
-                onmouseout="javascript:this.setAttribute('id', 'e');"{@else} id="d"
-                onmouseover="javascript:this.setAttribute('id', 'do');" onmouseout="javascript:this.setAttribute('id',
-                'd');"{@end}>
+                {@if loop.indexEven} id="e" onmouseover="javascript:this.setAttribute('id', 'eo');"  onmouseout="javascript:this.setAttribute('id', 'e');"{@else} id="d" onmouseover="javascript:this.setAttribute('id', 'do');" onmouseout="javascript:this.setAttribute('id', 'd');"{@end}>
                 <td>{$loop.hit.check}</td>
                 <td>{$loop.hit.rhost0} <!-- {$loop.hit.rhost1} --></td>
                 <td>{$loop.hit.numHops}</td>

@@ -13,3 +13,13 @@ ui/osx/peercast
 /CMakeCache.txt
 bin/
 lib/
+_UpgradeReport_Files/
+Backup/
+*.sdf
+*.opensdf
+*.suo
+ui/win32/simple/Debug
+ui/win32/Simple_vp/Debug
+ui/win32/simple/R
+ui/win32/Simple_vp/Debug
+core/win32/lib/

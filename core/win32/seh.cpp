@@ -1,4 +1,4 @@
-#include "win32/seh.h"
+﻿#include "win32/seh.h"
 
 void SEHdump(_EXCEPTION_POINTERS * lpExcept) {
     // crash dump

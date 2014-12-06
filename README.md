@@ -23,6 +23,18 @@ make
 ln -s ../html ./html
 ```
 
+### Windows
+
+VS2012で
+
+```
+PeerCast.sln
+```
+
+を開いてSimple_vpをビルド
+
+PeerCast.exeと同じフォルダにhtmlフォルダをおく
+
 ## 実行
 
 ```bash

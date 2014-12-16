@@ -43,16 +43,18 @@ Qt4のbinディレクトリのパスを通し
 cd ui/qt4
 qmake
 make
+ln -s ../html ./html
 ```
 
 ### Qt5
 
-Qt4のbinディレクトリのパスを通し
+Qt5のbinディレクトリのパスを通し
 
 ```bash
 cd ui/qt5
 qmake
 make
+ln -s ../html ./html
 ```
 
 ⚠未完成

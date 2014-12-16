@@ -11,6 +11,14 @@ unix {
  SOURCES += ../../core/unix/compat.cpp ../../core/unix/usys.cpp ../../core/unix/usocket.cpp
 }
 
+unix:!macx { # Ubuntu or Debian or etc...
+ QMAKE_CXXFLAGS += -D OS_LINUX
+}
+
+unix:macx {
+ QMAKE_CXXFLAGS += -D OS_MACOSX
+}
+
 win32 {
  LIBS += -lwsock32
  DEFINES += WIN32 QT

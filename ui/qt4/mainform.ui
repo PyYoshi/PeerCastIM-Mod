@@ -1,96 +1,129 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>MainFormBase</class>
- <widget class="QWidget" name="MainFormBase" >
-  <property name="geometry" >
+ <widget class="QWidget" name="MainFormBase">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>492</width>
+    <width>516</width>
     <height>483</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>PeerCast</string>
   </property>
-  <property name="autoFillBackground" >
+  <property name="autoFillBackground">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" >
-   <property name="margin" >
+  <layout class="QVBoxLayout">
+   <property name="spacing">
     <number>6</number>
    </property>
-   <property name="spacing" >
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
     <number>6</number>
    </property>
    <item>
-    <widget class="QFrame" name="frame" >
-     <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>5</hsizetype>
-       <vsizetype>0</vsizetype>
+    <widget class="QFrame" name="frame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="frameShape" >
+     <property name="frameShape">
       <enum>QFrame::Box</enum>
      </property>
-     <property name="frameShadow" >
+     <property name="frameShadow">
       <enum>QFrame::Sunken</enum>
      </property>
-     <layout class="QGridLayout" >
-      <property name="margin" >
+     <layout class="QGridLayout">
+      <property name="leftMargin">
        <number>6</number>
       </property>
-      <property name="spacing" >
+      <property name="topMargin">
        <number>6</number>
       </property>
-      <item row="0" column="0" >
-       <layout class="QHBoxLayout" >
-        <property name="margin" >
-         <number>0</number>
-        </property>
-        <property name="spacing" >
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <property name="spacing">
+       <number>6</number>
+      </property>
+      <item row="0" column="0">
+       <layout class="QHBoxLayout">
+        <property name="spacing">
          <number>6</number>
         </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
-         <layout class="QVBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
-          <property name="spacing" >
+         <layout class="QVBoxLayout">
+          <property name="spacing">
            <number>6</number>
           </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
-           <widget class="QLabel" name="label_4" >
-            <property name="font" >
+           <widget class="QLabel" name="label_4">
+            <property name="font">
              <font>
               <weight>75</weight>
               <bold>true</bold>
              </font>
             </property>
-            <property name="text" >
-             <string> PeerCast-VP </string>
+            <property name="text">
+             <string> PeerCast-IM </string>
             </property>
-            <property name="alignment" >
+            <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButtonEnabled" >
-            <property name="sizePolicy" >
-             <sizepolicy>
-              <hsizetype>1</hsizetype>
-              <vsizetype>3</vsizetype>
+           <widget class="QPushButton" name="pushButtonEnabled">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="text" >
+            <property name="text">
              <string>Enabled</string>
             </property>
-            <property name="checkable" >
+            <property name="checkable">
              <bool>true</bool>
             </property>
            </widget>
@@ -98,60 +131,69 @@
          </layout>
         </item>
         <item>
-         <layout class="QGridLayout" >
-          <property name="margin" >
+         <layout class="QGridLayout">
+          <property name="leftMargin">
            <number>2</number>
           </property>
-          <property name="spacing" >
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
+          <property name="spacing">
            <number>6</number>
           </property>
-          <item row="0" column="2" >
-           <widget class="QLabel" name="label_3" >
-            <property name="text" >
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
              <string>Max relays</string>
             </property>
-            <property name="alignment" >
+            <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
-          <item row="0" column="1" >
-           <widget class="QLineEdit" name="lineEditPort" >
-            <property name="alignment" >
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lineEditPort">
+            <property name="alignment">
              <set>Qt::AlignRight</set>
             </property>
            </widget>
           </item>
-          <item row="1" column="0" >
-           <widget class="QLabel" name="label_2" >
-            <property name="text" >
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
              <string>Password</string>
             </property>
-            <property name="alignment" >
+            <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
-          <item row="1" column="1" >
-           <widget class="QLineEdit" name="lineEditPassword" >
-            <property name="echoMode" >
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEditPassword">
+            <property name="echoMode">
              <enum>QLineEdit::Password</enum>
             </property>
            </widget>
           </item>
-          <item row="0" column="0" >
-           <widget class="QLabel" name="label" >
-            <property name="text" >
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
              <string>Port</string>
             </property>
-            <property name="alignment" >
+            <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
-          <item row="0" column="3" >
-           <widget class="QLineEdit" name="lineEditMaxRelays" >
-            <property name="alignment" >
+          <item row="0" column="3">
+           <widget class="QLineEdit" name="lineEditMaxRelays">
+            <property name="alignment">
              <set>Qt::AlignRight</set>
             </property>
            </widget>
@@ -160,10 +202,10 @@
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
             <height>20</height>
@@ -173,10 +215,10 @@
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
             <height>20</height>
@@ -190,61 +232,88 @@
     </widget>
    </item>
    <item>
-    <widget class="QSplitter" name="splitter" >
-     <property name="orientation" >
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="handleWidth" >
+     <property name="handleWidth">
       <number>4</number>
      </property>
-     <widget class="QWidget" name="layoutWidget_2" >
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
-       <property name="spacing" >
+     <widget class="QWidget" name="layoutWidget_2">
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>4</number>
        </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>6</number>
          </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
-          <widget class="QPushButton" name="pushButtonPlay" >
-           <property name="text" >
+          <widget class="QPushButton" name="pushButtonPlay">
+           <property name="text">
             <string>Play</string>
            </property>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" >
-           <property name="margin" >
+          <layout class="QHBoxLayout">
+           <property name="spacing">
             <number>0</number>
            </property>
-           <property name="spacing" >
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="pushButtonBump" >
-             <property name="text" >
+            <widget class="QPushButton" name="pushButtonBump">
+             <property name="text">
               <string>Bump</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButtonDisconnect" >
-             <property name="text" >
+            <widget class="QPushButton" name="pushButtonDisconnect">
+             <property name="text">
               <string>Disconnect</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButtonKeep" >
-             <property name="text" >
+            <widget class="QPushButton" name="pushButtonKeep">
+             <property name="text">
               <string>Keep</string>
              </property>
             </widget>
@@ -253,10 +322,10 @@
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
              <height>20</height>
@@ -267,39 +336,57 @@
         </layout>
        </item>
        <item>
-        <widget class="Q3ListBox" native="1" name="listBoxChannel" />
+        <widget class="Q3ListBox" name="listBoxChannel" native="true"/>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget_3" >
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
-       <property name="spacing" >
+     <widget class="QWidget" name="layoutWidget_3">
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>4</number>
        </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>6</number>
          </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
-          <widget class="QPushButton" name="pushButtonDisconnectConn" >
-           <property name="text" >
+          <widget class="QPushButton" name="pushButtonDisconnectConn">
+           <property name="text">
             <string>Disconnect</string>
            </property>
           </widget>
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
              <height>20</height>
@@ -310,107 +397,132 @@
         </layout>
        </item>
        <item>
-        <widget class="Q3ListBox" native="1" name="listBoxConnection" />
+        <widget class="Q3ListBox" name="listBoxConnection" native="true"/>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget_4" >
-      <layout class="QVBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
-       <property name="spacing" >
+     <widget class="QWidget" name="layoutWidget_4">
+      <layout class="QVBoxLayout">
+       <property name="spacing">
         <number>4</number>
        </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
-        <layout class="QHBoxLayout" >
-         <property name="margin" >
-          <number>0</number>
-         </property>
-         <property name="spacing" >
+        <layout class="QHBoxLayout">
+         <property name="spacing">
           <number>6</number>
          </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
-          <widget class="QPushButton" name="pushButtonClear" >
-           <property name="text" >
+          <widget class="QPushButton" name="pushButtonClear">
+           <property name="text">
             <string>Clear</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButtonStop" >
-           <property name="text" >
+          <widget class="QPushButton" name="pushButtonStop">
+           <property name="text">
             <string>Stop</string>
            </property>
-           <property name="checkable" >
+           <property name="checkable">
             <bool>true</bool>
            </property>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" >
-           <property name="margin" >
+          <layout class="QHBoxLayout">
+           <property name="spacing">
             <number>0</number>
            </property>
-           <property name="spacing" >
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="pushButtonDebug" >
-             <property name="sizePolicy" >
-              <sizepolicy>
-               <hsizetype>1</hsizetype>
-               <vsizetype>0</vsizetype>
+            <widget class="QPushButton" name="pushButtonDebug">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="sizeIncrement" >
+             <property name="sizeIncrement">
               <size>
                <width>0</width>
                <height>0</height>
               </size>
              </property>
-             <property name="baseSize" >
+             <property name="baseSize">
               <size>
                <width>0</width>
                <height>0</height>
               </size>
              </property>
-             <property name="text" >
+             <property name="text">
               <string>Debug</string>
              </property>
-             <property name="checkable" >
+             <property name="checkable">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButtonError" >
-             <property name="text" >
+            <widget class="QPushButton" name="pushButtonError">
+             <property name="text">
               <string>Error</string>
              </property>
-             <property name="checkable" >
+             <property name="checkable">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButtonNetwork" >
-             <property name="text" >
+            <widget class="QPushButton" name="pushButtonNetwork">
+             <property name="text">
               <string>Network</string>
              </property>
-             <property name="checkable" >
+             <property name="checkable">
               <bool>true</bool>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButtonChannel" >
-             <property name="text" >
+            <widget class="QPushButton" name="pushButtonChannel">
+             <property name="text">
               <string>Channel</string>
              </property>
-             <property name="checkable" >
+             <property name="checkable">
               <bool>true</bool>
              </property>
             </widget>
@@ -419,10 +531,10 @@
          </item>
          <item>
           <spacer>
-           <property name="orientation" >
+           <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" >
+           <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
              <height>20</height>
@@ -433,7 +545,7 @@
         </layout>
        </item>
        <item>
-        <widget class="Q3ListBox" native="1" name="listBoxLog" />
+        <widget class="Q3ListBox" name="listBoxLog" native="true"/>
        </item>
       </layout>
      </widget>
@@ -443,14 +555,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Q3ListBox</class>
-   <extends>Q3Frame</extends>
-   <header>q3listbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>Q3Frame</class>
    <extends>QWidget</extends>
    <header>q3frame.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Q3ListBox</class>
+   <extends>Q3Frame</extends>
+   <header>q3listbox.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

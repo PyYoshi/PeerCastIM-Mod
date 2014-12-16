@@ -35,6 +35,28 @@ PeerCast.sln
 
 PeerCast.exeと同じフォルダにhtmlフォルダをおく
 
+### Qt4
+
+Qt4のbinディレクトリのパスを通し
+
+```bash
+cd ui/qt4
+qmake
+make
+```
+
+### Qt5
+
+Qt4のbinディレクトリのパスを通し
+
+```bash
+cd ui/qt5
+qmake
+make
+```
+
+⚠未完成
+
 ## 実行
 
 ```bash

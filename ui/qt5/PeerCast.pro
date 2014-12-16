@@ -29,7 +29,7 @@ unix {
  HEADERS += ../../core/unix/compat.h \
     ../../core/unix/ts_vector.h \
     ../../core/unix/usocket.h \
-    ../../core/unix/usys.h \
+    ../../core/unix/usys.h
 }
 
 unix:!macx { # Ubuntu or Debian or etc...
@@ -37,7 +37,6 @@ unix:!macx { # Ubuntu or Debian or etc...
 }
 
 unix:macx { # OSX
-
  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
  QMAKE_MAC_SDK = macosx10.9
  LIBS += -framework IOKit -framework CoreFoundation
@@ -123,3 +122,5 @@ SOURCES += ../../core/common/socket.cpp \
     ../../core/common/icy.cpp \
     ../../core/common/pcp.cpp \
     ../../core/common/jis.cpp
+
+DISTFILES +=

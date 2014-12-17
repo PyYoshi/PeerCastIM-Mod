@@ -2,10 +2,10 @@
 // File : lsocket.cpp
 // Date: 4-apr-2002
 // Author: giles
-// Desc: 
+// Desc:
 //		Linux version of ClientSocket. Handles the nitty gritty of actually
 //		reading and writing TCP
-//		
+//
 // (c) 2002 peercast.org
 // ------------------------------------------------
 // This program is free software; you can redistribute it and/or modify
@@ -263,8 +263,9 @@ void UClientSocket::checkTimeout(bool r, bool w) {
             throw SockException("select failed.");
 
     } else {
-        char str[32];
-        sprintf(str, "Closed: %s", strerror(err));
+        char str[256];
+        char errmsg[128];
+        snprintf(str, sizeof(str), "Closed: %s", strerror_r(err, errmsg, sizeof(errmsg)));
         throw SockException(str);
     }
 }
@@ -648,4 +649,3 @@ int UClientSocket::numPending() {
 
     return (int) len;
 }
-

@@ -171,14 +171,14 @@ public:
 class ChanPacketBuffer {
 public:
     enum {
-        // MAX_PACKETS = 64,
-        // NUM_SAFEPACKETS = 60
+        MAX_PACKETS = 64,
+        NUM_SAFEPACKETS = 60
         // MAX_PACKETS = 128,
         // NUM_SAFEPACKETS = 120
         // MAX_PACKETS = 256,
         // NUM_SAFEPACKETS = 240
-        MAX_PACKETS = 512,
-        NUM_SAFEPACKETS = 480
+        // MAX_PACKETS = 512,
+        // NUM_SAFEPACKETS = 480
         // MAX_PACKETS = 1024,
         // NUM_SAFEPACKETS = 960
     };

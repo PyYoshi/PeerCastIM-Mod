@@ -34,7 +34,13 @@ class Stream;
 class ChanPacket {
 public:
     enum {
-        MAX_DATALEN = 16384
+        // MAX_DATALEN = 16384 // 16kb
+        // MAX_DATALEN = 32768 // 32kb
+        // MAX_DATALEN = 49152 // 48kb
+        // MAX_DATALEN = 65536 // 64kb
+        // MAX_DATALEN = 98304 // 96kb
+        // MAX_DATALEN = 131072 // 128kb
+        MAX_DATALEN = 262144 // 256kb
     };
 
     enum TYPE {
@@ -165,8 +171,16 @@ public:
 class ChanPacketBuffer {
 public:
     enum {
-        MAX_PACKETS = 64,
-        NUM_SAFEPACKETS = 60
+        // MAX_PACKETS = 64,
+        // NUM_SAFEPACKETS = 60
+        // MAX_PACKETS = 128,
+        // NUM_SAFEPACKETS = 120
+        // MAX_PACKETS = 256,
+        // NUM_SAFEPACKETS = 240
+        MAX_PACKETS = 512,
+        NUM_SAFEPACKETS = 480
+        // MAX_PACKETS = 1024,
+        // NUM_SAFEPACKETS = 960
     };
 
     void init() {
@@ -277,5 +291,4 @@ public:
     Channel *parent;
 };
 
-#endif 
-
+#endif
